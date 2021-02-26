@@ -1,0 +1,8 @@
+name: BoxedVillagers
+version: 1.0
+main: io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers
+commands:
+  boxedvillagers:
+    description: Main Command
+    usage: "Usage: /boxedvillagers [give|cure]"
+    aliases: bv
