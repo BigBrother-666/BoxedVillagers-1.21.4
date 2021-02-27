@@ -29,23 +29,22 @@ public class InteractionListener implements Listener
             return;
         }
 
-        Player player = event.getPlayer();
-        ItemStack item = player.getInventory().getItemInMainHand();
-
         if(event.getRightClicked() instanceof Villager)
         {
-            Villager villager = (Villager) event.getRightClicked();
-            NBTItem nbtItem = new NBTItem(item);
+            Player player = event.getPlayer();
+            NBTItem nbtItem = Util.validateUnboundItem(player.getInventory().getItemInMainHand());
 
-            if(nbtItem.hasKey(BoxedVillagers.TAG_BOXED_VILLAGER_ITEM))
+            if(nbtItem != null)
             {
                 event.setCancelled(true);
 
-                if(nbtItem.getBoolean(BoxedVillagers.TAG_IS_BOUND))
+                if(nbtItem.getBoolean(Strings.TAG_IS_BOUND))
                 {
                     player.sendMessage("Scroll already bound!");
                     return;
                 }
+
+                Villager villager = (Villager) event.getRightClicked();
 
                 if(villager.getRecipeCount() == 0)
                 {
@@ -54,10 +53,9 @@ public class InteractionListener implements Listener
                 else
                 {
                     VillagerData data = new VillagerData(villager);
-                    item = data.writeToItem(nbtItem, true);
 
+                    ItemStack item = data.writeToItem(nbtItem, true);
                     Util.updateBoundScrollTooltip(item, data);
-
                     player.getInventory().setItemInMainHand(item);
 
                     // Particles and sounds
@@ -73,7 +71,6 @@ public class InteractionListener implements Listener
                     player.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, x, y, z, 50, 0.2f, 0.5f, 0.2f, 0.01f);
 
                     // Delete villager
-
                     villager.remove();
                 }
             }
@@ -88,30 +85,20 @@ public class InteractionListener implements Listener
             return;
         }
 
-        System.out.println(event.getAction().toString());
-
         if(event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
         {
             return;
         }
 
         Player player = event.getPlayer();
-        ItemStack item = player.getInventory().getItemInMainHand();
+        NBTItem nbtItem = Util.validateBoundItem(player.getInventory().getItemInMainHand());
 
-        if(item.getType() == Material.AIR)
-        {
-            return;
-        }
-
-        NBTItem nbtItem = new NBTItem(item);
-
-        if(nbtItem.hasKey(BoxedVillagers.TAG_BOXED_VILLAGER_ITEM) && nbtItem.getBoolean(BoxedVillagers.TAG_IS_BOUND))
+        if(nbtItem != null)
         {
             event.setCancelled(true);
             VillagerData data = new VillagerData(nbtItem);
             data.attemptRestock();
-            item = data.writeToItem(nbtItem, false);
-            player.getInventory().setItemInMainHand(item);
+            player.getInventory().setItemInMainHand(data.writeToItem(nbtItem, false));
 
             Merchant merchant = Bukkit.createMerchant(data.professionAsString());
             merchant.setRecipes(data.trades);
@@ -125,16 +112,14 @@ public class InteractionListener implements Listener
         HumanEntity player = event.getPlayer();
         if(player.getOpenInventory().getTopInventory() instanceof MerchantInventory)
         {
-            ItemStack item = player.getInventory().getItemInMainHand();
-            NBTItem nbtItem = new NBTItem(item);
+            NBTItem nbtItem = Util.validateBoundItem(player.getInventory().getItemInMainHand());
 
-            if(nbtItem.hasKey(BoxedVillagers.TAG_BOXED_VILLAGER_ITEM) && nbtItem.getBoolean(BoxedVillagers.TAG_IS_BOUND))
+            if(nbtItem != null)
             {
                 VillagerData data = new VillagerData(nbtItem);
                 data.updateUses(((MerchantInventory) player.getOpenInventory().getTopInventory()).getMerchant());
-                item = data.writeToItem(nbtItem, false);
 
-                player.getInventory().setItemInMainHand(item);
+                player.getInventory().setItemInMainHand(data.writeToItem(nbtItem, false));
             }
         }
     }
@@ -142,16 +127,9 @@ public class InteractionListener implements Listener
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event)
     {
-        ItemStack item = event.getCurrentItem();
+        NBTItem nbtItem = Util.validateBoundItem(event.getCurrentItem());
 
-        if(item == null || item.getType() == Material.AIR)
-        {
-            return;
-        }
-
-        NBTItem nbtItem = new NBTItem(item);
-
-        if(nbtItem.hasKey(BoxedVillagers.TAG_BOXED_VILLAGER_ITEM) && nbtItem.getBoolean(BoxedVillagers.TAG_IS_BOUND))
+        if(nbtItem != null)
         {
             HumanEntity player = event.getWhoClicked();
             if(player.getOpenInventory().getTopInventory() instanceof MerchantInventory)

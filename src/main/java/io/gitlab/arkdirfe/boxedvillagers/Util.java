@@ -1,5 +1,7 @@
 package io.gitlab.arkdirfe.boxedvillagers;
 
+import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,7 +25,7 @@ public final class Util
 
     public static long getTotalTime()
     {
-        String worldName = plugin.config.getString(BoxedVillagers.CONFIG_TIME_WORLD);
+        String worldName = plugin.config.getString(Strings.CONFIG_TIME_WORLD);
 
         if(worldName != null)
         {
@@ -45,12 +47,51 @@ public final class Util
         return -1;
     }
 
+    public static boolean isValidItem(ItemStack item)
+    {
+        return !(item == null || item.getType() == Material.AIR);
+    }
+
+    public static NBTItem validateUnboundItem(ItemStack item)
+    {
+        if (!isValidItem(item))
+        {
+            return null;
+        }
+
+        NBTItem nbtItem = new NBTItem(item);
+
+        if(nbtItem.hasKey(Strings.TAG_BOXED_VILLAGER_ITEM))
+        {
+            return nbtItem;
+        }
+
+        return null;
+    }
+
+    public static NBTItem validateBoundItem(ItemStack item)
+    {
+        if (!isValidItem(item))
+        {
+            return null;
+        }
+
+        NBTItem nbtItem = new NBTItem(item);
+
+        if(nbtItem.hasKey(Strings.TAG_BOXED_VILLAGER_ITEM) && nbtItem.getBoolean(Strings.TAG_IS_BOUND))
+        {
+            return nbtItem;
+        }
+
+        return null;
+    }
+
     public static long getDay(long time)
     {
         return time / 24000;
     }
 
-    public  static long getDayTime(long time)
+    public static long getDayTime(long time)
     {
         return time % 24000;
     }

@@ -5,10 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class BoxedVillagersCommandExecutor implements CommandExecutor, TabCompleter
+public class BoxedVillagersCommandExecutor implements TabExecutor
 {
     private final BoxedVillagers plugin;
 
@@ -50,7 +47,7 @@ public class BoxedVillagersCommandExecutor implements CommandExecutor, TabComple
                     }
                     else
                     {
-                        giveUnboundScroll(player);
+                        player.getInventory().addItem(getUnboundScroll());
                         return true;
                     }
                 }
@@ -59,22 +56,15 @@ public class BoxedVillagersCommandExecutor implements CommandExecutor, TabComple
                     int numCures = 1;
 
                     Player player = getPlayer(args.length < 3, sender, args, 2);
+
                     if(player == null)
                     {
                         return true;
                     }
 
-                    ItemStack item = player.getInventory().getItemInMainHand();
+                    NBTItem nbtItem = Util.validateBoundItem(player.getInventory().getItemInMainHand());
 
-                    if(item.getType() == Material.AIR)
-                    {
-                        player.sendMessage("Invalid Item!");
-                        return true;
-                    }
-
-                    NBTItem nbtItem = new NBTItem(item);
-
-                    if(nbtItem.getUUID(BoxedVillagers.TAG_BOXED_VILLAGER_ITEM) != null && nbtItem.getBoolean(BoxedVillagers.TAG_IS_BOUND))
+                    if(nbtItem != null)
                     {
                         VillagerData data = new VillagerData(nbtItem);
                         if(data.cures == 7)
@@ -87,12 +77,10 @@ public class BoxedVillagersCommandExecutor implements CommandExecutor, TabComple
                             {
                                 numCures = Integer.parseInt(args[1]);
                             }
+
                             data.cure(nbtItem, numCures);
-
-                            item = data.writeToItem(nbtItem, false);
-
+                            ItemStack item = data.writeToItem(nbtItem, false);
                             Util.updateBoundScrollTooltip(item, data);
-
                             player.getInventory().setItemInMainHand(item);
                             player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, SoundCategory.NEUTRAL, 0.5f, 1);
                             player.sendMessage("Villager Cured!");
@@ -110,7 +98,7 @@ public class BoxedVillagersCommandExecutor implements CommandExecutor, TabComple
         return false;
     }
 
-    private void giveUnboundScroll(Player player)
+    private ItemStack getUnboundScroll()
     {
         ItemStack scroll = new ItemStack(Material.PAPER);
         ItemMeta meta = scroll.getItemMeta();
@@ -121,11 +109,10 @@ public class BoxedVillagersCommandExecutor implements CommandExecutor, TabComple
         scroll.setItemMeta(meta);
 
         NBTItem nbtscoll = new NBTItem(scroll);
-        nbtscoll.setUUID(BoxedVillagers.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
-        nbtscoll.setBoolean(BoxedVillagers.TAG_IS_BOUND, false);
-        scroll = nbtscoll.getItem();
+        nbtscoll.setUUID(Strings.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
+        nbtscoll.setBoolean(Strings.TAG_IS_BOUND, false);
+        return nbtscoll.getItem();
 
-        player.getInventory().addItem(scroll);
     }
 
     private Player getPlayer(boolean condition, CommandSender sender, String[] args, int playerIndex)

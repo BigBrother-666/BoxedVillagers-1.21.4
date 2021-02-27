@@ -12,20 +12,6 @@ import java.util.List;
 
 public class VillagerData
 {
-    public static String TAG_DATA_COMPOUND = "VillagerData";
-    public static String TAG_CURES = "Cures";
-    public static String TAG_INPUT_1 = "Input1";
-    public static String TAG_INPUT_2 = "Input2";
-    public static String TAG_OUTPUT = "Output";
-    public static String TAG_BASE_AMOUNT = "BaseAmount";
-    public static String TAG_MAX_USES = "MaxUses";
-    public static String TAG_USES = "Uses";
-    public static String TAG_REDUCTION = "CureReduction";
-    public static String TAG_PROFESSION = "Profession";
-    public static String TAG_RANK = "Rank";
-    public static String TAG_TRADE_COUNT = "TradeCount";
-    public static String TAG_TIMESTAMP = "LastRestocked";
-
     public int cures;
     public List<MerchantRecipe> trades;
     private final String profession;
@@ -46,23 +32,23 @@ public class VillagerData
     {
         trades = new ArrayList<MerchantRecipe>();
 
-        NBTCompound compound = fromItem.getCompound(TAG_DATA_COMPOUND);
-        cures = compound.getInteger(TAG_CURES);
-        profession = compound.getString(TAG_PROFESSION);
-        rank = compound.getInteger(TAG_RANK);
-        lastRestocked = compound.getLong(TAG_TIMESTAMP);
+        NBTCompound compound = fromItem.getCompound(Strings.TAG_DATA_COMPOUND);
+        cures = compound.getInteger(Strings.TAG_CURES);
+        profession = compound.getString(Strings.TAG_PROFESSION);
+        rank = compound.getInteger(Strings.TAG_RANK);
+        lastRestocked = compound.getLong(Strings.TAG_TIMESTAMP);
 
-        for(int i = 0; i < compound.getInteger(TAG_TRADE_COUNT); i++)
+        for(int i = 0; i < compound.getInteger(Strings.TAG_TRADE_COUNT); i++)
         {
             NBTCompound recipeCompound = compound.getCompound("" + i);
-            MerchantRecipe recipe = new MerchantRecipe(recipeCompound.getItemStack(TAG_OUTPUT), recipeCompound.getInteger(TAG_MAX_USES));
-            int reduction = recipeCompound.getInteger(TAG_REDUCTION);
+            MerchantRecipe recipe = new MerchantRecipe(recipeCompound.getItemStack(Strings.TAG_OUTPUT), recipeCompound.getInteger(Strings.TAG_MAX_USES));
+            int reduction = recipeCompound.getInteger(Strings.TAG_REDUCTION);
             recipe.setPriceMultiplier(reduction == 5 ? 0.05f : 0.2f);
-            recipe.setMaxUses(recipeCompound.getInteger(TAG_MAX_USES));
-            recipe.setUses(recipeCompound.getInteger(TAG_USES));
-            ItemStack i1 = recipeCompound.getItemStack(TAG_INPUT_1);
-            i1.setAmount(Math.max(recipeCompound.getInteger(TAG_BASE_AMOUNT) - reduction * cures, 1));
-            ItemStack i2 = recipeCompound.getItemStack(TAG_INPUT_2);
+            recipe.setMaxUses(recipeCompound.getInteger(Strings.TAG_MAX_USES));
+            recipe.setUses(recipeCompound.getInteger(Strings.TAG_USES));
+            ItemStack i1 = recipeCompound.getItemStack(Strings.TAG_INPUT_1);
+            i1.setAmount(Math.max(recipeCompound.getInteger(Strings.TAG_BASE_AMOUNT) - reduction * cures, 1));
+            ItemStack i2 = recipeCompound.getItemStack(Strings.TAG_INPUT_2);
             recipe.addIngredient(i1);
             recipe.addIngredient(i2);
 
@@ -72,13 +58,13 @@ public class VillagerData
 
     public ItemStack writeToItem(NBTItem item, boolean setBaseValue)
     {
-        item.setBoolean(BoxedVillagers.TAG_IS_BOUND, true);
-        NBTCompound compound = item.getOrCreateCompound(TAG_DATA_COMPOUND);
-        compound.setInteger(TAG_CURES, cures);
-        compound.setString(TAG_PROFESSION, profession);
-        compound.setInteger(TAG_RANK, rank);
-        compound.setInteger(TAG_TRADE_COUNT, trades.size());
-        compound.setLong(TAG_TIMESTAMP, lastRestocked);
+        item.setBoolean(Strings.TAG_IS_BOUND, true);
+        NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
+        compound.setInteger(Strings.TAG_CURES, cures);
+        compound.setString(Strings.TAG_PROFESSION, profession);
+        compound.setInteger(Strings.TAG_RANK, rank);
+        compound.setInteger(Strings.TAG_TRADE_COUNT, trades.size());
+        compound.setLong(Strings.TAG_TIMESTAMP, lastRestocked);
 
         for(int i = 0; i < trades.size(); i++)
         {
@@ -87,16 +73,16 @@ public class VillagerData
             ItemStack i2 = recipe.getIngredients().get(1);
 
             NBTCompound entry = compound.getOrCreateCompound("" + i);
-            entry.setItemStack(TAG_INPUT_1, i1);
-            entry.setItemStack(TAG_INPUT_2, i2);
-            entry.setItemStack(TAG_OUTPUT, recipe.getResult());
-            entry.setInteger(TAG_MAX_USES, recipe.getMaxUses());
-            entry.setInteger(TAG_USES, recipe.getUses());
-            entry.setInteger(TAG_REDUCTION, recipe.getPriceMultiplier() > 0.1 ? 20 : 5);
+            entry.setItemStack(Strings.TAG_INPUT_1, i1);
+            entry.setItemStack(Strings.TAG_INPUT_2, i2);
+            entry.setItemStack(Strings.TAG_OUTPUT, recipe.getResult());
+            entry.setInteger(Strings.TAG_MAX_USES, recipe.getMaxUses());
+            entry.setInteger(Strings.TAG_USES, recipe.getUses());
+            entry.setInteger(Strings.TAG_REDUCTION, recipe.getPriceMultiplier() > 0.1 ? 20 : 5);
 
             if(setBaseValue)
             {
-                entry.setInteger(TAG_BASE_AMOUNT, i1.getAmount());
+                entry.setInteger(Strings.TAG_BASE_AMOUNT, i1.getAmount());
             }
         }
 
@@ -105,9 +91,9 @@ public class VillagerData
 
     public void cure(NBTItem item, int times)
     {
-        NBTCompound compound = item.getOrCreateCompound(TAG_DATA_COMPOUND);
+        NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         cures = Math.min(7, cures + times);
-        compound.setInteger(TAG_CURES, cures);
+        compound.setInteger(Strings.TAG_CURES, cures);
     }
 
     public void updateUses(Merchant merchant)
