@@ -1,18 +1,23 @@
 package io.gitlab.arkdirfe.boxedvillagers;
 
 import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
-public class BoxedVillagersCommandExecutor implements CommandExecutor
+public class BoxedVillagersCommandExecutor implements CommandExecutor, TabCompleter
 {
     private final BoxedVillagers plugin;
 
@@ -26,78 +31,78 @@ public class BoxedVillagersCommandExecutor implements CommandExecutor
     {
         if(command.getName().equalsIgnoreCase("boxedvillagers") || command.getName().equalsIgnoreCase("bv"))
         {
-            if(args.length == 2)
+            if(args.length > 0)
             {
-                if(!(sender instanceof Player)) // TODO: Add argument to be able to target player
-                {
-                    sender.sendMessage("Command only executable for players!");
-                    return false;
-                }
+                String subCmd = args[0];
 
-                Player player = (Player)sender;
-
-                switch (args[0])
+                if(subCmd.equalsIgnoreCase("give"))
                 {
-                    case "give":
+                    Player player = getPlayer((args.length == 2 || args.length == 3), sender, args, 2);
+                    if(player == null)
                     {
-                        switch (args[1])
-                        {
-                            case "unbound":
-                            {
-                                int slot = player.getInventory().firstEmpty();
-                                if(slot < 0)
-                                {
-                                    sender.sendMessage("Inventory Full!");
-                                }
-                                else
-                                {
-                                    giveUnboundScroll(player);
-                                }
-                                break;
-                            }
-                            default:
-                            {
-                                sender.sendMessage("Invalid Item!");
-                                break;
-                            }
-                        }
                         return true;
                     }
-                    case "cure":
+
+                    int slot = player.getInventory().firstEmpty();
+                    if(slot < 0)
                     {
-                        ItemStack item = player.getInventory().getItemInMainHand();
-                        NBTItem nbtItem = new NBTItem(item);
+                        sender.sendMessage("Inventory Full!");
+                    }
+                    else
+                    {
+                        giveUnboundScroll(player);
+                        return true;
+                    }
+                }
+                else if (subCmd.equalsIgnoreCase("cure"))
+                {
+                    int numCures = 1;
 
-                        if(nbtItem.getUUID(BoxedVillagers.TAG_BOXED_VILLAGER_ITEM) != null && nbtItem.getBoolean(BoxedVillagers.TAG_IS_BOUND))
+                    Player player = getPlayer(args.length < 3, sender, args, 2);
+                    if(player == null)
+                    {
+                        return true;
+                    }
+
+                    ItemStack item = player.getInventory().getItemInMainHand();
+
+                    if(item.getType() == Material.AIR)
+                    {
+                        player.sendMessage("Invalid Item!");
+                        return true;
+                    }
+
+                    NBTItem nbtItem = new NBTItem(item);
+
+                    if(nbtItem.getUUID(BoxedVillagers.TAG_BOXED_VILLAGER_ITEM) != null && nbtItem.getBoolean(BoxedVillagers.TAG_IS_BOUND))
+                    {
+                        VillagerData data = new VillagerData(nbtItem);
+                        if(data.cures == 7)
                         {
-                            VillagerData data = new VillagerData(nbtItem);
-                            if(data.cures == 7)
-                            {
-                                player.sendMessage("Already at max cures!");
-                            }
-                            else
-                            {
-                                data.cure(nbtItem, Integer.parseInt(args[1]));
-                                data.writeToItem(nbtItem, false);
-                                item = nbtItem.getItem();
-
-                                Util.updateBoundScrollTooltip(item, data);
-
-                                player.getInventory().setItemInMainHand(item);
-                                player.sendMessage("Villager Cured!");
-                            }
+                            player.sendMessage("Already at max cures!");
                         }
                         else
                         {
-                            player.sendMessage("Invalid Item!");
+                            if(args.length > 1)
+                            {
+                                numCures = Integer.parseInt(args[1]);
+                            }
+                            data.cure(nbtItem, numCures);
+
+                            item = data.writeToItem(nbtItem, false);
+
+                            Util.updateBoundScrollTooltip(item, data);
+
+                            player.getInventory().setItemInMainHand(item);
+                            player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, SoundCategory.NEUTRAL, 0.5f, 1);
+                            player.sendMessage("Villager Cured!");
                         }
-                        return true;
                     }
-                    default:
+                    else
                     {
-                        sender.sendMessage("Unknown Sub-Command!");
-                        break;
+                        player.sendMessage("Invalid Item!");
                     }
+                    return true;
                 }
             }
         }
@@ -121,5 +126,63 @@ public class BoxedVillagersCommandExecutor implements CommandExecutor
         scroll = nbtscoll.getItem();
 
         player.getInventory().addItem(scroll);
+    }
+
+    private Player getPlayer(boolean condition, CommandSender sender, String[] args, int playerIndex)
+    {
+        if(condition)
+        {
+            if(!(sender instanceof Player))
+            {
+                sender.sendMessage("Use /bv [arg1] [arg2] [player] to run as non-player!");
+                return null;
+            }
+
+            return (Player)sender;
+        }
+        else
+        {
+            Player player = Bukkit.getServer().getPlayer(args[playerIndex]);
+            if(player == null)
+            {
+                sender.sendMessage("Player offline!");
+            }
+
+            return player;
+        }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
+    {
+        if(command.getName().equalsIgnoreCase("boxedvillagers") || command.getName().equalsIgnoreCase("bv"))
+        {
+            if(sender instanceof Player)
+            {
+                if((args.length == 1 || args.length == 2))
+                {
+                    if(args[0].equalsIgnoreCase("give"))
+                    {
+                        return Arrays.asList("unbound");
+                    }
+                    else if (args[0].equalsIgnoreCase("cure"))
+                    {
+                        return Arrays.asList("1", "2", "3", "4", "5", "6", "7");
+                    }
+                }
+
+                if((args.length == 2) && args[0].equalsIgnoreCase("give"))
+                {
+                    return null;
+                }
+
+                if((args.length == 0 || args.length == 1))
+                {
+                    return Arrays.asList("give", "cure");
+                }
+            }
+        }
+
+        return null;
     }
 }

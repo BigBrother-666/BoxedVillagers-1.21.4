@@ -30,6 +30,7 @@ public class VillagerData
     public List<MerchantRecipe> trades;
     private final String profession;
     private final int rank;
+    private long lastRestocked; // In days
 
     public VillagerData(Villager fromVillager)
     {
@@ -37,6 +38,7 @@ public class VillagerData
         trades = fromVillager.getRecipes();
         profession = fromVillager.getProfession().name();
         rank = fromVillager.getVillagerLevel();
+        lastRestocked = Util.getDay(Util.getTotalTime());
         attemptRestock();
     }
 
@@ -48,6 +50,7 @@ public class VillagerData
         cures = compound.getInteger(TAG_CURES);
         profession = compound.getString(TAG_PROFESSION);
         rank = compound.getInteger(TAG_RANK);
+        lastRestocked = compound.getLong(TAG_TIMESTAMP);
 
         for(int i = 0; i < compound.getInteger(TAG_TRADE_COUNT); i++)
         {
@@ -67,7 +70,7 @@ public class VillagerData
         }
     }
 
-    public void writeToItem(NBTItem item, boolean setBaseValue)
+    public ItemStack writeToItem(NBTItem item, boolean setBaseValue)
     {
         item.setBoolean(BoxedVillagers.TAG_IS_BOUND, true);
         NBTCompound compound = item.getOrCreateCompound(TAG_DATA_COMPOUND);
@@ -75,6 +78,7 @@ public class VillagerData
         compound.setString(TAG_PROFESSION, profession);
         compound.setInteger(TAG_RANK, rank);
         compound.setInteger(TAG_TRADE_COUNT, trades.size());
+        compound.setLong(TAG_TIMESTAMP, lastRestocked);
 
         for(int i = 0; i < trades.size(); i++)
         {
@@ -86,14 +90,17 @@ public class VillagerData
             entry.setItemStack(TAG_INPUT_1, i1);
             entry.setItemStack(TAG_INPUT_2, i2);
             entry.setItemStack(TAG_OUTPUT, recipe.getResult());
+            entry.setInteger(TAG_MAX_USES, recipe.getMaxUses());
+            entry.setInteger(TAG_USES, recipe.getUses());
+            entry.setInteger(TAG_REDUCTION, recipe.getPriceMultiplier() > 0.1 ? 20 : 5);
+
             if(setBaseValue)
             {
                 entry.setInteger(TAG_BASE_AMOUNT, i1.getAmount());
             }
-            entry.setInteger(TAG_MAX_USES, recipe.getMaxUses());
-            entry.setInteger(TAG_USES, recipe.getUses());
-            entry.setInteger(TAG_REDUCTION, recipe.getPriceMultiplier() > 0.1 ? 20 : 5);
         }
+
+        return item.getItem();
     }
 
     public void cure(NBTItem item, int times)
@@ -101,8 +108,6 @@ public class VillagerData
         NBTCompound compound = item.getOrCreateCompound(TAG_DATA_COMPOUND);
         cures = Math.min(7, cures + times);
         compound.setInteger(TAG_CURES, cures);
-
-        System.out.println(cures);
     }
 
     public void updateUses(Merchant merchant)
@@ -116,11 +121,36 @@ public class VillagerData
 
     public void attemptRestock()
     {
-        // Check timestamp
+        long time = Util.getTotalTime();
+        long days = Util.getDay(time);
+        long dayTime = Util.getDayTime(time);
 
-        for(MerchantRecipe recipe : trades)
+        boolean permitted = false;
+
+        if(days < lastRestocked)
         {
-            recipe.setUses(0);
+            Util.logWarning("Restock attempted with lower world time than last restocked time. Restock permitted.");
+            permitted = true;
+        }
+
+        if(!permitted && Math.abs(days - lastRestocked) > 1) // Guaranteed to have passed noon
+        {
+            permitted = true;
+        }
+
+        if(!permitted && Math.abs(days - lastRestocked) == 1 && dayTime >= 6000) // Past noon on day after last restock
+        {
+            permitted = true;
+        }
+
+        if(permitted)
+        {
+            lastRestocked = days;
+
+            for(MerchantRecipe recipe : trades)
+            {
+                recipe.setUses(0);
+            }
         }
     }
 
