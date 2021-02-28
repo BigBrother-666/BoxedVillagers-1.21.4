@@ -1,8 +1,13 @@
 name: BoxedVillagers
 version: 1.0
 main: io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers
+api-version: 1.16
 commands:
   boxedvillagers:
     description: Main Command
     usage: "Usage: /boxedvillagers [give|cure]"
     aliases: bv
+  witchdoctor:
+    description: Opens the Witch Doctor UI that handles upgrading and changing boxed villagers
+    usage: "Usage: /witchdoctor"
+    aliases: wd

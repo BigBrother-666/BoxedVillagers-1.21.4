@@ -1,6 +1,10 @@
-package io.gitlab.arkdirfe.boxedvillagers;
+package io.gitlab.arkdirfe.boxedvillagers.listeners;
 
 import de.tr7zw.nbtapi.NBTItem;
+import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
+import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
+import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
+import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -85,17 +89,18 @@ public class InteractionListener implements Listener
             return;
         }
 
-        if(event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
-        {
-            return;
-        }
-
         Player player = event.getPlayer();
         NBTItem nbtItem = Util.validateBoundItem(player.getInventory().getItemInMainHand());
 
         if(nbtItem != null)
         {
             event.setCancelled(true);
+
+            if(event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
+            {
+                return; // Return here instead of before check, otherwise you could open a merchant UI by clicking on a villager
+            }
+
             VillagerData data = new VillagerData(nbtItem);
             data.attemptRestock();
             player.getInventory().setItemInMainHand(data.writeToItem(nbtItem, false));

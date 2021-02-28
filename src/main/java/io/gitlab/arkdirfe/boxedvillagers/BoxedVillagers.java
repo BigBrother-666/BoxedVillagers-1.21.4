@@ -1,5 +1,11 @@
 package io.gitlab.arkdirfe.boxedvillagers;
 
+import io.gitlab.arkdirfe.boxedvillagers.commands.BoxedVillagersCommandExecutor;
+import io.gitlab.arkdirfe.boxedvillagers.commands.WitchdoctorCommandExecutor;
+import io.gitlab.arkdirfe.boxedvillagers.listeners.InteractionListener;
+import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
+import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
+import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,6 +22,11 @@ public class BoxedVillagers extends JavaPlugin
         BoxedVillagersCommandExecutor boxedvillagersCmd = new BoxedVillagersCommandExecutor(this);
         this.getCommand("boxedvillagers").setExecutor(boxedvillagersCmd);
         this.getCommand("boxedvillagers").setTabCompleter(boxedvillagersCmd);
+
+        WitchdoctorCommandExecutor witchdoctorCmd = new WitchdoctorCommandExecutor(this, new WitchdoctorGuiManager(this));
+        this.getCommand("witchdoctor").setExecutor(witchdoctorCmd);
+        this.getCommand("witchdoctor").setTabCompleter(witchdoctorCmd);
+
         new InteractionListener(this);
         getLogger().info("Loaded!");
 
@@ -28,6 +39,7 @@ public class BoxedVillagers extends JavaPlugin
     @Override
     public void onDisable()
     {
+        // TODO: Check if reloading affects open witchdoctor uis
         getLogger().info("Unloaded!");
     }
 }

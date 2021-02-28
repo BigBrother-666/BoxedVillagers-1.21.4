@@ -1,12 +1,16 @@
-package io.gitlab.arkdirfe.boxedvillagers;
+package io.gitlab.arkdirfe.boxedvillagers.util;
 
 import de.tr7zw.nbtapi.NBTItem;
+import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
+import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.List;
 
 public final class Util
 {
@@ -14,13 +18,12 @@ public final class Util
 
     public static void updateBoundScrollTooltip(ItemStack item, VillagerData data)
     {
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§2Bound Villager Scroll");
-        meta.setLore(Arrays.asList("§r§fProfession: §a" + data.professionAsString(),
-                "§r§fRank: " + data.rankAsString(),
-                "§r§fCures: " + data.curesAsString(),
-                "§r§aLeft Click in hand to trade!"));
-        item.setItemMeta(meta);
+        setItemTitleLoreAndFlags(item,
+                "§2Bound Villager Scroll",
+                Arrays.asList("§r§fProfession: §a" + data.professionAsString(),
+                        "§r§fRank: " + data.rankAsString(),
+                        "§r§fCures: " + data.curesAsString(),
+                        "§r§aLeft Click in hand to trade!"), null);
     }
 
     public static long getTotalTime()
@@ -84,6 +87,25 @@ public final class Util
         }
 
         return null;
+    }
+
+    public static ItemStack setItemTitleLoreAndFlags(ItemStack item, String title, List<String> lore, List<ItemFlag> flags)
+    {
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(title);
+        meta.setLore(lore);
+
+        if (flags != null)
+        {
+            for(ItemFlag f : flags)
+            {
+                meta.addItemFlags(f);
+            }
+        }
+
+        item.setItemMeta(meta);
+
+        return item;
     }
 
     public static long getDay(long time)

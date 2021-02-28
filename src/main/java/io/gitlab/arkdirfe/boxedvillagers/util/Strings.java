@@ -1,4 +1,4 @@
-package io.gitlab.arkdirfe.boxedvillagers;
+package io.gitlab.arkdirfe.boxedvillagers.util;
 
 public final class Strings
 {
@@ -19,6 +19,13 @@ public final class Strings
     public static String TAG_TRADE_COUNT = "TradeCount";
     public static String TAG_TIMESTAMP = "LastRestocked";
 
+    // UI Helper Tags
+    public static String TAG_UNINTERACTABLE = "Uninteractable";
+    public static String TAG_MOVABLE = "Movable";
+
     // Config Entries
     public static String CONFIG_TIME_WORLD = "timeWorld";
+
+    // UI Strings
+    public static String UI_WD_TITLE = "Witch Doctor";
 }

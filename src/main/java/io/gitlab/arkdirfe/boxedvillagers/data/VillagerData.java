@@ -1,7 +1,9 @@
-package io.gitlab.arkdirfe.boxedvillagers;
+package io.gitlab.arkdirfe.boxedvillagers.data;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
+import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;

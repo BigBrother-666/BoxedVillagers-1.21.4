@@ -1,6 +1,10 @@
-package io.gitlab.arkdirfe.boxedvillagers;
+package io.gitlab.arkdirfe.boxedvillagers.commands;
 
 import de.tr7zw.nbtapi.NBTItem;
+import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
+import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
+import io.gitlab.arkdirfe.boxedvillagers.util.Util;
+import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -24,9 +28,9 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public boolean onCommand(CommandSender sender, Command command, String alias, String[] args)
     {
-        if(command.getName().equalsIgnoreCase("boxedvillagers") || command.getName().equalsIgnoreCase("bv"))
+        if(command.getName().equalsIgnoreCase("boxedvillagers"))
         {
             if(args.length > 0)
             {
@@ -101,12 +105,11 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
     private ItemStack getUnboundScroll()
     {
         ItemStack scroll = new ItemStack(Material.PAPER);
-        ItemMeta meta = scroll.getItemMeta();
-        meta.setDisplayName("§aUnbound Villager Scroll");
-        meta.setLore(Arrays.asList("§r§fRight click on a villager to §4§mensnare its mortal soul§r§f capture it.",
-                "§r§fCaptured villagers do not benefit from previous cures or",
-                "§r§fHero of the Village and can not unlock additional trades."));
-        scroll.setItemMeta(meta);
+        Util.setItemTitleLoreAndFlags(scroll,
+                "§aUnbound Villager Scroll",
+                Arrays.asList("§r§fRight click on a villager to §4§mensnare its mortal soul§r§f capture it.",
+                        "§r§fCaptured villagers do not benefit from previous cures or",
+                        "§r§fHero of the Village and can not unlock additional trades."), null);
 
         NBTItem nbtscoll = new NBTItem(scroll);
         nbtscoll.setUUID(Strings.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
@@ -142,7 +145,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
     {
-        if(command.getName().equalsIgnoreCase("boxedvillagers") || command.getName().equalsIgnoreCase("bv"))
+        if(command.getName().equalsIgnoreCase("boxedvillagers"))
         {
             if(sender instanceof Player)
             {
