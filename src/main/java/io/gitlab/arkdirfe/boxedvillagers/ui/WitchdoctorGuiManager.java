@@ -2,27 +2,26 @@ package io.gitlab.arkdirfe.boxedvillagers.ui;
 
 import de.tr7zw.nbtapi.NBTItem;
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
+import io.gitlab.arkdirfe.boxedvillagers.data.TradeData;
 import io.gitlab.arkdirfe.boxedvillagers.data.WitchdoctorGuiData;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class WitchdoctorGuiManager implements Listener
 {
@@ -30,6 +29,11 @@ public class WitchdoctorGuiManager implements Listener
     private final Map<UUID, WitchdoctorGuiData> guiMap;
 
     private final int scrollSlot = getSlot(1, 4);
+    private final int helpSlot = getSlot(0, 4);
+    private final int cureSlot = getSlot(1, 1);
+    private final int commitSlot = getSlot(1, 7);
+    private final List<Integer> tradeSlots = Arrays.asList(getSlot(3, 2), getSlot(3, 3), getSlot(3, 4), getSlot(3, 5), getSlot(3, 6),
+            getSlot(4, 2), getSlot(4, 3), getSlot(4, 4), getSlot(4, 5), getSlot(4, 6));
 
     public WitchdoctorGuiManager(BoxedVillagers plugin)
     {
@@ -42,8 +46,7 @@ public class WitchdoctorGuiManager implements Listener
     {
         Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE);
 
-        player.openInventory(gui);
-        WitchdoctorGuiData data = new WitchdoctorGuiData(gui);
+        WitchdoctorGuiData data = new WitchdoctorGuiData(gui, player);
         initGui(data);
 
         guiMap.put(player.getUniqueId(), data);
@@ -58,7 +61,7 @@ public class WitchdoctorGuiManager implements Listener
             items[i] = getFillerItem(Material.LIME_STAINED_GLASS_PANE);
         }
 
-        items[getSlot(0, 4)] = getScrollIndicator();
+        items[helpSlot] = getScrollIndicator();
         items[scrollSlot] = null;
 
         data.gui.setContents(items);
@@ -74,13 +77,52 @@ public class WitchdoctorGuiManager implements Listener
         {
             ItemStack[] items = data.gui.getContents();
 
-            items[getSlot(1, 1)] = null; // Cure button
-            items[getSlot(1, 7)] = null; // Commit changes button
+            items[helpSlot] = getHelpScroll();
 
             // Draw trades
 
+            int index = 0;
+
+            for(int i : tradeSlots)
+            {
+                if(index >= data.villagerData.trades.size())
+                {
+                    items[i] = null;
+                    continue;
+                }
+
+                TradeData trade = data.villagerData.trades.get(index++);
+                if(trade != null)
+                {
+                    items[i] = getTradeItem(trade);
+                }
+                else
+                {
+                    items[i] = null;
+                }
+            }
+
             data.gui.setContents(items);
+            updateCureButton(data);
+            updateCommitButton(data);
         }
+    }
+
+    private void updateCureButton(WitchdoctorGuiData data)
+    {
+        if(data.villagerData.cures == 7)
+        {
+            data.gui.setItem(cureSlot, getBlockedCureItem());
+        }
+        else
+        {
+            data.gui.setItem(cureSlot, getCureItem());
+        }
+    }
+
+    private void updateCommitButton(WitchdoctorGuiData data)
+    {
+        data.gui.setItem(commitSlot, getCommitItem(data));
     }
 
     private int getSlot(int row, int col)
@@ -101,6 +143,24 @@ public class WitchdoctorGuiManager implements Listener
         return nbtItem.hasKey(Strings.TAG_UNINTERACTABLE);
     }
 
+    private ItemStack setMovable(ItemStack item)
+    {
+        NBTItem nbtItem = new NBTItem(item);
+        nbtItem.setBoolean(Strings.TAG_MOVABLE, true);
+        return nbtItem.getItem();
+    }
+
+    private boolean isMovable(ItemStack item)
+    {
+        if(!Util.isValidItem(item))
+        {
+            return false;
+        }
+
+        NBTItem nbtItem = new NBTItem(item);
+        return nbtItem.hasKey(Strings.TAG_MOVABLE);
+    }
+
     private ItemStack getFillerItem(Material material)
     {
         ItemStack item = new ItemStack(material);
@@ -115,12 +175,148 @@ public class WitchdoctorGuiManager implements Listener
         ItemStack item = new ItemStack(Material.PAPER);
 
         Util.setItemTitleLoreAndFlags(item, "§2Villager Scroll",
-                Arrays.asList("§r§fPlace your scroll below to begin the process."),
+                Arrays.asList("§r§fPlace your bound scroll below to begin the process."),
                 Arrays.asList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
         return setUninteractable(item);
+    }
+
+    private ItemStack getHelpScroll()
+    {
+        ItemStack item = new ItemStack(Material.PAPER);
+
+        Util.setItemTitleLoreAndFlags(item, "§2Villager Scroll",
+                Arrays.asList("§r§fEdit trades below.",
+                        "§r§fUse the button on the right to commit your changes.",
+                        "§r§fNote: Prices shown ignore cures."),
+                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
+
+        item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+
+        return setUninteractable(item);
+    }
+
+    private ItemStack getCureItem()
+    {
+        ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
+
+        Util.setItemTitleLoreAndFlags(item, "§2Cure Villager",
+                Arrays.asList("§r§fReduces all prices but never below 1.", "§r§4Applies instantly, irreversible."),
+                null);
+
+        return setUninteractable(item);
+    }
+
+    private ItemStack getBlockedCureItem()
+    {
+        ItemStack item = new ItemStack(Material.APPLE);
+
+        Util.setItemTitleLoreAndFlags(item, "§2Cure Villager",
+                Arrays.asList("§r§fVillager is at max cures!"),
+                null);
+
+        return setUninteractable(item);
+    }
+
+    private ItemStack getCommitItem(WitchdoctorGuiData data)
+    {
+        ItemStack item = new ItemStack(Material.ENDER_PEARL);
+
+        List<String> lore = new ArrayList<>();
+
+        if(!data.tradesMoved && data.tradesPurged == 0)
+        {
+            lore.add("§r§fNo changes to commit!");
+        }
+        else
+        {
+            lore.add("§r§fUncommitted changes!");
+            item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+        }
+
+        if(data.tradesMoved)
+        {
+            lore.add("§r§fTrades were moved.");
+        }
+        if(data.tradesPurged > 0)
+        {
+            lore.add(String.format("§r§6%d§f trades were purged.", data.tradesPurged));
+        }
+
+        if(lore.size() > 1)
+        {
+            lore.add("§r§fTotal Costs:");
+        }
+
+        Util.setItemTitleLoreAndFlags(item, "§2Commit Changes",
+                lore,
+                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
+
+        return setUninteractable(item);
+    }
+
+    private ItemStack getTradeItem(TradeData trade)
+    {
+        ItemStack item = new ItemStack(Material.PAPER);
+
+        Util.setItemTitleLoreAndFlags(item, "§aStored Trade",
+                Arrays.asList(tradeToString(trade.recipe, trade.baseAmount),
+                        "§r§fPrice reduced by §6" + trade.reduction + "§f for each cure.",
+                        "§r§fShift Left Click to purge this trade."),
+                null);
+
+        return setMovable(item);
+    }
+
+    private String tradeToString(MerchantRecipe recipe, int baseAmount)
+    {
+        ItemStack i1 = recipe.getIngredients().get(0);
+        ItemStack i2 = recipe.getIngredients().get(1);
+        ItemStack output = recipe.getResult();
+
+        StringBuilder result = new StringBuilder();
+        result.append("§r§f");
+        result.append(String.format("§6%d §a%s§f", baseAmount, Strings.capitalize(i1.getType().getKey().getKey(), "_")));
+        if(i2.getType() != Material.AIR)
+        {
+            result.append(String.format(" + §6%d§f §a%s§f", i2.getAmount(), Strings.capitalize(i2.getType().getKey().getKey(), "_")));
+        }
+        result.append(String.format(" = §6%d§f §a%s§f", output.getAmount(), Strings.capitalize(output.getType().getKey().getKey(), "_")));
+        if(output.getType() == Material.ENCHANTED_BOOK)
+        {
+            EnchantmentStorageMeta meta = (EnchantmentStorageMeta)output.getItemMeta();
+            for(Map.Entry<Enchantment, Integer> ench : meta.getStoredEnchants().entrySet())
+            {
+                result.append(String.format(" §5(%s %s)§f", Strings.capitalize(ench.getKey().getKey().getKey(), "_"), Strings.numberToRoman(ench.getValue())));
+            }
+        }
+
+        return result.toString();
+    }
+
+    // Cleanup methods that are called on disable or when ui is closed, makes sure that the player gets their stuff back
+
+    public void cleanupOpenGuis()
+    {
+        for(WitchdoctorGuiData data : guiMap.values())
+        {
+            HumanEntity player = data.player;
+            returnScroll(data, player);
+        }
+    }
+
+    private void returnScroll(WitchdoctorGuiData data, HumanEntity player)
+    {
+        ItemStack scroll = data.gui.getItem(scrollSlot);
+
+        if(scroll != null)
+        {
+            player.getInventory().addItem(scroll);
+        }
+
+        guiMap.remove(player.getUniqueId());
     }
 
     // Event Handlers. At this point I know only players can open this UI so I can skip some checks.
@@ -133,7 +329,7 @@ public class WitchdoctorGuiManager implements Listener
             return;
         }
 
-        HumanEntity player =  event.getInventory().getViewers().get(0);
+        HumanEntity player = event.getInventory().getViewers().get(0);
         WitchdoctorGuiData data = guiMap.get(player.getUniqueId());
 
         if(data == null)
@@ -141,14 +337,7 @@ public class WitchdoctorGuiManager implements Listener
             return;
         }
 
-        ItemStack scroll = data.gui.getItem(scrollSlot);
-
-        if(scroll != null)
-        {
-            player.getInventory().addItem(scroll);
-        }
-
-        guiMap.remove(player.getUniqueId());
+        returnScroll(data, player);
     }
 
     @EventHandler
@@ -158,6 +347,11 @@ public class WitchdoctorGuiManager implements Listener
         if(!view.getTitle().equalsIgnoreCase(Strings.UI_WD_TITLE))
         {
             return;
+        }
+
+        if(event.isShiftClick())
+        {
+            event.setCancelled(true);
         }
 
         HumanEntity player =  event.getInventory().getViewers().get(0);
@@ -205,10 +399,94 @@ public class WitchdoctorGuiManager implements Listener
                 view.setCursor(slot);
             }
 
-            data.scroll = data.gui.getItem(scrollSlot);
+            data.resetTracking();
+
+            data.setScroll(data.gui.getItem(scrollSlot));
             updateGui(data);
         }
+        else if(event.getRawSlot() == cureSlot && data.scroll != null)
+        {
+            if(data.villagerData.cures != 7)
+            {
+                // Check for costs here
 
-        event.getWhoClicked().sendMessage("" + event.getRawSlot());
+                data.villagerData.cure(new NBTItem(data.scroll), 1);
+                Util.updateBoundScrollTooltip(data.scroll, data.villagerData);
+                data.gui.setItem(scrollSlot, data.villagerData.writeToItem(new NBTItem(data.scroll)));
+                ((Player)player).playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 0.5f, 1);
+                updateCureButton(data);
+            }
+        }
+
+        // Handling for movable items (trade recipes), can be moved around inside the UI but not taken out
+
+        int slotIndex = event.getRawSlot();
+        ItemStack slot = event.getCurrentItem();
+        ItemStack cursor = view.getCursor();
+        boolean slotEmpty = slot == null;
+        boolean cursorEmpty = cursor == null || cursor.getType() == Material.AIR;
+        boolean slotMovable = isMovable(slot);
+        boolean cursorMovable = isMovable(cursor);
+
+        if(tradeSlots.contains(slotIndex))
+        {
+            event.setCancelled(true);
+            if((slotEmpty && cursorMovable))
+            {
+                data.gui.setItem(slotIndex, cursor);
+                view.setCursor(new ItemStack(Material.AIR));
+                data.tradesMoved = true;
+            }
+            else if((slotMovable && cursorMovable))
+            {
+                data.gui.setItem(slotIndex, cursor);
+                view.setCursor(slot);
+                data.tradesMoved = true;
+            }
+            else if((slotMovable && cursorEmpty))
+            {
+                data.gui.setItem(slotIndex, null);
+                view.setCursor(slot);
+            }
+
+            updateCommitButton(data);
+        }
+        else if(cursorMovable)
+        {
+            event.setCancelled(true);
+        }
+
+        if(slotMovable && cursorEmpty && event.isShiftClick())
+        {
+            event.setCancelled(true);
+
+            data.gui.setItem(slotIndex, null);
+            view.setCursor(new ItemStack(Material.AIR));
+
+            // Sound maybe
+            data.tradesPurged++;
+            updateCommitButton(data);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDragged(InventoryDragEvent event)
+    {
+        InventoryView view = event.getView();
+        if(!view.getTitle().equalsIgnoreCase(Strings.UI_WD_TITLE))
+        {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onItemDropped(PlayerDropItemEvent event)
+    {
+        if(isMovable(event.getItemDrop().getItemStack()))
+        {
+            event.getItemDrop().remove();
+        }
     }
 }

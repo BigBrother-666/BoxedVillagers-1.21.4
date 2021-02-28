@@ -15,7 +15,7 @@ import java.util.List;
 public class VillagerData
 {
     public int cures;
-    public List<MerchantRecipe> trades;
+    public List<TradeData> trades;
     private final String profession;
     private final int rank;
     private long lastRestocked; // In days
@@ -23,7 +23,13 @@ public class VillagerData
     public VillagerData(Villager fromVillager)
     {
         cures = 0;
-        trades = fromVillager.getRecipes();
+        trades = new ArrayList<TradeData>();
+
+        for(MerchantRecipe r : fromVillager.getRecipes())
+        {
+            trades.add(new TradeData((r.getPriceMultiplier() > 0.1 ? 20 : 5), r.getIngredients().get(0).getAmount(), r));
+        }
+
         profession = fromVillager.getProfession().name();
         rank = fromVillager.getVillagerLevel();
         lastRestocked = Util.getDay(Util.getTotalTime());
@@ -32,7 +38,7 @@ public class VillagerData
 
     public VillagerData(NBTItem fromItem)
     {
-        trades = new ArrayList<MerchantRecipe>();
+        trades = new ArrayList<TradeData>();
 
         NBTCompound compound = fromItem.getCompound(Strings.TAG_DATA_COMPOUND);
         cures = compound.getInteger(Strings.TAG_CURES);
@@ -45,20 +51,20 @@ public class VillagerData
             NBTCompound recipeCompound = compound.getCompound("" + i);
             MerchantRecipe recipe = new MerchantRecipe(recipeCompound.getItemStack(Strings.TAG_OUTPUT), recipeCompound.getInteger(Strings.TAG_MAX_USES));
             int reduction = recipeCompound.getInteger(Strings.TAG_REDUCTION);
-            recipe.setPriceMultiplier(reduction == 5 ? 0.05f : 0.2f);
             recipe.setMaxUses(recipeCompound.getInteger(Strings.TAG_MAX_USES));
             recipe.setUses(recipeCompound.getInteger(Strings.TAG_USES));
             ItemStack i1 = recipeCompound.getItemStack(Strings.TAG_INPUT_1);
-            i1.setAmount(Math.max(recipeCompound.getInteger(Strings.TAG_BASE_AMOUNT) - reduction * cures, 1));
+            int baseAmount = recipeCompound.getInteger(Strings.TAG_BASE_AMOUNT);
+            i1.setAmount(Math.max(baseAmount - reduction * cures, 1));
             ItemStack i2 = recipeCompound.getItemStack(Strings.TAG_INPUT_2);
             recipe.addIngredient(i1);
             recipe.addIngredient(i2);
 
-            trades.add(recipe);
+            trades.add(new TradeData(reduction, baseAmount, recipe));
         }
     }
 
-    public ItemStack writeToItem(NBTItem item, boolean setBaseValue)
+    public ItemStack writeToItem(NBTItem item)
     {
         item.setBoolean(Strings.TAG_IS_BOUND, true);
         NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
@@ -70,7 +76,8 @@ public class VillagerData
 
         for(int i = 0; i < trades.size(); i++)
         {
-            MerchantRecipe recipe = trades.get(i);
+            TradeData trade = trades.get(i);
+            MerchantRecipe recipe = trade.recipe;
             ItemStack i1 = recipe.getIngredients().get(0);
             ItemStack i2 = recipe.getIngredients().get(1);
 
@@ -80,15 +87,21 @@ public class VillagerData
             entry.setItemStack(Strings.TAG_OUTPUT, recipe.getResult());
             entry.setInteger(Strings.TAG_MAX_USES, recipe.getMaxUses());
             entry.setInteger(Strings.TAG_USES, recipe.getUses());
-            entry.setInteger(Strings.TAG_REDUCTION, recipe.getPriceMultiplier() > 0.1 ? 20 : 5);
-
-            if(setBaseValue)
-            {
-                entry.setInteger(Strings.TAG_BASE_AMOUNT, i1.getAmount());
-            }
+            entry.setInteger(Strings.TAG_REDUCTION, trade.reduction);
+            entry.setInteger(Strings.TAG_BASE_AMOUNT, trade.baseAmount);
         }
 
         return item.getItem();
+    }
+
+    public List<MerchantRecipe> getMerchantRecipes()
+    {
+        List<MerchantRecipe> recipes = new ArrayList<>();
+        for(TradeData t : trades)
+        {
+            recipes.add(t.recipe);
+        }
+        return recipes;
     }
 
     public void cure(NBTItem item, int times)
@@ -103,7 +116,7 @@ public class VillagerData
         for(int i = 0; i < trades.size(); i++)
         {
             MerchantRecipe recipe = merchant.getRecipe(i);
-            trades.get(i).setUses(recipe.getUses());
+            trades.get(i).recipe.setUses(recipe.getUses());
         }
     }
 
@@ -135,9 +148,9 @@ public class VillagerData
         {
             lastRestocked = days;
 
-            for(MerchantRecipe recipe : trades)
+            for(TradeData data : trades)
             {
-                recipe.setUses(0);
+                data.recipe.setUses(0);
             }
         }
     }
@@ -163,7 +176,7 @@ public class VillagerData
 
     public String professionAsString()
     {
-        return profession.substring(0, 1).toUpperCase() + profession.substring(1).toLowerCase();
+        return Strings.capitalize(profession, " ");
     }
 
     public String curesAsString()

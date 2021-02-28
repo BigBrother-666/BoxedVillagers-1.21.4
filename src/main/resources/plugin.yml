@@ -2,6 +2,7 @@ name: BoxedVillagers
 version: 1.0
 main: io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers
 api-version: 1.16
+depend: [NBTAPI]
 commands:
   boxedvillagers:
     description: Main Command

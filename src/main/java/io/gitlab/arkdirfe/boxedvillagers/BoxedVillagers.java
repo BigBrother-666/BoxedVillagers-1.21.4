@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BoxedVillagers extends JavaPlugin
 {
     public FileConfiguration config = getConfig();
+    private WitchdoctorGuiManager witchdoctorGuiManager;
 
     @Override
     public void onEnable()
@@ -23,7 +24,8 @@ public class BoxedVillagers extends JavaPlugin
         this.getCommand("boxedvillagers").setExecutor(boxedvillagersCmd);
         this.getCommand("boxedvillagers").setTabCompleter(boxedvillagersCmd);
 
-        WitchdoctorCommandExecutor witchdoctorCmd = new WitchdoctorCommandExecutor(this, new WitchdoctorGuiManager(this));
+        witchdoctorGuiManager = new WitchdoctorGuiManager(this);
+        WitchdoctorCommandExecutor witchdoctorCmd = new WitchdoctorCommandExecutor(this, witchdoctorGuiManager);
         this.getCommand("witchdoctor").setExecutor(witchdoctorCmd);
         this.getCommand("witchdoctor").setTabCompleter(witchdoctorCmd);
 
@@ -39,7 +41,7 @@ public class BoxedVillagers extends JavaPlugin
     @Override
     public void onDisable()
     {
-        // TODO: Check if reloading affects open witchdoctor uis
+
         getLogger().info("Unloaded!");
     }
 }

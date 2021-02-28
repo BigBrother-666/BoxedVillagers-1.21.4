@@ -28,4 +28,39 @@ public final class Strings
 
     // UI Strings
     public static String UI_WD_TITLE = "Witch Doctor";
+
+    public static String numberToRoman(int number) // Only 5 for now, expand if needed
+    {
+        switch (number)
+        {
+            case 1:
+                return "I";
+            case 2:
+                return "II";
+            case 3:
+                return "III";
+            case 4:
+                return "IV";
+            case 5:
+                return "V";
+            default:
+                return "" + number;
+        }
+    }
+
+    public static String capitalize(String string, String separator)
+    {
+        String[] words = string.split(separator);
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < words.length; i++)
+        {
+            result.append(words[i].substring(0, 1).toUpperCase()).append(words[i].substring(1).toLowerCase());
+            if(i < words.length - 1)
+            {
+                result.append(" ");
+            }
+        }
+
+        return result.toString();
+    }
 }

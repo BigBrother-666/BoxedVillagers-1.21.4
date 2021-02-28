@@ -12,7 +12,6 @@ import org.bukkit.SoundCategory;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.List;
@@ -83,7 +82,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                             }
 
                             data.cure(nbtItem, numCures);
-                            ItemStack item = data.writeToItem(nbtItem, false);
+                            ItemStack item = data.writeToItem(nbtItem);
                             Util.updateBoundScrollTooltip(item, data);
                             player.getInventory().setItemInMainHand(item);
                             player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, SoundCategory.NEUTRAL, 0.5f, 1);

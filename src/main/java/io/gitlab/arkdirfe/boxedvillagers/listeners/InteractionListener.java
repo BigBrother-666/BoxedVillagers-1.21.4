@@ -58,7 +58,7 @@ public class InteractionListener implements Listener
                 {
                     VillagerData data = new VillagerData(villager);
 
-                    ItemStack item = data.writeToItem(nbtItem, true);
+                    ItemStack item = data.writeToItem(nbtItem);
                     Util.updateBoundScrollTooltip(item, data);
                     player.getInventory().setItemInMainHand(item);
 
@@ -75,7 +75,7 @@ public class InteractionListener implements Listener
                     player.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, x, y, z, 50, 0.2f, 0.5f, 0.2f, 0.01f);
 
                     // Delete villager
-                    villager.remove();
+                    //villager.remove();
                 }
             }
         }
@@ -103,10 +103,10 @@ public class InteractionListener implements Listener
 
             VillagerData data = new VillagerData(nbtItem);
             data.attemptRestock();
-            player.getInventory().setItemInMainHand(data.writeToItem(nbtItem, false));
+            player.getInventory().setItemInMainHand(data.writeToItem(nbtItem));
 
             Merchant merchant = Bukkit.createMerchant(data.professionAsString());
-            merchant.setRecipes(data.trades);
+            merchant.setRecipes(data.getMerchantRecipes());
             player.openMerchant(merchant, true);
         }
     }
@@ -124,7 +124,7 @@ public class InteractionListener implements Listener
                 VillagerData data = new VillagerData(nbtItem);
                 data.updateUses(((MerchantInventory) player.getOpenInventory().getTopInventory()).getMerchant());
 
-                player.getInventory().setItemInMainHand(data.writeToItem(nbtItem, false));
+                player.getInventory().setItemInMainHand(data.writeToItem(nbtItem));
             }
         }
     }
