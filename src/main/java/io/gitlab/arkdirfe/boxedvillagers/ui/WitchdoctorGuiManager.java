@@ -25,9 +25,7 @@ public class WitchdoctorGuiManager implements Listener
 {
     private final BoxedVillagers plugin;
     private final Map<UUID, WitchdoctorGuiController> guiMap;
-    public final Map<Material, Integer> cureTier1CostMap;
-    public final Map<Material, Integer> cureTier2CostMap;
-    public final Map<Material, Integer> cureTier3CostMap;
+    public List<Map<Material, Integer>> cureCostMaps;
     public final Map<Material, Integer> purgeCostMap;
 
     private final int scrollSlot = Util.getGuiSlot(1, 4);
@@ -43,9 +41,7 @@ public class WitchdoctorGuiManager implements Listener
 
         this.plugin = plugin;
         this.guiMap = plugin.guiMap;
-        this.cureTier1CostMap = plugin.cureTier1CostMap;
-        this.cureTier2CostMap = plugin.cureTier2CostMap;
-        this.cureTier3CostMap = plugin.cureTier3CostMap;
+        this.cureCostMaps = plugin.cureCostMaps;
         this.purgeCostMap = plugin.purgeCostMap;
     }
 

@@ -27,9 +27,7 @@ public final class Strings
 
     // Config Entries
     public static String CONFIG_TIME_WORLD = "timeWorld";
-    public static String CONFIG_COST_CURE1 = "cureCostTier1";
-    public static String CONFIG_COST_CURE2 = "cureCostTier2";
-    public static String CONFIG_COST_CURE3 = "cureCostTier3";
+    public static String CONFIG_COST_CURE = "cureCost";
     public static String CONFIG_COST_PURGE = "purgeCost";
 
     // UI Strings

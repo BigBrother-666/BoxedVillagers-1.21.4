@@ -28,7 +28,7 @@ public final class Util
 
     public static long getTotalTime()
     {
-        String worldName = plugin.config.getString(Strings.CONFIG_TIME_WORLD);
+        String worldName = plugin.getConfig().getString(Strings.CONFIG_TIME_WORLD);
 
         if(worldName != null)
         {

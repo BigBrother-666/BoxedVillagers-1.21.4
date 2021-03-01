@@ -8,22 +8,17 @@ import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class BoxedVillagers extends JavaPlugin
 {
-    public FileConfiguration config = getConfig();
     public WitchdoctorGuiManager witchdoctorGuiManager;
 
     public Map<UUID, WitchdoctorGuiController> guiMap;
-    public Map<Material, Integer> cureTier1CostMap;
-    public Map<Material, Integer> cureTier2CostMap;
-    public Map<Material, Integer> cureTier3CostMap;
+    public List<Map<Material, Integer>> cureCostMaps;
     public Map<Material, Integer> purgeCostMap;
 
     @Override
@@ -45,7 +40,7 @@ public class BoxedVillagers extends JavaPlugin
         new InteractionListener(this);
         getLogger().info("Loaded!");
 
-        if(getServer().getWorld(config.getString(Strings.CONFIG_TIME_WORLD)) == null)
+        if(getServer().getWorld(getConfig().getString(Strings.CONFIG_TIME_WORLD)) == null)
         {
             getLogger().severe("No world with name " + Strings.CONFIG_TIME_WORLD + ", this WILL break!");
         }
@@ -61,20 +56,44 @@ public class BoxedVillagers extends JavaPlugin
     private void initializeMaps()
     {
         guiMap = new HashMap<>();
-        cureTier1CostMap = new HashMap<>();
-        cureTier2CostMap = new HashMap<>();
-        cureTier3CostMap = new HashMap<>();
+        cureCostMaps = new ArrayList<>();
         purgeCostMap = new HashMap<>();
 
-        initCostMap(Strings.CONFIG_COST_CURE1, cureTier1CostMap);
-        initCostMap(Strings.CONFIG_COST_CURE2, cureTier2CostMap);
-        initCostMap(Strings.CONFIG_COST_CURE3, cureTier3CostMap);
-        initCostMap(Strings.CONFIG_COST_PURGE, purgeCostMap);
+        initSimpleCostMap(Strings.CONFIG_COST_PURGE, purgeCostMap);
+
+        initLayeredCostMap(Strings.CONFIG_COST_CURE, cureCostMaps, 7);
 
         getLogger().info("Registered costs for operations!");
     }
 
-    private void initCostMap(String configSection, Map<Material, Integer> costMap)
+    private void initLayeredCostMap(String configSection, List<Map<Material, Integer>> maps, int expectedCount)
+    {
+        int i = 1;
+
+        for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
+        {
+            Map<Material, Integer> map = new HashMap<>();
+
+            for (String innerKey : getConfig().getConfigurationSection(configSection + "." + i).getKeys(false))
+            {
+                Material mat = Material.matchMaterial(innerKey);
+                if(mat != null)
+                {
+                    map.put(mat, getConfig().getInt(configSection + "." + i + "." + mat.toString()));
+                }
+            }
+
+            maps.add(map);
+            i++;
+        }
+
+        if(maps.size() != expectedCount)
+        {
+            getLogger().severe("Incorrect number of cure cost entries in config (expected " + expectedCount + ")! This WILL break!");
+        }
+    }
+
+    private void initSimpleCostMap(String configSection, Map<Material, Integer> costMap)
     {
         if(!costMap.isEmpty())
         {

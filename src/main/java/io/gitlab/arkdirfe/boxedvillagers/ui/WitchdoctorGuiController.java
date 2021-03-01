@@ -126,8 +126,13 @@ public class WitchdoctorGuiController
             villagerData.setTrades(getModifiedTrades());
             Util.updateBoundScrollTooltip(scroll, villagerData);
             gui.setItem(scrollSlot, villagerData.writeToItem(new NBTItem(scroll)));
+            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             resetTracking();
             updateCommitButton();
+        }
+        else
+        {
+            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
         }
     }
 
@@ -143,13 +148,17 @@ public class WitchdoctorGuiController
             ((Player)player).playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 0.5f, 1);
             updateCureButton();
         }
+        else
+        {
+            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1);
+        }
     }
 
     public void purgeTrade(int slot)
     {
         gui.setItem(slot, null);
 
-        // Sound maybe
+        ((Player)player).playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
         tradesPurged++;
         updateCommitButton();
     }
@@ -391,28 +400,11 @@ public class WitchdoctorGuiController
         cureCost.clear();
 
         int cures = villagerData.getCures();
-        int multiplier = cures + 1;
 
-        for (Map.Entry<Material, Integer> entry : manager.cureTier1CostMap.entrySet())
+        for (Map.Entry<Material, Integer> entry : manager.cureCostMaps.get(cures).entrySet())
         {
             Material key = entry.getKey();
-            cureCost.put(key, cureCost.getOrDefault(key, 0) + entry.getValue() * multiplier);
-        }
-        if (cures >= 3)
-        {
-            for (Map.Entry<Material, Integer> entry : manager.cureTier2CostMap.entrySet())
-            {
-                Material key = entry.getKey();
-                cureCost.put(key, cureCost.getOrDefault(key, 0) + entry.getValue() * (multiplier - 3));
-            }
-        }
-        if (cures >= 5)
-        {
-            for (Map.Entry<Material, Integer> entry : manager.cureTier3CostMap.entrySet())
-            {
-                Material key = entry.getKey();
-                cureCost.put(key, cureCost.getOrDefault(key, 0) + entry.getValue() * (multiplier - 5));
-            }
+            cureCost.put(key, cureCost.getOrDefault(key, 0) + entry.getValue());
         }
     }
 
