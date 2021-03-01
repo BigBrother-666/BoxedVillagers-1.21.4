@@ -18,6 +18,7 @@ public final class Strings
     public static String TAG_RANK = "Rank";
     public static String TAG_TRADE_COUNT = "TradeCount";
     public static String TAG_TIMESTAMP = "LastRestocked";
+    public static String TAG_NONLETHAL = "NonLethal";
 
     // UI Helper Tags
     public static String TAG_UNINTERACTABLE = "Uninteractable";

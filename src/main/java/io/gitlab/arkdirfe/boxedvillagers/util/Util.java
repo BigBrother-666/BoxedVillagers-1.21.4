@@ -20,9 +20,9 @@ public final class Util
     {
         setItemTitleLoreAndFlags(item,
                 "§2Bound Villager Scroll",
-                Arrays.asList("§r§fProfession: §a" + data.professionAsString(),
-                        "§r§fRank: " + data.rankAsString(),
-                        "§r§fCures: " + data.curesAsString(),
+                Arrays.asList("§r§fProfession: §a" + data.getProfessionAsString(),
+                        "§r§fRank: " + data.getRankAsString(),
+                        "§r§fCures: " + data.getCuresAsString(),
                         "§r§aLeft Click in hand to trade!"), null);
     }
 
@@ -131,5 +131,10 @@ public final class Util
     public static void logSevere(String log)
     {
         plugin.getLogger().severe(log);
+    }
+
+    public static int getGuiSlot(int row, int col)
+    {
+        return 9 * row + col;
     }
 }

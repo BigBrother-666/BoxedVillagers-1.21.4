@@ -50,7 +50,18 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     }
                     else
                     {
-                        player.getInventory().addItem(getUnboundScroll());
+                        if(args[1].equalsIgnoreCase("unbound"))
+                        {
+                            player.getInventory().addItem(getUnboundScroll(false));
+                        }
+                        else if (args[1].equalsIgnoreCase("unbound-nonlethal"))
+                        {
+                            player.getInventory().addItem(getUnboundScroll(true));
+                        }
+                        else
+                        {
+                            player.sendMessage("Invalid Item!");
+                        }
                         return true;
                     }
                 }
@@ -70,7 +81,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     if(nbtItem != null)
                     {
                         VillagerData data = new VillagerData(nbtItem);
-                        if(data.cures == 7)
+                        if(data.getCures() == 7)
                         {
                             player.sendMessage("Already at max cures!");
                         }
@@ -101,7 +112,41 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         return false;
     }
 
-    private ItemStack getUnboundScroll()
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
+    {
+        if(command.getName().equalsIgnoreCase("boxedvillagers"))
+        {
+            if(sender instanceof Player)
+            {
+                if((args.length == 1 || args.length == 2))
+                {
+                    if(args[0].equalsIgnoreCase("give"))
+                    {
+                        return Arrays.asList("unbound", "unbound-nonlethal");
+                    }
+                    else if (args[0].equalsIgnoreCase("cure"))
+                    {
+                        return Arrays.asList("1", "2", "3", "4", "5", "6", "7");
+                    }
+                }
+
+                if((args.length == 2) && args[0].equalsIgnoreCase("give"))
+                {
+                    return null;
+                }
+
+                if((args.length == 0 || args.length == 1))
+                {
+                    return Arrays.asList("give", "cure");
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private ItemStack getUnboundScroll(boolean nonlethal)
     {
         ItemStack scroll = new ItemStack(Material.PAPER);
         Util.setItemTitleLoreAndFlags(scroll,
@@ -113,6 +158,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         NBTItem nbtscoll = new NBTItem(scroll);
         nbtscoll.setUUID(Strings.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
         nbtscoll.setBoolean(Strings.TAG_IS_BOUND, false);
+        nbtscoll.setBoolean(Strings.TAG_NONLETHAL, true);
         return nbtscoll.getItem();
 
     }
@@ -141,37 +187,5 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         }
     }
 
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
-    {
-        if(command.getName().equalsIgnoreCase("boxedvillagers"))
-        {
-            if(sender instanceof Player)
-            {
-                if((args.length == 1 || args.length == 2))
-                {
-                    if(args[0].equalsIgnoreCase("give"))
-                    {
-                        return Arrays.asList("unbound");
-                    }
-                    else if (args[0].equalsIgnoreCase("cure"))
-                    {
-                        return Arrays.asList("1", "2", "3", "4", "5", "6", "7");
-                    }
-                }
 
-                if((args.length == 2) && args[0].equalsIgnoreCase("give"))
-                {
-                    return null;
-                }
-
-                if((args.length == 0 || args.length == 1))
-                {
-                    return Arrays.asList("give", "cure");
-                }
-            }
-        }
-
-        return null;
-    }
 }

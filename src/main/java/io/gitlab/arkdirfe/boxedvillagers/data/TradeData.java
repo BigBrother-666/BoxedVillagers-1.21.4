@@ -9,9 +9,9 @@ import java.io.Serializable;
 
 public class TradeData implements Serializable
 {
-    public int reduction;
-    public int baseAmount;
-    public MerchantRecipe recipe;
+    private final int reduction;
+    private final int baseAmount;
+    private final MerchantRecipe recipe;
 
     public TradeData(int reduction, int baseAmount, MerchantRecipe recipe)
     {
@@ -34,6 +34,25 @@ public class TradeData implements Serializable
         recipe.addIngredient(i1);
         recipe.addIngredient(i2);
     }
+
+    // Getters
+
+    public int getReduction()
+    {
+        return reduction;
+    }
+
+    public int getBaseAmount()
+    {
+        return baseAmount;
+    }
+
+    public MerchantRecipe getRecipe()
+    {
+        return recipe;
+    }
+
+    // --- Serialization
 
     public void serializeToNBT(NBTCompound entry)
     {

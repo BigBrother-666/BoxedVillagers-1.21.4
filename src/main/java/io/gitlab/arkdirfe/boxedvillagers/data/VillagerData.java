@@ -14,8 +14,8 @@ import java.util.List;
 
 public class VillagerData
 {
-    public int cures;
-    public List<TradeData> trades;
+    private int cures;
+    private List<TradeData> trades;
     private final String profession;
     private final int rank;
     private long lastRestocked; // In days
@@ -54,6 +54,56 @@ public class VillagerData
         }
     }
 
+    // --- Getters
+
+    public int getCures()
+    {
+        return cures;
+    }
+
+    public List<TradeData> getTrades()
+    {
+        return trades;
+    }
+
+    public String getRankAsString()
+    {
+        switch (rank)
+        {
+            case 1:
+                return "§7Novice";
+            case 2:
+                return "§eApprentice";
+            case 3:
+                return "§6Journeyman";
+            case 4:
+                return "§aExpert";
+            case 5:
+                return "§bMaster";
+        }
+
+        return "Invalid!";
+    }
+
+    public String getProfessionAsString()
+    {
+        return Strings.capitalize(profession, " ");
+    }
+
+    public String getCuresAsString()
+    {
+        return cures != 7 ? "" + cures : "§6" + cures;
+    }
+
+    // --- Setters
+
+    public void setTrades(List<TradeData> trades)
+    {
+        this.trades = trades;
+    }
+
+    // --- Serialization
+
     public ItemStack writeToItem(NBTItem item)
     {
         item.setBoolean(Strings.TAG_IS_BOUND, true);
@@ -73,12 +123,14 @@ public class VillagerData
         return item.getItem();
     }
 
+    // --- General Methods
+
     public List<MerchantRecipe> getMerchantRecipes()
     {
         List<MerchantRecipe> recipes = new ArrayList<>();
         for(TradeData t : trades)
         {
-            recipes.add(t.recipe);
+            recipes.add(t.getRecipe());
         }
         return recipes;
     }
@@ -95,7 +147,7 @@ public class VillagerData
         for(int i = 0; i < trades.size(); i++)
         {
             MerchantRecipe recipe = merchant.getRecipe(i);
-            trades.get(i).recipe.setUses(recipe.getUses());
+            trades.get(i).getRecipe().setUses(recipe.getUses());
         }
     }
 
@@ -109,7 +161,7 @@ public class VillagerData
 
         if(days < lastRestocked)
         {
-            Util.logWarning("Restock attempted with lower world time than last restocked time. Restock permitted.");
+            Util.logWarning("Restock attempted with lower world time than last restocked time. If you see this message once it's nothing to worry about, if you see it often you might want to look into things.");
             permitted = true;
         }
 
@@ -129,37 +181,10 @@ public class VillagerData
 
             for(TradeData data : trades)
             {
-                data.recipe.setUses(0);
+                data.getRecipe().setUses(0);
             }
         }
     }
 
-    public String rankAsString()
-    {
-        switch (rank)
-        {
-            case 1:
-                return "§7Novice";
-            case 2:
-                return "§eApprentice";
-            case 3:
-                return "§6Journeyman";
-            case 4:
-                return "§aExpert";
-            case 5:
-                return "§bMaster";
-        }
 
-        return "Invalid!";
-    }
-
-    public String professionAsString()
-    {
-        return Strings.capitalize(profession, " ");
-    }
-
-    public String curesAsString()
-    {
-        return cures != 7 ? "" + cures : "§6" + cures;
-    }
 }

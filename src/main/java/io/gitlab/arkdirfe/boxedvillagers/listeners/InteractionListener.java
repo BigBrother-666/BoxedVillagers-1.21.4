@@ -74,8 +74,11 @@ public class InteractionListener implements Listener
                     player.getWorld().spawnParticle(Particle.LAVA, x, y, z, 25, 0.2f, 0.5f, 0.2f, 0);
                     player.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, x, y, z, 50, 0.2f, 0.5f, 0.2f, 0.01f);
 
-                    // Delete villager
-                    //villager.remove();
+                    // Delete villager if scroll is lethal
+                    if(!nbtItem.hasKey(Strings.TAG_NONLETHAL))
+                    {
+                        villager.remove();
+                    }
                 }
             }
         }
@@ -98,14 +101,14 @@ public class InteractionListener implements Listener
 
             if(event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
             {
-                return; // Return here instead of before check, otherwise you could open a merchant UI by clicking on a villager
+                return;
             }
 
             VillagerData data = new VillagerData(nbtItem);
             data.attemptRestock();
             player.getInventory().setItemInMainHand(data.writeToItem(nbtItem));
 
-            Merchant merchant = Bukkit.createMerchant(data.professionAsString());
+            Merchant merchant = Bukkit.createMerchant(data.getProfessionAsString());
             merchant.setRecipes(data.getMerchantRecipes());
             player.openMerchant(merchant, true);
         }
