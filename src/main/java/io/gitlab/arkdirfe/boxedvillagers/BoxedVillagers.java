@@ -41,7 +41,7 @@ public class BoxedVillagers extends JavaPlugin
     @Override
     public void onDisable()
     {
-
+        witchdoctorGuiManager.cleanupOpenGuis();
         getLogger().info("Unloaded!");
     }
 }

@@ -50,14 +50,14 @@ public final class Util
         return -1;
     }
 
-    public static boolean isValidItem(ItemStack item)
+    public static boolean isNotNullOrAir(ItemStack item)
     {
         return !(item == null || item.getType() == Material.AIR);
     }
 
     public static NBTItem validateUnboundItem(ItemStack item)
     {
-        if (!isValidItem(item))
+        if (!isNotNullOrAir(item))
         {
             return null;
         }
@@ -74,7 +74,7 @@ public final class Util
 
     public static NBTItem validateBoundItem(ItemStack item)
     {
-        if (!isValidItem(item))
+        if (!isNotNullOrAir(item))
         {
             return null;
         }

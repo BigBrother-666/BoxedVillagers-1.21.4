@@ -1,5 +1,6 @@
 package io.gitlab.arkdirfe.boxedvillagers.ui;
 
+import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.data.TradeData;
@@ -18,6 +19,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
@@ -26,7 +28,11 @@ import java.util.*;
 public class WitchdoctorGuiManager implements Listener
 {
     private final BoxedVillagers plugin;
-    private final Map<UUID, WitchdoctorGuiData> guiMap;
+    private Map<UUID, WitchdoctorGuiData> guiMap;
+    private Map<Material, Integer> cureTier1Map;
+    private Map<Material, Integer> cureTier2Map;
+    private Map<Material, Integer> cureTier3Map;
+    private Map<Material, Integer> purgeMap;
 
     private final int scrollSlot = getSlot(1, 4);
     private final int helpSlot = getSlot(0, 4);
@@ -39,7 +45,40 @@ public class WitchdoctorGuiManager implements Listener
     {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        initializeMaps();
+    }
+
+    private void initializeMaps()
+    {
         guiMap = new HashMap<>();
+        cureTier1Map = new HashMap<>();
+        cureTier2Map = new HashMap<>();
+        cureTier3Map = new HashMap<>();
+        purgeMap = new HashMap<>();
+
+        initCostMap(Strings.CONFIG_COST_CURE1, cureTier1Map);
+        initCostMap(Strings.CONFIG_COST_CURE2, cureTier2Map);
+        initCostMap(Strings.CONFIG_COST_CURE3, cureTier3Map);
+        initCostMap(Strings.CONFIG_COST_PURGE, purgeMap);
+
+        plugin.getLogger().info("Registered costs for operations!");
+    }
+
+    private void initCostMap(String configSection, Map<Material, Integer> costMap)
+    {
+        if(!costMap.isEmpty())
+        {
+            costMap.clear();
+        }
+
+        for(String key : plugin.getConfig().getConfigurationSection(configSection).getKeys(false))
+        {
+            Material mat = Material.matchMaterial(key);
+            if(mat != null)
+            {
+                costMap.put(mat, plugin.getConfig().getInt(configSection + "." + mat.toString()));
+            }
+        }
     }
 
     public void openGui(final HumanEntity player)
@@ -116,7 +155,7 @@ public class WitchdoctorGuiManager implements Listener
         }
         else
         {
-            data.gui.setItem(cureSlot, getCureItem());
+            data.gui.setItem(cureSlot, getCureItem(data.villagerData.cures));
         }
     }
 
@@ -152,7 +191,7 @@ public class WitchdoctorGuiManager implements Listener
 
     private boolean isMovable(ItemStack item)
     {
-        if(!Util.isValidItem(item))
+        if(!Util.isNotNullOrAir(item))
         {
             return false;
         }
@@ -198,15 +237,62 @@ public class WitchdoctorGuiManager implements Listener
         return setUninteractable(item);
     }
 
-    private ItemStack getCureItem()
+    private ItemStack getCureItem(int cures)
     {
         ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
 
+        List<String> lore = new ArrayList<>();
+        lore.add("§r§fReduces all prices but never below 1.");
+        lore.add("§r§4Applies instantly, irreversible.");
+
+        Map<Material, Integer> cost = calculateCureCost(cures);
+
+        if(cost.size() > 0)
+        {
+            lore.add("§r§fCosts:");
+            for(Map.Entry<Material, Integer> entry : cost.entrySet())
+            {
+                lore.add(String.format("§r§f   -§6%d §a%s", entry.getValue(), Strings.capitalize(entry.getKey().toString(), "_")));
+            }
+        }
+
         Util.setItemTitleLoreAndFlags(item, "§2Cure Villager",
-                Arrays.asList("§r§fReduces all prices but never below 1.", "§r§4Applies instantly, irreversible."),
+                lore,
                 null);
 
         return setUninteractable(item);
+    }
+
+    private Map<Material, Integer> calculateCureCost(int cures)
+    {
+        Map<Material, Integer> costs = new HashMap<>();
+
+        int multiplier = cures + 1;
+
+        for (Map.Entry<Material, Integer> entry : cureTier1Map.entrySet())
+        {
+            Material key = entry.getKey();
+            costs.put(key, costs.getOrDefault(key, 0) + entry.getValue() * multiplier);
+        }
+        if (cures >= 3)
+        {
+            for (Map.Entry<Material, Integer> entry : cureTier2Map.entrySet())
+            {
+                Material key = entry.getKey();
+                costs.put(key, costs.getOrDefault(key, 0) + entry.getValue() * (multiplier - 3));
+            }
+        }
+        if (cures >= 5)
+        {
+            for (Map.Entry<Material, Integer> entry : cureTier3Map.entrySet())
+            {
+                Material key = entry.getKey();
+                costs.put(key, costs.getOrDefault(key, 0) + entry.getValue() * (multiplier - 5));
+            }
+        }
+
+
+        return costs;
     }
 
     private ItemStack getBlockedCureItem()
@@ -245,9 +331,14 @@ public class WitchdoctorGuiManager implements Listener
             lore.add(String.format("§r§6%d§f trades were purged.", data.tradesPurged));
         }
 
-        if(lore.size() > 1)
+        if(data.tradesPurged > 0) // Same condition for now, might chance if I add trade extracting
         {
             lore.add("§r§fTotal Costs:");
+
+            for (Map.Entry<Material, Integer> entry : purgeMap.entrySet())
+            {
+                lore.add(String.format("§r§f   -§6%d §a%s", entry.getValue() * data.tradesPurged, Strings.capitalize(entry.getKey().toString(), "_")));
+            }
         }
 
         Util.setItemTitleLoreAndFlags(item, "§2Commit Changes",
@@ -267,7 +358,11 @@ public class WitchdoctorGuiManager implements Listener
                         "§r§fShift Left Click to purge this trade."),
                 null);
 
-        return setMovable(item);
+        NBTItem nbtItem = new NBTItem(item);
+        NBTCompound compound = nbtItem.addCompound(Strings.TAG_SERIALIZED_TRADE_DATA);
+        trade.serializeToNBT(compound);
+
+        return setMovable(nbtItem.getItem());
     }
 
     private String tradeToString(MerchantRecipe recipe, int baseAmount)
@@ -296,6 +391,48 @@ public class WitchdoctorGuiManager implements Listener
         return result.toString();
     }
 
+    private List<TradeData> getModifiedTrades(WitchdoctorGuiData data)
+    {
+        List<TradeData> trades = new ArrayList<>();
+
+        for(int i : tradeSlots)
+        {
+            ItemStack item = data.gui.getItem(i);
+
+            if(Util.isNotNullOrAir(item))
+            {
+                NBTItem nbtItem = new NBTItem(item);
+                TradeData tradeData = new TradeData(nbtItem.getCompound(Strings.TAG_SERIALIZED_TRADE_DATA), data.villagerData.cures);
+                trades.add(tradeData);
+            }
+        }
+
+        return trades;
+    }
+
+    private boolean playerCanPay(HumanEntity player, Map<Material, Integer> costs)
+    {
+        for (Map.Entry<Material, Integer> entry : costs.entrySet())
+        {
+            if(!player.getInventory().containsAtLeast(new ItemStack(entry.getKey()), entry.getValue()))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void payCosts(HumanEntity player, Map<Material, Integer> costs)
+    {
+        for (Map.Entry<Material, Integer> entry : costs.entrySet())
+        {
+            ItemStack item = new ItemStack(entry.getKey());
+            item.setAmount(entry.getValue());
+            player.getInventory().removeItem(item);
+        }
+    }
+
     // Cleanup methods that are called on disable or when ui is closed, makes sure that the player gets their stuff back
 
     public void cleanupOpenGuis()
@@ -303,13 +440,13 @@ public class WitchdoctorGuiManager implements Listener
         for(WitchdoctorGuiData data : guiMap.values())
         {
             HumanEntity player = data.player;
-            returnScroll(data, player);
+            returnScrollAndRemoveFromMap(data, player);
         }
     }
 
-    private void returnScroll(WitchdoctorGuiData data, HumanEntity player)
+    private void returnScrollAndRemoveFromMap(WitchdoctorGuiData data, HumanEntity player)
     {
-        ItemStack scroll = data.gui.getItem(scrollSlot);
+        ItemStack scroll = data.scroll;
 
         if(scroll != null)
         {
@@ -324,7 +461,13 @@ public class WitchdoctorGuiManager implements Listener
     @EventHandler
     public void onCloseInventory(final InventoryCloseEvent event)
     {
-        if(event.getView().getTitle().equals(Strings.UI_WD_TITLE))
+        System.out.println(event.getView().getTitle());
+        if(!event.getView().getTitle().equals(Strings.UI_WD_TITLE))
+        {
+            return;
+        }
+
+        if(guiMap.size() == 0)
         {
             return;
         }
@@ -337,7 +480,17 @@ public class WitchdoctorGuiManager implements Listener
             return;
         }
 
-        returnScroll(data, player);
+        returnScrollAndRemoveFromMap(data, player);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(final PlayerQuitEvent event)
+    {
+        UUID uuid = event.getPlayer().getUniqueId();
+        if(guiMap.containsKey(uuid))
+        {
+            returnScrollAndRemoveFromMap(guiMap.get(uuid), event.getPlayer());
+        }
     }
 
     @EventHandler
@@ -349,11 +502,6 @@ public class WitchdoctorGuiManager implements Listener
             return;
         }
 
-        if(event.isShiftClick())
-        {
-            event.setCancelled(true);
-        }
-
         HumanEntity player =  event.getInventory().getViewers().get(0);
         WitchdoctorGuiData data = guiMap.get(player.getUniqueId());
 
@@ -362,9 +510,14 @@ public class WitchdoctorGuiManager implements Listener
             return;
         }
 
+        if(event.isShiftClick())
+        {
+            event.setCancelled(true);
+        }
+
         ItemStack item = event.getCurrentItem();
 
-        if(Util.isValidItem(item))
+        if(Util.isNotNullOrAir(item))
         {
             if(isUninteractable(item))
             {
@@ -403,19 +556,49 @@ public class WitchdoctorGuiManager implements Listener
 
             data.setScroll(data.gui.getItem(scrollSlot));
             updateGui(data);
+            return;
         }
-        else if(event.getRawSlot() == cureSlot && data.scroll != null)
+
+        if(event.getRawSlot() == cureSlot && data.scroll != null)
         {
             if(data.villagerData.cures != 7)
             {
-                // Check for costs here
+                Map<Material, Integer> costs = calculateCureCost(data.villagerData.cures);
+                if(playerCanPay(data.player, costs))
+                {
+                    payCosts(data.player, costs);
 
-                data.villagerData.cure(new NBTItem(data.scroll), 1);
+                    data.villagerData.cure(new NBTItem(data.scroll), 1);
+                    Util.updateBoundScrollTooltip(data.scroll, data.villagerData);
+                    data.gui.setItem(scrollSlot, data.villagerData.writeToItem(new NBTItem(data.scroll)));
+                    ((Player)player).playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 0.5f, 1);
+                    updateCureButton(data);
+                }
+            }
+
+            return;
+        }
+
+        if(event.getRawSlot() == commitSlot && (data.tradesMoved || data.tradesPurged > 0))
+        {
+            Map<Material, Integer> costs = new HashMap<>();
+
+            for (Map.Entry<Material, Integer> entry : purgeMap.entrySet())
+            {
+                costs.put(entry.getKey(), entry.getValue() * data.tradesPurged);
+            }
+
+            if(playerCanPay(data.player, costs))
+            {
+                payCosts(data.player, costs);
+                data.villagerData.trades = getModifiedTrades(data);
                 Util.updateBoundScrollTooltip(data.scroll, data.villagerData);
                 data.gui.setItem(scrollSlot, data.villagerData.writeToItem(new NBTItem(data.scroll)));
-                ((Player)player).playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 0.5f, 1);
-                updateCureButton(data);
+                data.resetTracking();
+                updateCommitButton(data);
             }
+
+            return;
         }
 
         // Handling for movable items (trade recipes), can be moved around inside the UI but not taken out
@@ -456,7 +639,7 @@ public class WitchdoctorGuiManager implements Listener
             event.setCancelled(true);
         }
 
-        if(slotMovable && cursorEmpty && event.isShiftClick())
+        if(slotMovable && cursorEmpty && event.isShiftClick()) // Purge trade
         {
             event.setCancelled(true);
 

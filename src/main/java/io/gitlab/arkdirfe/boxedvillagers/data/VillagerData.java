@@ -49,18 +49,8 @@ public class VillagerData
         for(int i = 0; i < compound.getInteger(Strings.TAG_TRADE_COUNT); i++)
         {
             NBTCompound recipeCompound = compound.getCompound("" + i);
-            MerchantRecipe recipe = new MerchantRecipe(recipeCompound.getItemStack(Strings.TAG_OUTPUT), recipeCompound.getInteger(Strings.TAG_MAX_USES));
-            int reduction = recipeCompound.getInteger(Strings.TAG_REDUCTION);
-            recipe.setMaxUses(recipeCompound.getInteger(Strings.TAG_MAX_USES));
-            recipe.setUses(recipeCompound.getInteger(Strings.TAG_USES));
-            ItemStack i1 = recipeCompound.getItemStack(Strings.TAG_INPUT_1);
-            int baseAmount = recipeCompound.getInteger(Strings.TAG_BASE_AMOUNT);
-            i1.setAmount(Math.max(baseAmount - reduction * cures, 1));
-            ItemStack i2 = recipeCompound.getItemStack(Strings.TAG_INPUT_2);
-            recipe.addIngredient(i1);
-            recipe.addIngredient(i2);
 
-            trades.add(new TradeData(reduction, baseAmount, recipe));
+            trades.add(new TradeData(recipeCompound, cures));
         }
     }
 
@@ -76,19 +66,8 @@ public class VillagerData
 
         for(int i = 0; i < trades.size(); i++)
         {
-            TradeData trade = trades.get(i);
-            MerchantRecipe recipe = trade.recipe;
-            ItemStack i1 = recipe.getIngredients().get(0);
-            ItemStack i2 = recipe.getIngredients().get(1);
-
             NBTCompound entry = compound.getOrCreateCompound("" + i);
-            entry.setItemStack(Strings.TAG_INPUT_1, i1);
-            entry.setItemStack(Strings.TAG_INPUT_2, i2);
-            entry.setItemStack(Strings.TAG_OUTPUT, recipe.getResult());
-            entry.setInteger(Strings.TAG_MAX_USES, recipe.getMaxUses());
-            entry.setInteger(Strings.TAG_USES, recipe.getUses());
-            entry.setInteger(Strings.TAG_REDUCTION, trade.reduction);
-            entry.setInteger(Strings.TAG_BASE_AMOUNT, trade.baseAmount);
+            trades.get(i).serializeToNBT(entry);
         }
 
         return item.getItem();

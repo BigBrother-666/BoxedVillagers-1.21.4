@@ -1,1 +1,19 @@
+# Which world should be taken as a reference for timing boxed villager restocks
 timeWorld: world
+
+# Costs for curing = tier base cost * (current cures + 1) + previous tier costs
+# Cost for curing a boxed villager (0-2 cures)
+cureCostTier1:
+  GOLDEN_APPLE: 1
+
+# Cost for curing a boxed villager (3-4 cures)
+cureCostTier2:
+  ENCHANTED_GOLDEN_APPLE: 1
+
+# Cost for curing a boxed villager (5-6 cures)
+cureCostTier3:
+  NETHERITE_BLOCK: 1
+
+# Cost for purging a trade
+purgeCost:
+  SPONGE: 1

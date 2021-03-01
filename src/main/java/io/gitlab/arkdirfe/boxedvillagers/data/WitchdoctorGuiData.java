@@ -1,9 +1,13 @@
 package io.gitlab.arkdirfe.boxedvillagers.data;
 
 import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class WitchdoctorGuiData
 {
