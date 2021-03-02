@@ -9,8 +9,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public final class Util
 {
@@ -23,7 +25,9 @@ public final class Util
                 Arrays.asList("§r§fProfession: §a" + data.getProfessionAsString(),
                         "§r§fRank: " + data.getRankAsString(),
                         "§r§fCures: " + data.getCuresAsString(),
-                        "§r§aLeft Click in hand to trade!"), null);
+                        "§r§fTrade Slots: " + data.getTradeSlotsAsString(),
+                        "§r§aLeft Click in hand to trade!"),
+                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
     }
 
     public static long getTotalTime()
@@ -108,6 +112,35 @@ public final class Util
         return item;
     }
 
+    public static ItemStack getUnboundScroll(boolean nonlethal)
+    {
+        ItemStack scroll = new ItemStack(Material.PAPER);
+
+        List<String> lore = new ArrayList<>();
+
+        lore.add("§r§fRight click on a villager to §4§mensnare its mortal soul§r§f capture it.");
+        lore.add("§r§fCaptured villagers do not benefit from previous cures or");
+        lore.add("§r§fHero of the Village and can not unlock additional trades.");
+
+        if(nonlethal)
+        {
+            lore.add("§r§4NONLETHAL SCROLL (ADMIN ITEM)!");
+        }
+
+        Util.setItemTitleLoreAndFlags(scroll,
+                "§aUnbound Villager Scroll",
+                lore, null);
+
+        NBTItem nbtscoll = new NBTItem(scroll);
+        nbtscoll.setUUID(Strings.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
+        nbtscoll.setBoolean(Strings.TAG_IS_BOUND, false);
+        if(nonlethal)
+        {
+            nbtscoll.setBoolean(Strings.TAG_NONLETHAL, true);
+        }
+        return nbtscoll.getItem();
+    }
+
     public static long getDay(long time)
     {
         return time / 24000;
@@ -131,10 +164,5 @@ public final class Util
     public static void logSevere(String log)
     {
         plugin.getLogger().severe(log);
-    }
-
-    public static int getGuiSlot(int row, int col)
-    {
-        return 9 * row + col;
     }
 }

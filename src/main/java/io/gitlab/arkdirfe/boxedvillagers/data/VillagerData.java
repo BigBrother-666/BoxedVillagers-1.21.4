@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
@@ -14,10 +15,14 @@ import java.util.List;
 
 public class VillagerData
 {
+    public static int maxTradeSlots = 27;
+    public static int minTradeSlots = 10;
+
     private int cures;
     private List<TradeData> trades;
     private final String profession;
     private final int rank;
+    private int tradeSlots;
     private long lastRestocked; // In days
 
     public VillagerData(Villager fromVillager)
@@ -33,6 +38,7 @@ public class VillagerData
         profession = fromVillager.getProfession().name();
         rank = fromVillager.getVillagerLevel();
         lastRestocked = Util.getDay(Util.getTotalTime());
+        tradeSlots = Math.max(minTradeSlots, trades.size());
         attemptRestock();
     }
 
@@ -45,6 +51,7 @@ public class VillagerData
         profession = compound.getString(Strings.TAG_PROFESSION);
         rank = compound.getInteger(Strings.TAG_RANK);
         lastRestocked = compound.getLong(Strings.TAG_TIMESTAMP);
+        tradeSlots = compound.getInteger(Strings.TAG_TRADE_SLOTS);
 
         for(int i = 0; i < compound.getInteger(Strings.TAG_TRADE_COUNT); i++)
         {
@@ -64,6 +71,11 @@ public class VillagerData
     public List<TradeData> getTrades()
     {
         return trades;
+    }
+
+    public int getTradeSlots()
+    {
+        return tradeSlots;
     }
 
     public String getRankAsString()
@@ -95,7 +107,12 @@ public class VillagerData
         return cures != 7 ? "" + cures : "§6" + cures;
     }
 
-    // --- Setters
+    public String getTradeSlotsAsString()
+    {
+        return tradeSlots != maxTradeSlots ? String.format("§e%d§f/§6%d", tradeSlots, maxTradeSlots) : String.format("§6%d/%d", maxTradeSlots, maxTradeSlots);
+    }
+
+    // --- Setters/Accessors
 
     public void setTrades(List<TradeData> trades)
     {
@@ -106,6 +123,11 @@ public class VillagerData
 
     public ItemStack writeToItem(NBTItem item)
     {
+        if(item.hasKey(Strings.TAG_NONLETHAL))
+        {
+            item.removeKey(Strings.TAG_NONLETHAL);
+        }
+
         item.setBoolean(Strings.TAG_IS_BOUND, true);
         NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         compound.setInteger(Strings.TAG_CURES, cures);
@@ -113,6 +135,7 @@ public class VillagerData
         compound.setInteger(Strings.TAG_RANK, rank);
         compound.setInteger(Strings.TAG_TRADE_COUNT, trades.size());
         compound.setLong(Strings.TAG_TIMESTAMP, lastRestocked);
+        compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
 
         for(int i = 0; i < trades.size(); i++)
         {
@@ -120,7 +143,10 @@ public class VillagerData
             trades.get(i).serializeToNBT(entry);
         }
 
-        return item.getItem();
+        ItemStack itemStack = item.getItem();
+        itemStack.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+
+        return itemStack;
     }
 
     // --- General Methods
@@ -140,6 +166,13 @@ public class VillagerData
         NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         cures = Math.min(7, cures + times);
         compound.setInteger(Strings.TAG_CURES, cures);
+    }
+
+    public void addTradeSlots(NBTItem item, int slots)
+    {
+        NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
+        tradeSlots = Math.min(maxTradeSlots, tradeSlots + slots);
+        compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
     }
 
     public void updateUses(Merchant merchant)

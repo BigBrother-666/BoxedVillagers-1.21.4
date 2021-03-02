@@ -2,6 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.ui;
 
 
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
+import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
 import io.gitlab.arkdirfe.boxedvillagers.util.GuiUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
@@ -25,15 +26,20 @@ public class WitchdoctorGuiManager implements Listener
 {
     private final BoxedVillagers plugin;
     private final Map<UUID, WitchdoctorGuiController> guiMap;
-    public List<Map<Material, Integer>> cureCostMaps;
-    public final Map<Material, Integer> purgeCostMap;
+    public final List<CostData> cureCosts;
+    public final List<CostData> slotExtensionCosts;
+    public final CostData purgeCost;
+    public final CostData scrollCost;
+    public final CostData extractCost;
+    public final CostData addCost;
 
-    private final int scrollSlot = Util.getGuiSlot(1, 4);
-    private final int helpSlot = Util.getGuiSlot(0, 4);
-    private final int cureSlot = Util.getGuiSlot(1, 1);
-    private final int commitSlot = Util.getGuiSlot(1, 7);
-    private final List<Integer> tradeSlots = Arrays.asList(Util.getGuiSlot(3, 2), Util.getGuiSlot(3, 3), Util.getGuiSlot(3, 4), Util.getGuiSlot(3, 5), Util.getGuiSlot(3, 6),
-            Util.getGuiSlot(4, 2), Util.getGuiSlot(4, 3), Util.getGuiSlot(4, 4), Util.getGuiSlot(4, 5), Util.getGuiSlot(4, 6));
+    public final int scrollSlot = GuiUtil.getGuiSlot(1, 4);
+    public final int helpSlot = GuiUtil.getGuiSlot(0, 4);
+    public final int cureSlot = GuiUtil.getGuiSlot(1, 2);
+    public final int commitSlot = GuiUtil.getGuiSlot(1, 6);
+    public final int extendTradeSlotsSlot = GuiUtil.getGuiSlot(1, 0);
+    public final int buyScrollSlot = GuiUtil.getGuiSlot(1, 8);
+    public final int tradeSlotStart = GuiUtil.getGuiSlot(3, 0);
 
     public WitchdoctorGuiManager(BoxedVillagers plugin)
     {
@@ -41,14 +47,18 @@ public class WitchdoctorGuiManager implements Listener
 
         this.plugin = plugin;
         this.guiMap = plugin.guiMap;
-        this.cureCostMaps = plugin.cureCostMaps;
-        this.purgeCostMap = plugin.purgeCostMap;
+        this.cureCosts = plugin.cureCosts;
+        this.slotExtensionCosts = plugin.slotExtensionCosts;
+        this.purgeCost = plugin.purgeCost;
+        this.scrollCost = plugin.scrollCost;
+        this.extractCost = plugin.extractCost;
+        this.addCost = plugin.addCost;
     }
 
     public void openGui(final HumanEntity player)
     {
         Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE);
-        WitchdoctorGuiController data = new WitchdoctorGuiController(gui, player, scrollSlot, helpSlot, cureSlot, commitSlot, tradeSlots, this);
+        WitchdoctorGuiController data = new WitchdoctorGuiController(gui, player, this);
         guiMap.put(player.getUniqueId(), data);
     }
 
@@ -132,7 +142,18 @@ public class WitchdoctorGuiManager implements Listener
         if(event.getRawSlot() == commitSlot && controller.canCommit())
         {
             controller.commitChanges();
+            return;
+        }
 
+        if(event.getRawSlot() == buyScrollSlot)
+        {
+            controller.buyScroll();
+            return;
+        }
+
+        if(event.getRawSlot() == extendTradeSlotsSlot && controller.getScroll() != null)
+        {
+            controller.extendSlots();
             return;
         }
 
@@ -142,7 +163,7 @@ public class WitchdoctorGuiManager implements Listener
         boolean slotMovable = GuiUtil.isMovable(slotItem);
         boolean cursorMovable = GuiUtil.isMovable(cursorItem);
 
-        if(tradeSlots.contains(slotIndex))
+        if(controller.isTradeSlot(slotIndex))
         {
             event.setCancelled(true);
             if((slotEmpty && cursorMovable))
@@ -157,24 +178,31 @@ public class WitchdoctorGuiManager implements Listener
                 view.setCursor(slotItem);
                 controller.tradeMoved();
             }
-            else if((slotMovable && cursorEmpty))
+            else if((slotMovable && cursorEmpty) && event.isLeftClick() && !event.isShiftClick())
             {
                 controller.getGui().setItem(slotIndex, null);
                 view.setCursor(slotItem);
+                controller.tradeMoved();
             }
 
             controller.updateCommitButton();
         }
-        else if(cursorMovable)
+        else if(cursorMovable && !GuiUtil.isFree(cursorItem))
         {
             event.setCancelled(true);
         }
 
-        if(slotMovable && cursorEmpty && event.isShiftClick()) // Purge trade
+        if(slotMovable && cursorEmpty && event.isShiftClick() && event.isLeftClick()) // Purge trade
         {
             event.setCancelled(true);
             controller.purgeTrade(slotIndex);
             view.setCursor(new ItemStack(Material.AIR));
+        }
+
+        if(slotMovable && cursorEmpty && event.isShiftClick() && event.isRightClick())
+        {
+            event.setCancelled(true);
+            controller.extractTrade(slotIndex);
         }
     }
 
@@ -206,7 +234,6 @@ public class WitchdoctorGuiManager implements Listener
     @EventHandler
     public void onCloseInventory(final InventoryCloseEvent event)
     {
-        System.out.println(event.getView().getTitle());
         if(!event.getView().getTitle().equals(Strings.UI_WD_TITLE))
         {
             return;
@@ -225,7 +252,7 @@ public class WitchdoctorGuiManager implements Listener
             return;
         }
 
-        returnScrollAndRemoveFromMap(controller.getScroll(), player);
+        returnItemsAndRemoveFromMap(controller, player);
     }
 
     @EventHandler
@@ -234,7 +261,7 @@ public class WitchdoctorGuiManager implements Listener
         UUID uuid = event.getPlayer().getUniqueId();
         if(guiMap.containsKey(uuid))
         {
-            returnScrollAndRemoveFromMap(guiMap.get(uuid).getScroll(), event.getPlayer());
+            returnItemsAndRemoveFromMap(guiMap.get(uuid), event.getPlayer());
         }
     }
 
@@ -245,15 +272,20 @@ public class WitchdoctorGuiManager implements Listener
         for(WitchdoctorGuiController controller : guiMap.values())
         {
             HumanEntity player = controller.getPlayer();
-            returnScrollAndRemoveFromMap(controller.getScroll(), player);
+            returnItemsAndRemoveFromMap(controller, player);
         }
     }
 
-    private void returnScrollAndRemoveFromMap(ItemStack scroll, HumanEntity player)
+    private void returnItemsAndRemoveFromMap(WitchdoctorGuiController controller, HumanEntity player)
     {
-        if(scroll != null)
+        if(controller.getScroll() != null)
         {
-            player.getInventory().addItem(scroll);
+            player.getInventory().addItem(controller.getScroll());
+        }
+
+        for (ItemStack item : controller.getFreeTradeItems())
+        {
+            player.getInventory().addItem(item);
         }
 
         guiMap.remove(player.getUniqueId());

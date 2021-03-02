@@ -52,11 +52,11 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     {
                         if(args[1].equalsIgnoreCase("unbound"))
                         {
-                            player.getInventory().addItem(getUnboundScroll(false));
+                            player.getInventory().addItem(Util.getUnboundScroll(false));
                         }
                         else if (args[1].equalsIgnoreCase("unbound-nonlethal"))
                         {
-                            player.getInventory().addItem(getUnboundScroll(true));
+                            player.getInventory().addItem(Util.getUnboundScroll(true));
                         }
                         else
                         {
@@ -146,22 +146,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         return null;
     }
 
-    private ItemStack getUnboundScroll(boolean nonlethal)
-    {
-        ItemStack scroll = new ItemStack(Material.PAPER);
-        Util.setItemTitleLoreAndFlags(scroll,
-                "§aUnbound Villager Scroll",
-                Arrays.asList("§r§fRight click on a villager to §4§mensnare its mortal soul§r§f capture it.",
-                        "§r§fCaptured villagers do not benefit from previous cures or",
-                        "§r§fHero of the Village and can not unlock additional trades."), null);
 
-        NBTItem nbtscoll = new NBTItem(scroll);
-        nbtscoll.setUUID(Strings.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
-        nbtscoll.setBoolean(Strings.TAG_IS_BOUND, false);
-        nbtscoll.setBoolean(Strings.TAG_NONLETHAL, true);
-        return nbtscoll.getItem();
-
-    }
 
     private Player getPlayer(boolean condition, CommandSender sender, String[] args, int playerIndex)
     {

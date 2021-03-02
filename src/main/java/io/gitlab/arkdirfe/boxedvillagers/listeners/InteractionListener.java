@@ -56,6 +56,7 @@ public class InteractionListener implements Listener
                 }
                 else
                 {
+                    boolean nonlethal = nbtItem.hasKey(Strings.TAG_NONLETHAL);
                     VillagerData data = new VillagerData(villager);
 
                     ItemStack item = data.writeToItem(nbtItem);
@@ -75,7 +76,7 @@ public class InteractionListener implements Listener
                     player.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, x, y, z, 50, 0.2f, 0.5f, 0.2f, 0.01f);
 
                     // Delete villager if scroll is lethal
-                    if(!nbtItem.hasKey(Strings.TAG_NONLETHAL))
+                    if(!nonlethal)
                     {
                         villager.remove();
                     }

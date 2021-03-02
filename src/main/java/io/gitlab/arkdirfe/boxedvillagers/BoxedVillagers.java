@@ -2,6 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers;
 
 import io.gitlab.arkdirfe.boxedvillagers.commands.BoxedVillagersCommandExecutor;
 import io.gitlab.arkdirfe.boxedvillagers.commands.WitchdoctorCommandExecutor;
+import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
 import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiController;
 import io.gitlab.arkdirfe.boxedvillagers.listeners.InteractionListener;
 import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
@@ -18,8 +19,12 @@ public class BoxedVillagers extends JavaPlugin
     public WitchdoctorGuiManager witchdoctorGuiManager;
 
     public Map<UUID, WitchdoctorGuiController> guiMap;
-    public List<Map<Material, Integer>> cureCostMaps;
-    public Map<Material, Integer> purgeCostMap;
+    public List<CostData> cureCosts;
+    public List<CostData> slotExtensionCosts;
+    public CostData purgeCost;
+    public CostData scrollCost;
+    public CostData extractCost;
+    public CostData addCost;
 
     @Override
     public void onEnable()
@@ -56,56 +61,78 @@ public class BoxedVillagers extends JavaPlugin
     private void initializeMaps()
     {
         guiMap = new HashMap<>();
-        cureCostMaps = new ArrayList<>();
-        purgeCostMap = new HashMap<>();
+        cureCosts = new ArrayList<>();
+        slotExtensionCosts = new ArrayList<>();
+        purgeCost = new CostData();
+        scrollCost = new CostData();
+        extractCost = new CostData();
+        addCost = new CostData();
 
-        initSimpleCostMap(Strings.CONFIG_COST_PURGE, purgeCostMap);
+        initSimpleCostMap(Strings.CONFIG_COST_PURGE, purgeCost);
+        initSimpleCostMap(Strings.CONFIG_COST_SCROLL, scrollCost);
+        initSimpleCostMap(Strings.CONFIG_COST_EXTRACT, extractCost);
+        initSimpleCostMap(Strings.CONFIG_COST_ADD, addCost);
 
-        initLayeredCostMap(Strings.CONFIG_COST_CURE, cureCostMaps, 7);
+        initLayeredCostMap(Strings.CONFIG_COST_CURE, cureCosts, 1, 7);
+        initLayeredCostMap(Strings.CONFIG_COST_SLOT, slotExtensionCosts, 11, 17);
 
         getLogger().info("Registered costs for operations!");
     }
 
-    private void initLayeredCostMap(String configSection, List<Map<Material, Integer>> maps, int expectedCount)
+    private void initLayeredCostMap(String configSection, List<CostData> costs, int from, int expected)
     {
-        int i = 1;
+        int i = from;
 
         for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
         {
-            Map<Material, Integer> map = new HashMap<>();
+            CostData cost = new CostData();
 
             for (String innerKey : getConfig().getConfigurationSection(configSection + "." + i).getKeys(false))
             {
+                if(innerKey.equalsIgnoreCase("free"))
+                {
+                    continue;
+                }
+
                 Material mat = Material.matchMaterial(innerKey);
                 if(mat != null)
                 {
-                    map.put(mat, getConfig().getInt(configSection + "." + i + "." + mat.toString()));
+                    cost.addResource(mat, getConfig().getInt(configSection + "." + i + "." + mat.toString()));
+                    continue;
+                }
+
+                if(innerKey.equalsIgnoreCase("money"))
+                {
+                    cost.setMoney(getConfig().getInt(configSection + "." + i + "." + innerKey));
+                }
+                else if(innerKey.equalsIgnoreCase("crystals"))
+                {
+                    cost.setCrystals(getConfig().getInt(configSection + "." + i + "." + innerKey));
+                }
+                else
+                {
+                    getLogger().warning("Unknown material or unsupported currency " + innerKey + "! Ignoring.");
                 }
             }
 
-            maps.add(map);
+            costs.add(cost);
             i++;
         }
 
-        if(maps.size() != expectedCount)
+        if(costs.size() != expected)
         {
-            getLogger().severe("Incorrect number of cure cost entries in config (expected " + expectedCount + ")! This WILL break!");
+            getLogger().severe("Unexpected number of cost entries for " + configSection + " (got "+ costs.size() + ", expected " + expected + ")! This WILL break!");
         }
     }
 
-    private void initSimpleCostMap(String configSection, Map<Material, Integer> costMap)
+    private void initSimpleCostMap(String configSection, CostData cost)
     {
-        if(!costMap.isEmpty())
-        {
-            costMap.clear();
-        }
-
         for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
         {
             Material mat = Material.matchMaterial(key);
             if(mat != null)
             {
-                costMap.put(mat, getConfig().getInt(configSection + "." + mat.toString()));
+                cost.addResource(mat, getConfig().getInt(configSection + "." + mat.toString()));
             }
         }
     }

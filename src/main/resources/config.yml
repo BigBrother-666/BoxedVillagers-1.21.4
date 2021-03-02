@@ -1,9 +1,14 @@
 # Which world should be taken as a reference for timing boxed villager restocks
 timeWorld: world
 
+# For any list that would be empty, use FREE: 0 instead, the plugin needs to be a value for each entry to read it, otherwise things will break
+# You can also add non-item costs, currently supported is MONEY and CRYSTALS, add them like item costs
+
 # Cost for curing a boxed villager
 cureCost:
   1:
+    MONEY: 1
+    CRYSTALS: 1
     GOLDEN_APPLE: 1
   2:
     GOLDEN_APPLE: 3
@@ -21,6 +26,55 @@ cureCost:
     ENCHANTED_GOLDEN_APPLE: 1
     NETHERITE_BLOCK: 3
 
+# Cost for adding a trade slot (11 - 27, the first 10 slots come with the villager)
+slotCost:
+  11:
+    GOLDEN_APPLE: 1
+  12:
+    FREE: 0
+  13:
+    FREE: 0
+  14:
+    FREE: 0
+  15:
+    FREE: 0
+  16:
+    FREE: 0
+  17:
+    FREE: 0
+  18:
+    FREE: 0
+  19:
+    FREE: 0
+  20:
+    FREE: 0
+  21:
+    FREE: 0
+  22:
+    FREE: 0
+  23:
+    FREE: 0
+  24:
+    FREE: 0
+  25:
+    FREE: 0
+  26:
+    FREE: 0
+  27:
+    FREE: 0
+
 # Cost for purging a trade
 purgeCost:
+  SPONGE: 1
+
+# Cost for buying a villager scroll
+scrollCost:
+  SPONGE: 1
+
+# Cost for extracting a trade
+extractCost:
+  APPLE: 1
+
+# Cost for adding an extracted trade onto another villager
+addCost:
   SPONGE: 1

@@ -18,17 +18,24 @@ public final class Strings
     public static String TAG_RANK = "Rank";
     public static String TAG_TRADE_COUNT = "TradeCount";
     public static String TAG_TIMESTAMP = "LastRestocked";
+    public static String TAG_TRADE_SLOTS = "TradeSlots";
     public static String TAG_NONLETHAL = "NonLethal";
 
     // UI Helper Tags
     public static String TAG_UNINTERACTABLE = "Uninteractable";
     public static String TAG_MOVABLE = "Movable";
+    public static String TAG_FREE = "Free";
+    public static String TAG_EXTRACTED = "Extracted";
     public static String TAG_SERIALIZED_TRADE_DATA = "SerializedTradeData";
 
     // Config Entries
     public static String CONFIG_TIME_WORLD = "timeWorld";
     public static String CONFIG_COST_CURE = "cureCost";
     public static String CONFIG_COST_PURGE = "purgeCost";
+    public static String CONFIG_COST_SLOT = "slotCost";
+    public static String CONFIG_COST_SCROLL = "scrollCost";
+    public static String CONFIG_COST_EXTRACT = "extractCost";
+    public static String CONFIG_COST_ADD = "addCost";
 
     // UI Strings
     public static String UI_WD_TITLE = "Witch Doctor";
