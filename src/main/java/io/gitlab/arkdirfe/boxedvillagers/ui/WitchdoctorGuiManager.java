@@ -55,11 +55,11 @@ public class WitchdoctorGuiManager implements Listener
         this.addCost = plugin.addCost;
     }
 
-    public void openGui(final HumanEntity player)
+    public void openGui(final HumanEntity player, boolean admin)
     {
-        Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE);
-        WitchdoctorGuiController data = new WitchdoctorGuiController(gui, player, this);
-        guiMap.put(player.getUniqueId(), data);
+        Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE + (admin ? " §4(ADMIN MODE)" : ""));
+        WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, admin);
+        guiMap.put(player.getUniqueId(), controller);
     }
 
     // --- Interaction Event Handlers
@@ -68,7 +68,7 @@ public class WitchdoctorGuiManager implements Listener
     public void onInventoryClick(final InventoryClickEvent event)
     {
         InventoryView view = event.getView();
-        if(!view.getTitle().equalsIgnoreCase(Strings.UI_WD_TITLE))
+        if(!view.getTitle().startsWith(Strings.UI_WD_TITLE))
         {
             return;
         }
@@ -202,7 +202,11 @@ public class WitchdoctorGuiManager implements Listener
         if(slotMovable && cursorEmpty && event.isShiftClick() && event.isRightClick())
         {
             event.setCancelled(true);
-            controller.extractTrade(slotIndex);
+
+            if(controller.getPlayer().hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT))
+            {
+                controller.extractTrade(slotIndex);
+            }
         }
     }
 
@@ -212,7 +216,7 @@ public class WitchdoctorGuiManager implements Listener
     public void onInventoryDragged(InventoryDragEvent event)
     {
         InventoryView view = event.getView();
-        if(!view.getTitle().equalsIgnoreCase(Strings.UI_WD_TITLE))
+        if(!view.getTitle().startsWith(Strings.UI_WD_TITLE))
         {
             return;
         }
@@ -234,7 +238,7 @@ public class WitchdoctorGuiManager implements Listener
     @EventHandler
     public void onCloseInventory(final InventoryCloseEvent event)
     {
-        if(!event.getView().getTitle().equals(Strings.UI_WD_TITLE))
+        if(!event.getView().getTitle().startsWith(Strings.UI_WD_TITLE))
         {
             return;
         }

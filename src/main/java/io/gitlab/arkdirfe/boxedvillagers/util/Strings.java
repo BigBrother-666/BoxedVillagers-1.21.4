@@ -40,6 +40,12 @@ public final class Strings
     // UI Strings
     public static String UI_WD_TITLE = "Witch Doctor";
 
+    // Permission Strings
+    public static String PERM_WITCHDOCTOR = "boxedvillagers.witchdoctor";
+    public static String PERM_WITCHDOCTOR_ADVANCED = "boxedvillagers.witchdoctor.advanced";
+    public static String PERM_WITCHDOCTOR_EXTRACT = "boxedvillagers.witchdoctor.extract";
+    public static String PERM_ADMIN = "boxedvillagers.admin";
+
     public static String numberToRoman(int number) // Only 5 for now, expand if needed
     {
         switch (number)

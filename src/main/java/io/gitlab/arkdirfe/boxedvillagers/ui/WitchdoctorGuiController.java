@@ -35,13 +35,17 @@ public class WitchdoctorGuiController
 
     private int tradeSlotEnd;
 
+    private final boolean admin;
+
     private final WitchdoctorGuiManager manager;
 
-    public WitchdoctorGuiController(Inventory gui, HumanEntity player,  WitchdoctorGuiManager manager)
+    public WitchdoctorGuiController(Inventory gui, HumanEntity player,  WitchdoctorGuiManager manager, boolean admin)
     {
         this.player = player;
         this.gui = gui;
         this.manager = manager;
+        this.admin = admin;
+        tradeSlotEnd = manager.tradeSlotStart;
 
         player.openInventory(gui);
         init();
@@ -90,6 +94,84 @@ public class WitchdoctorGuiController
         }
     }
 
+    // --- UI Update Methods
+
+    private void init()
+    {
+        ItemStack[] items = new ItemStack[54];
+
+        for (int i = 0; i < 54; i++)
+        {
+            items[i] = getFillerItem(Material.LIME_STAINED_GLASS_PANE);
+        }
+
+        items[manager.buyScrollSlot] = getBuyScrollItem();
+        items[manager.helpSlot] = getNoScrollHelpItem();
+        items[manager.scrollSlot] = null;
+
+        gui.setContents(items);
+    }
+
+    public void update()
+    {
+        if(scroll == null)
+        {
+            init();
+        }
+        else
+        {
+            ItemStack[] items = gui.getContents();
+
+            items[manager.buyScrollSlot] = getBuyScrollItem();
+            items[manager.extendTradeSlotsSlot] = getSlotExtensionItem();
+            items[manager.helpSlot] = getScrollHelpItem();
+
+            if(player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED))
+            {
+                // Draw trades
+                int index = 0;
+
+                tradeSlotEnd = manager.tradeSlotStart + villagerData.getTradeSlots();
+
+                for(int i = manager.tradeSlotStart; i < tradeSlotEnd; i++)
+                {
+                    if(index >= villagerData.getTrades().size())
+                    {
+                        items[i] = null;
+                        continue;
+                    }
+
+                    TradeData trade = villagerData.getTrades().get(index++);
+                    if(trade != null)
+                    {
+                        items[i] = getTradeItem(trade);
+                    }
+                    else
+                    {
+                        items[i] = null;
+                    }
+                }
+            }
+
+            gui.setContents(items);
+            updateCureButton();
+            updateCommitButton();
+        }
+    }
+
+    public void updateCureButton()
+    {
+        gui.setItem(manager.cureSlot, getCureItem(villagerData.getCures()));
+    }
+
+    public void updateCommitButton()
+    {
+        if(player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED))
+        {
+            gui.setItem(manager.commitSlot, getCommitItem());
+        }
+    }
+
     // --- General Methods
 
     public boolean isTradeSlot(int slot)
@@ -114,9 +196,12 @@ public class WitchdoctorGuiController
     {
         CostData commitCost = calculateCommitCost();
 
-        if(playerCanPay(commitCost))
+        if(playerCanPay(commitCost) || admin)
         {
-            payCosts(commitCost);
+            if(!admin)
+            {
+                payCosts(commitCost);
+            }
 
             List<ItemStack> extracted = getExtractedTradeItems();
 
@@ -155,9 +240,12 @@ public class WitchdoctorGuiController
     {
         CostData cureCost = calculateCureCost();
 
-        if(playerCanPay(cureCost))
+        if(playerCanPay(cureCost) || admin)
         {
-            payCosts(cureCost);
+            if(!admin)
+            {
+                payCosts(cureCost);
+            }
 
             villagerData.cure(new NBTItem(scroll), 1);
             Util.updateBoundScrollTooltip(scroll, villagerData);
@@ -249,79 +337,6 @@ public class WitchdoctorGuiController
         updateCommitButton();
     }
 
-    // --- UI Update Methods
-
-    private void init()
-    {
-        ItemStack[] items = new ItemStack[54];
-
-        for (int i = 0; i < 54; i++)
-        {
-            items[i] = getFillerItem(Material.LIME_STAINED_GLASS_PANE);
-        }
-
-        items[manager.buyScrollSlot] = getBuyScrollItem();
-        items[manager.helpSlot] = getNoScrollHelpItem();
-        items[manager.scrollSlot] = null;
-
-        gui.setContents(items);
-    }
-
-    public void update()
-    {
-        if(scroll == null)
-        {
-            init();
-        }
-        else
-        {
-            ItemStack[] items = gui.getContents();
-
-            items[manager.buyScrollSlot] = getBuyScrollItem();
-            items[manager.extendTradeSlotsSlot] = getSlotExtensionItem();
-            items[manager.helpSlot] = getScrollHelpItem();
-
-            // Draw trades
-            int index = 0;
-
-            tradeSlotEnd = manager.tradeSlotStart + villagerData.getTradeSlots();
-
-            for(int i = manager.tradeSlotStart; i < tradeSlotEnd; i++)
-            {
-                if(index >= villagerData.getTrades().size())
-                {
-                    items[i] = null;
-                    continue;
-                }
-
-                TradeData trade = villagerData.getTrades().get(index++);
-                if(trade != null)
-                {
-                    items[i] = getTradeItem(trade);
-                }
-                else
-                {
-                    items[i] = null;
-                }
-            }
-
-            gui.setContents(items);
-            updateCureButton();
-            updateCommitButton();
-
-        }
-    }
-
-    public void updateCureButton()
-    {
-        gui.setItem(manager.cureSlot, getCureItem(villagerData.getCures()));
-    }
-
-    public void updateCommitButton()
-    {
-        gui.setItem(manager.commitSlot, getCommitItem());
-    }
-
     // --- UI Element Generator Methods
 
     private ItemStack getFillerItem(Material material)
@@ -351,12 +366,20 @@ public class WitchdoctorGuiController
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
+        List<String> lore = new ArrayList<>();
+
+        lore.add("§r§fEdit trades below.");
+        lore.add("§r§fYou can purchase scrolls at the right.");
+        lore.add("§r§fUse the buttons on the left to upgrade your villager.");
+
+        if(player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED))
+        {
+            lore.add("§r§fUse the button on the right to commit your changes.");
+            lore.add("§r§fNote: Prices shown below ignore cures.");
+        }
+
         Util.setItemTitleLoreAndFlags(item, "§2Help",
-                Arrays.asList("§r§fEdit trades below.",
-                        "§r§fYou can purchase scrolls at the right.",
-                        "§r§fUse the button on the right to commit your changes.",
-                        "§r§fUse the buttons on the left to upgrade your villager.",
-                        "§r§fNote: Prices shown below ignore cures."),
+                lore,
                 Arrays.asList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
@@ -503,11 +526,19 @@ public class WitchdoctorGuiController
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
+        List<String> lore = new ArrayList<>();
+
+        lore.add(tradeToString(trade.getRecipe(), trade.getBaseAmount()));
+        lore.add("§r§fPrice reduced by §6" + trade.getReduction() + "§f for each cure.");
+        lore.add("§r§fShift Left Click to purge this trade.");
+
+        if(player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT))
+        {
+            lore.add("§r§fShift Right Click to extract this trade.");
+        }
+
         Util.setItemTitleLoreAndFlags(item, "§aStored Trade",
-                Arrays.asList(tradeToString(trade.getRecipe(), trade.getBaseAmount()),
-                        "§r§fPrice reduced by §6" + trade.getReduction() + "§f for each cure.",
-                        "§r§fShift Left Click to purge this trade.",
-                        "§r§fShift Right Click to extract this trade."),
+                lore,
                 Arrays.asList(ItemFlag.HIDE_ENCHANTS));
 
         NBTItem nbtItem = new NBTItem(item);

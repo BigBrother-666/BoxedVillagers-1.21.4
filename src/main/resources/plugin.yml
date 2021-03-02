@@ -6,9 +6,30 @@ depend: [NBTAPI]
 commands:
   boxedvillagers:
     description: Main Command
-    usage: "Usage: /boxedvillagers [give|cure]"
+    usage: "Usage: /boxedvillagers help"
     aliases: bv
   witchdoctor:
     description: Opens the Witch Doctor UI that handles upgrading and changing boxed villagers
     usage: "Usage: /witchdoctor"
     aliases: wd
+
+permissions:
+  boxedvillagers.*:
+    description: Access to all permissions
+    children:
+      boxedvillagers.witchdoctor: true
+      boxedvillagers.witchdoctor.advanced: true
+      boxedvillagers.witchdoctor.extract: true
+      boxedvillagers.admin: true
+  boxedvillagers.witchdoctor:
+    description: /witchdoctor permission
+    default: true
+  boxedvillagers.witchdoctor.advanced:
+    description: Allows rearranging and purging of trades in the witchdoctor ui
+    default: op
+  boxedvillagers.witchdoctor.extract:
+    description: Allows extracting and re-inserting of trades in the witchdoctor ui
+    default: op
+  boxedvillagers.admin:
+    description: Allows use of /bv give and /bv cure and allows opening of the witchdoctor ui in admin mode (with costs disabled)
+    default: op

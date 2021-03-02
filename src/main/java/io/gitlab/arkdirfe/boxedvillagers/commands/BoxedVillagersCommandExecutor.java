@@ -13,6 +13,7 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +36,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
             {
                 String subCmd = args[0];
 
-                if(subCmd.equalsIgnoreCase("give"))
+                if(subCmd.equalsIgnoreCase("give") && sender.hasPermission(Strings.PERM_ADMIN))
                 {
                     Player player = getPlayer((args.length == 2 || args.length == 3), sender, args, 2);
                     if(player == null)
@@ -65,7 +66,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                         return true;
                     }
                 }
-                else if (subCmd.equalsIgnoreCase("cure"))
+                else if (subCmd.equalsIgnoreCase("cure") && !sender.hasPermission(Strings.PERM_ADMIN))
                 {
                     int numCures = 1;
 
@@ -106,6 +107,11 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     }
                     return true;
                 }
+                else if(args[0].equalsIgnoreCase("help"))
+                {
+                    sender.sendMessage("Help pages are being worked on!");
+                    return true;
+                }
             }
         }
 
@@ -119,34 +125,45 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         {
             if(sender instanceof Player)
             {
-                if((args.length == 1 || args.length == 2))
+                if(sender.hasPermission(Strings.PERM_ADMIN))
                 {
-                    if(args[0].equalsIgnoreCase("give"))
+                    if((args.length == 1 || args.length == 2))
                     {
-                        return Arrays.asList("unbound", "unbound-nonlethal");
+                        if(args[0].equalsIgnoreCase("give"))
+                        {
+                            return Arrays.asList("unbound", "unbound-nonlethal");
+                        }
+                        else if (args[0].equalsIgnoreCase("cure"))
+                        {
+                            return Arrays.asList("1", "2", "3", "4", "5", "6", "7");
+                        }
                     }
-                    else if (args[0].equalsIgnoreCase("cure"))
+
+                    if((args.length == 2) && args[0].equalsIgnoreCase("give"))
                     {
-                        return Arrays.asList("1", "2", "3", "4", "5", "6", "7");
+                        return null;
                     }
                 }
 
-                if((args.length == 2) && args[0].equalsIgnoreCase("give"))
+                if(args.length > 0 && args[0].equalsIgnoreCase("help"))
                 {
-                    return null;
+                    return new ArrayList<String>(); // Expand once proper help pages are done.
                 }
 
                 if((args.length == 0 || args.length == 1))
                 {
-                    return Arrays.asList("give", "cure");
+                    return Arrays.asList("give", "cure", "help");
                 }
             }
         }
 
-        return null;
+        if(args.length == 3 && !args[0].equalsIgnoreCase("help"))
+        {
+            return null;
+        }
+
+        return new ArrayList<String>();
     }
-
-
 
     private Player getPlayer(boolean condition, CommandSender sender, String[] args, int playerIndex)
     {
