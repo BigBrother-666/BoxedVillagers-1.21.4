@@ -3,6 +3,7 @@ package io.gitlab.arkdirfe.boxedvillagers;
 import io.gitlab.arkdirfe.boxedvillagers.commands.BoxedVillagersCommandExecutor;
 import io.gitlab.arkdirfe.boxedvillagers.commands.WitchdoctorCommandExecutor;
 import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
+import io.gitlab.arkdirfe.boxedvillagers.data.HelpData;
 import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiController;
 import io.gitlab.arkdirfe.boxedvillagers.listeners.InteractionListener;
 import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
@@ -19,6 +20,7 @@ public class BoxedVillagers extends JavaPlugin
     public WitchdoctorGuiManager witchdoctorGuiManager;
 
     public Map<UUID, WitchdoctorGuiController> guiMap;
+    public Map<String, HelpData> helpPages;
     public List<CostData> cureCosts;
     public List<CostData> slotExtensionCosts;
     public CostData purgeCost;
@@ -61,12 +63,15 @@ public class BoxedVillagers extends JavaPlugin
     private void initializeMaps()
     {
         guiMap = new HashMap<>();
+        helpPages = new HashMap<>();
         cureCosts = new ArrayList<>();
         slotExtensionCosts = new ArrayList<>();
         purgeCost = new CostData();
         scrollCost = new CostData();
         extractCost = new CostData();
         addCost = new CostData();
+
+        initHelpPages(Strings.CONFIG_HELP, helpPages);
 
         initSimpleCostMap(Strings.CONFIG_COST_PURGE, purgeCost);
         initSimpleCostMap(Strings.CONFIG_COST_SCROLL, scrollCost);
@@ -77,6 +82,31 @@ public class BoxedVillagers extends JavaPlugin
         initLayeredCostMap(Strings.CONFIG_COST_SLOT, slotExtensionCosts, 11, 17);
 
         getLogger().info("Registered costs for operations!");
+    }
+
+    private void initHelpPages(String configSection, Map<String, HelpData> helpPages)
+    {
+        for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
+        {
+            String title = "";
+            String content = "";
+
+            for (String innerKey : getConfig().getConfigurationSection(configSection + "." + key).getKeys(false))
+            {
+                if(innerKey.equalsIgnoreCase("title"))
+                {
+                    title = getConfig().getString(configSection + "." + key + "." + innerKey);
+                }
+                else if (innerKey.equalsIgnoreCase("content"))
+                {
+                    content = getConfig().getString(configSection + "." + key + "." + innerKey);
+                }
+            }
+
+            helpPages.put(key, new HelpData(title, content));
+        }
+
+        getLogger().info("Registered " + helpPages.size() + " help pages!");
     }
 
     private void initLayeredCostMap(String configSection, List<CostData> costs, int from, int expected)

@@ -78,3 +78,12 @@ extractCost:
 # Cost for adding an extracted trade onto another villager
 addCost:
   SPONGE: 1
+
+# Help pages, use \n to force linebreaks
+helpPages:
+  default:
+    title: "Boxed Villagers Help Pages"
+    content: "Boxed Villagers is a plugin that allows converting villagers into items, which can be traded with. This lightens the server load by taking away the stress caused by large trading halls and benefits the player by providing reliably restocking trades."
+  witchdoctor:
+    title: "The Witch Doctor"
+    content: "The Witch Doctor is an NPC located at spawn, it sells unbound villager scrolls and allows manipulation of captured villagers."

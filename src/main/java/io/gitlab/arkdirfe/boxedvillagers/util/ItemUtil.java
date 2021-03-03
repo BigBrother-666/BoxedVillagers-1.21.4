@@ -111,7 +111,7 @@ public final class ItemUtil
 
             if(slotCost.hasCost())
             {
-                lore.addAll(Strings.costToString(slotCost));
+                lore.addAll(StringUtil.costToString(slotCost));
             }
         }
         else
@@ -136,7 +136,7 @@ public final class ItemUtil
 
         if(scrollCost.hasCost())
         {
-            lore.addAll(Strings.costToString(scrollCost));
+            lore.addAll(StringUtil.costToString(scrollCost));
         }
 
         Util.setItemTitleLoreAndFlags(item, "§2Buy Villager Scroll",
@@ -159,7 +159,7 @@ public final class ItemUtil
 
             if(cureCost.hasCost())
             {
-                lore.addAll(Strings.costToString(cureCost));
+                lore.addAll(StringUtil.costToString(cureCost));
             }
         }
         else
@@ -212,7 +212,7 @@ public final class ItemUtil
 
         if(commitCost.hasCost())
         {
-            lore.addAll(Strings.costToString(commitCost));
+            lore.addAll(StringUtil.costToString(commitCost));
         }
 
         Util.setItemTitleLoreAndFlags(item, "§2Commit Changes",
@@ -228,7 +228,7 @@ public final class ItemUtil
 
         List<String> lore = new ArrayList<>();
 
-        lore.add(Strings.tradeToString(trade.getRecipe(), trade.getBaseAmount()));
+        lore.add(StringUtil.tradeToString(trade.getRecipe(), trade.getBaseAmount()));
         lore.add("§r§fPrice reduced by §6" + trade.getReduction() + "§f for each cure.");
         lore.add("§r§fShift Left Click to purge this trade.");
 

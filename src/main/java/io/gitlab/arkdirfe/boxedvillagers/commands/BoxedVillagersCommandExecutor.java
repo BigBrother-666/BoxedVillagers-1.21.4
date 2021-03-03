@@ -2,6 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.commands;
 
 import de.tr7zw.nbtapi.NBTItem;
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
+import io.gitlab.arkdirfe.boxedvillagers.data.HelpData;
 import io.gitlab.arkdirfe.boxedvillagers.data.TradeData;
 import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
@@ -157,7 +158,22 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                 }
                 else if(args[0].equalsIgnoreCase("help"))
                 {
-                    sender.sendMessage("Help pages are being worked on!");
+                    if(args.length == 1 && plugin.helpPages.containsKey("default"))
+                    {
+                        sender.sendMessage(plugin.helpPages.get("default").getFormatted(50));
+                    }
+                    else if(args.length == 2)
+                    {
+                        HelpData help = plugin.helpPages.get(args[1]);
+                        if(help != null)
+                        {
+                            sender.sendMessage(help.getFormatted(50));
+                        }
+                        else
+                        {
+                            sender.sendMessage("§cNo help page available under this name!");
+                        }
+                    }
                     return true;
                 }
             }
@@ -193,9 +209,9 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     }
                 }
 
-                if(args.length > 0 && args[0].equalsIgnoreCase("help"))
+                if((args.length == 1 || args.length == 2) && args[0].equalsIgnoreCase("help"))
                 {
-                    return new ArrayList<>(); // Expand once proper help pages are done.
+                    return new ArrayList<>(plugin.helpPages.keySet());
                 }
 
                 if((args.length == 0 || args.length == 1))

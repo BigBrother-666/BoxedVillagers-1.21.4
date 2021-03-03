@@ -2,6 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.data;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import io.gitlab.arkdirfe.boxedvillagers.util.StringUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.enchantments.Enchantment;
@@ -99,7 +100,7 @@ public class VillagerData
 
     public String getProfessionAsString()
     {
-        return Strings.capitalize(profession, " ");
+        return StringUtil.capitalize(profession, " ");
     }
 
     public String getCuresAsString()
