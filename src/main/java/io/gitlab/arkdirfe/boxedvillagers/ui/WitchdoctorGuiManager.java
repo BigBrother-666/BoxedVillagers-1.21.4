@@ -203,7 +203,7 @@ public class WitchdoctorGuiManager implements Listener
         {
             event.setCancelled(true);
 
-            if(controller.getPlayer().hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT))
+            if(controller.extractPerms)
             {
                 controller.extractTrade(slotIndex);
             }

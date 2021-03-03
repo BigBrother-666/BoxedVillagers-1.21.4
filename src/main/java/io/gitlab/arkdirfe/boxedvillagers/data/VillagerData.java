@@ -28,7 +28,7 @@ public class VillagerData
     public VillagerData(Villager fromVillager)
     {
         cures = 0;
-        trades = new ArrayList<TradeData>();
+        trades = new ArrayList<>();
 
         for(MerchantRecipe r : fromVillager.getRecipes())
         {
@@ -44,7 +44,7 @@ public class VillagerData
 
     public VillagerData(NBTItem fromItem)
     {
-        trades = new ArrayList<TradeData>();
+        trades = new ArrayList<>();
 
         NBTCompound compound = fromItem.getCompound(Strings.TAG_DATA_COMPOUND);
         cures = compound.getInteger(Strings.TAG_CURES);

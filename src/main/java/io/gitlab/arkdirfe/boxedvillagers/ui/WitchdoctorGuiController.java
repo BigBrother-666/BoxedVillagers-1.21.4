@@ -6,6 +6,7 @@ import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
 import io.gitlab.arkdirfe.boxedvillagers.data.TradeData;
 import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
 import io.gitlab.arkdirfe.boxedvillagers.util.GuiUtil;
+import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Material;
@@ -16,8 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MerchantRecipe;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
@@ -36,6 +35,8 @@ public class WitchdoctorGuiController
     private int tradeSlotEnd;
 
     private final boolean admin;
+    private final boolean advancedPerms;
+    public final boolean extractPerms;
 
     private final WitchdoctorGuiManager manager;
 
@@ -46,6 +47,9 @@ public class WitchdoctorGuiController
         this.manager = manager;
         this.admin = admin;
         tradeSlotEnd = manager.tradeSlotStart;
+
+        advancedPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED);
+        extractPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT);
 
         player.openInventory(gui);
         init();
@@ -102,11 +106,11 @@ public class WitchdoctorGuiController
 
         for (int i = 0; i < 54; i++)
         {
-            items[i] = getFillerItem(Material.LIME_STAINED_GLASS_PANE);
+            items[i] = ItemUtil.getUIFillerItem(Material.LIME_STAINED_GLASS_PANE);
         }
 
-        items[manager.buyScrollSlot] = getBuyScrollItem();
-        items[manager.helpSlot] = getNoScrollHelpItem();
+        items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
+        items[manager.helpSlot] = ItemUtil.getNoScrollHelpItem();
         items[manager.scrollSlot] = null;
 
         gui.setContents(items);
@@ -122,12 +126,13 @@ public class WitchdoctorGuiController
         {
             ItemStack[] items = gui.getContents();
 
-            items[manager.buyScrollSlot] = getBuyScrollItem();
-            items[manager.extendTradeSlotsSlot] = getSlotExtensionItem();
-            items[manager.helpSlot] = getScrollHelpItem();
+            items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
+            items[manager.helpSlot] = ItemUtil.getScrollHelpItem(advancedPerms);
 
-            if(player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED))
+            if(advancedPerms)
             {
+                items[manager.extendTradeSlotsSlot] = ItemUtil.getSlotExtensionItem(villagerData, calculateSlotExtensionCost());
+
                 // Draw trades
                 int index = 0;
 
@@ -144,7 +149,7 @@ public class WitchdoctorGuiController
                     TradeData trade = villagerData.getTrades().get(index++);
                     if(trade != null)
                     {
-                        items[i] = getTradeItem(trade);
+                        items[i] = ItemUtil.getTradeItem(trade, extractPerms);
                     }
                     else
                     {
@@ -161,14 +166,14 @@ public class WitchdoctorGuiController
 
     public void updateCureButton()
     {
-        gui.setItem(manager.cureSlot, getCureItem(villagerData.getCures()));
+        gui.setItem(manager.cureSlot, ItemUtil.getCureItem(villagerData.getCures(), villagerData, calculateCureCost()));
     }
 
     public void updateCommitButton()
     {
-        if(player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED))
+        if(advancedPerms)
         {
-            gui.setItem(manager.commitSlot, getCommitItem());
+            gui.setItem(manager.commitSlot, ItemUtil.getCommitItem(getFreeTradeItems().size(), tradesMoved, tradesPurged, tradesExtracted, calculateCommitCost()));
         }
     }
 
@@ -209,17 +214,7 @@ public class WitchdoctorGuiController
             {
                 gui.remove(item);
 
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName("§aExtracted Trade");
-                List<String> lore = new ArrayList<>();
-                lore.add(meta.getLore().get(0));
-                lore.add(meta.getLore().get(1));
-                lore.add("§r§fActs like a regular trade in the Witch Doctor.");
-                lore.add("§r§fGets added to scroll if committed.");
-                meta.setLore(lore);
-                item.setItemMeta(meta);
-
-                player.getInventory().addItem(GuiUtil.setFree(item));
+                player.getInventory().addItem(ItemUtil.convertExtractedToFree(item));
             }
 
             villagerData.setTrades(getModifiedTrades());
@@ -275,7 +270,7 @@ public class WitchdoctorGuiController
         if(playerCanPay(scrollCost) && player.getInventory().firstEmpty() != -1)
         {
             payCosts(scrollCost);
-            player.getInventory().addItem(Util.getUnboundScroll(false));
+            player.getInventory().addItem(ItemUtil.getUnboundScroll(false));
             ((Player)player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_WORK_LIBRARIAN, 1f, 1);
         }
         else
@@ -318,235 +313,14 @@ public class WitchdoctorGuiController
             return;
         }
 
-        item.setType(Material.SUGAR_CANE);
+        ((Player)player).playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 2);
 
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§aExtracted Trade");
-        List<String> lore = new ArrayList<>();
-        lore.add(meta.getLore().get(0));
-        lore.add(meta.getLore().get(1));
-        lore.add("§r§fCommit to receive item.");
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-
-        gui.setItem(slot, GuiUtil.setExtracted(item));
-
+        gui.setItem(slot, ItemUtil.convertTradeToExtracted(item));
         tradesExtracted++;
-
         updateCommitButton();
     }
 
-    // --- UI Element Generator Methods
-
-    private ItemStack getFillerItem(Material material)
-    {
-        ItemStack item = new ItemStack(material);
-
-        Util.setItemTitleLoreAndFlags(item, " ", null, null);
-
-        return GuiUtil.setUninteractable(item);
-    }
-
-    private ItemStack getNoScrollHelpItem()
-    {
-        ItemStack item = new ItemStack(Material.PAPER);
-
-        Util.setItemTitleLoreAndFlags(item, "§2Help",
-                Arrays.asList("§r§fPlace your bound scroll below to begin the process.",
-                        "§r§fYou can purchase scrolls at the right."),
-                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
-
-        item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-
-        return GuiUtil.setUninteractable(item);
-    }
-
-    private ItemStack getScrollHelpItem()
-    {
-        ItemStack item = new ItemStack(Material.PAPER);
-
-        List<String> lore = new ArrayList<>();
-
-        lore.add("§r§fEdit trades below.");
-        lore.add("§r§fYou can purchase scrolls at the right.");
-        lore.add("§r§fUse the buttons on the left to upgrade your villager.");
-
-        if(player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED))
-        {
-            lore.add("§r§fUse the button on the right to commit your changes.");
-            lore.add("§r§fNote: Prices shown below ignore cures.");
-        }
-
-        Util.setItemTitleLoreAndFlags(item, "§2Help",
-                lore,
-                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
-
-        item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-
-        return GuiUtil.setUninteractable(item);
-    }
-
-    private ItemStack getSlotExtensionItem()
-    {
-        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
-
-        List<String> lore = new ArrayList<>();
-
-        if(villagerData.getTradeSlots() < VillagerData.maxTradeSlots)
-        {
-            lore.add(String.format("§r§fYour villager hold up to §6%d§f trades.", VillagerData.maxTradeSlots));
-            lore.add(String.format("§r§fIt can currently hold §6%d§f.", villagerData.getTradeSlots()));
-            lore.add("§r§4Applies instantly, irreversible.");
-
-            CostData slotCost = calculateSlotExtensionCost();
-
-            if(slotCost.hasCost())
-            {
-                lore.addAll(costToString(slotCost));
-            }
-        }
-        else
-        {
-            lore.add("§r§fYour villager has full trade slots.");
-            item.setType(Material.BOOK);
-        }
-
-        Util.setItemTitleLoreAndFlags(item, "§2Extend Trade Slots",
-                lore,
-                null);
-
-        return GuiUtil.setUninteractable(item);
-    }
-
-    private ItemStack getBuyScrollItem()
-    {
-        ItemStack item = new ItemStack(Material.PAPER);
-
-        List<String> lore = new ArrayList<>();
-        lore.add("§r§fUse it to capture villagers.");
-
-        CostData scrollCost = calculateScrollCost();
-
-        if(scrollCost.hasCost())
-        {
-            lore.addAll(costToString(scrollCost));
-        }
-
-        Util.setItemTitleLoreAndFlags(item, "§2Buy Villager Scroll",
-                lore,
-                null);
-
-        return GuiUtil.setUninteractable(item);
-    }
-
-    private ItemStack getCureItem(int cures)
-    {
-        ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
-
-        List<String> lore = new ArrayList<>();
-
-        if(villagerData.getCures() != 7)
-        {
-            lore.add("§r§fReduces all prices but never below 1.");
-            lore.add("§r§4Applies instantly, irreversible.");
-
-            CostData cureCost = calculateCureCost();
-
-            if(cureCost.hasCost())
-            {
-                lore.addAll(costToString(cureCost));
-            }
-        }
-        else
-        {
-            lore.add("§r§fVillager is at max cures!");
-            item.setType(Material.APPLE);
-        }
-
-        Util.setItemTitleLoreAndFlags(item, "§2Cure Villager",
-                lore,
-                null);
-
-        return GuiUtil.setUninteractable(item);
-    }
-
-    private ItemStack getCommitItem()
-    {
-        ItemStack item = new ItemStack(Material.ENDER_PEARL);
-
-        List<String> lore = new ArrayList<>();
-
-        int free = getFreeTradeItems().size();
-
-        if(!tradesMoved && tradesPurged == 0 && tradesExtracted == 0 && free == 0)
-        {
-            lore.add("§r§fNo changes to commit!");
-        }
-        else
-        {
-            lore.add("§r§fUncommitted changes!");
-            item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-        }
-
-        if(tradesMoved)
-        {
-            lore.add("§r§fTrades were moved.");
-        }
-        if(tradesPurged > 0)
-        {
-            lore.add(String.format("§r§6%d§f trades were purged.", tradesPurged));
-        }
-
-        if(tradesExtracted > 0)
-        {
-            lore.add(String.format("§r§6%d§f trades were extracted.", tradesExtracted));
-        }
-
-        if(free > 0)
-        {
-            lore.add(String.format("§r§6%d§f new trades were added.", free));
-        }
-
-        CostData commitCost = calculateCommitCost();
-
-        if(commitCost.hasCost())
-        {
-            lore.addAll(costToString(commitCost));
-        }
-
-        Util.setItemTitleLoreAndFlags(item, "§2Commit Changes",
-                lore,
-                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
-
-        return GuiUtil.setUninteractable(item);
-    }
-
-    private ItemStack getTradeItem(TradeData trade)
-    {
-        ItemStack item = new ItemStack(Material.PAPER);
-
-        List<String> lore = new ArrayList<>();
-
-        lore.add(tradeToString(trade.getRecipe(), trade.getBaseAmount()));
-        lore.add("§r§fPrice reduced by §6" + trade.getReduction() + "§f for each cure.");
-        lore.add("§r§fShift Left Click to purge this trade.");
-
-        if(player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT))
-        {
-            lore.add("§r§fShift Right Click to extract this trade.");
-        }
-
-        Util.setItemTitleLoreAndFlags(item, "§aStored Trade",
-                lore,
-                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
-
-        NBTItem nbtItem = new NBTItem(item);
-        NBTCompound compound = nbtItem.addCompound(Strings.TAG_SERIALIZED_TRADE_DATA);
-        trade.serializeToNBT(compound);
-
-        return GuiUtil.setMovable(nbtItem.getItem());
-    }
+    // --- Utility Methods
 
     public List<TradeData> getModifiedTrades()
     {
@@ -566,8 +340,6 @@ public class WitchdoctorGuiController
 
         return trades;
     }
-
-    // --- Utility Methods
 
     public List<ItemStack> getFreeTradeItems()
     {
@@ -622,55 +394,6 @@ public class WitchdoctorGuiController
     private CostData calculateSlotExtensionCost()
     {
         return manager.slotExtensionCosts.get(villagerData.getTradeSlots() - VillagerData.minTradeSlots);
-    }
-
-    private String tradeToString(MerchantRecipe recipe, int baseAmount)
-    {
-        ItemStack i1 = recipe.getIngredients().get(0);
-        ItemStack i2 = recipe.getIngredients().get(1);
-        ItemStack output = recipe.getResult();
-
-        StringBuilder result = new StringBuilder();
-        result.append("§r§f");
-        result.append(String.format("§6%d §a%s§f", baseAmount, Strings.capitalize(i1.getType().getKey().getKey(), "_")));
-        if(i2.getType() != Material.AIR)
-        {
-            result.append(String.format(" + §6%d§f §a%s§f", i2.getAmount(), Strings.capitalize(i2.getType().getKey().getKey(), "_")));
-        }
-        result.append(String.format(" = §6%d§f §a%s§f", output.getAmount(), Strings.capitalize(output.getType().getKey().getKey(), "_")));
-        if(output.getType() == Material.ENCHANTED_BOOK)
-        {
-            EnchantmentStorageMeta meta = (EnchantmentStorageMeta)output.getItemMeta();
-            for(Map.Entry<Enchantment, Integer> ench : meta.getStoredEnchants().entrySet())
-            {
-                result.append(String.format(" §5(%s %s)§f", Strings.capitalize(ench.getKey().getKey().getKey(), "_"), Strings.numberToRoman(ench.getValue())));
-            }
-        }
-
-        return result.toString();
-    }
-
-    private List<String> costToString(CostData cost)
-    {
-        List<String> strings = new ArrayList<>();
-
-        strings.add("§r§fCosts:");
-        if(cost.getMoney() > 0)
-        {
-            strings.add(String.format("§r§f   -§6%d §eMoney", cost.getMoney()));
-        }
-
-        if(cost.getCrystals() > 0)
-        {
-            strings.add(String.format("§r§f   -§6%d §bCrystals", cost.getCrystals()));
-        }
-
-        for (Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
-        {
-            strings.add(String.format("§r§f   -§6%d §a%s", entry.getValue(), Strings.capitalize(entry.getKey().toString(), "_")));
-        }
-
-        return strings;
     }
 
     private boolean playerCanPay(CostData cost)

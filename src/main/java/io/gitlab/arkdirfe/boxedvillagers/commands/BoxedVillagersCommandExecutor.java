@@ -2,6 +2,8 @@ package io.gitlab.arkdirfe.boxedvillagers.commands;
 
 import de.tr7zw.nbtapi.NBTItem;
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
+import io.gitlab.arkdirfe.boxedvillagers.data.TradeData;
+import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
@@ -12,6 +14,7 @@ import org.bukkit.SoundCategory;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantRecipe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +41,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
                 if(subCmd.equalsIgnoreCase("give") && sender.hasPermission(Strings.PERM_ADMIN))
                 {
-                    Player player = getPlayer((args.length == 2 || args.length == 3), sender, args, 2);
+                    Player player = getPlayer((args.length == 2 || args.length == 3 || (args.length >= 2 && args[1].equalsIgnoreCase("trade"))), sender, args, 2);
                     if(player == null)
                     {
                         return true;
@@ -53,11 +56,56 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     {
                         if(args[1].equalsIgnoreCase("unbound"))
                         {
-                            player.getInventory().addItem(Util.getUnboundScroll(false));
+                            player.getInventory().addItem(ItemUtil.getUnboundScroll(false));
                         }
                         else if (args[1].equalsIgnoreCase("unbound-nonlethal"))
                         {
-                            player.getInventory().addItem(Util.getUnboundScroll(true));
+                            player.getInventory().addItem(ItemUtil.getUnboundScroll(true));
+                        }
+                        else if(args[1].equalsIgnoreCase("trade"))
+                        {
+                            if(args.length == 7)
+                            {
+                                int slot1, slot2, slot3, uses, reduction;
+
+                                try
+                                {
+                                    slot1 = Integer.parseInt(args[2]);
+                                    slot2 = Integer.parseInt(args[3]);
+                                    slot3 = Integer.parseInt(args[4]);
+                                    uses = Integer.parseInt(args[5]);
+                                    reduction = Integer.parseInt(args[6]);
+                                }
+                                catch (NumberFormatException e)
+                                {
+                                    player.sendMessage(Strings.ERROR_GIVE_TRADE_INVALID_SLOT);
+                                    return true;
+                                }
+
+                                if(!(slot1 >= 0 && slot1 <= 8 && slot2 >= -1 && slot2 <= 8 && slot3 >= 0 && slot3 <= 8 && uses > 0 && reduction >= 0))
+                                {
+                                    player.sendMessage(Strings.ERROR_GIVE_TRADE_INVALID_SLOT);
+                                }
+
+                                ItemStack input1 = player.getInventory().getItem(slot1);
+                                ItemStack input2 = slot2 == -1 ? new ItemStack(Material.AIR) : player.getInventory().getItem(slot2);
+                                ItemStack output = player.getInventory().getItem(slot3);
+
+                                MerchantRecipe trade = new MerchantRecipe(output, uses);
+                                trade.addIngredient(input1);
+                                if(slot2 != -1)
+                                {
+                                    trade.addIngredient(input2);
+                                }
+
+                                TradeData data = new TradeData(reduction, input1.getAmount(), trade);
+
+                                player.getInventory().addItem(ItemUtil.convertExtractedToFree(ItemUtil.convertTradeToExtracted(ItemUtil.getTradeItem(data, true)))); // Yup
+                            }
+                            else
+                            {
+                                player.sendMessage("Usage: /bv give trade <hotbar slot of input 1> <hotbar slot of input 2 (or -1 for no input)> <hotbar slot of output> <uses> <reduction per cure>");
+                            }
                         }
                         else
                         {
@@ -131,7 +179,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     {
                         if(args[0].equalsIgnoreCase("give"))
                         {
-                            return Arrays.asList("unbound", "unbound-nonlethal");
+                            return Arrays.asList("unbound", "unbound-nonlethal", "trade");
                         }
                         else if (args[0].equalsIgnoreCase("cure"))
                         {
@@ -139,15 +187,15 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                         }
                     }
 
-                    if((args.length == 2) && args[0].equalsIgnoreCase("give"))
+                    if (args.length >= 2 && args[0].equalsIgnoreCase("give") && args[1].equalsIgnoreCase("trade"))
                     {
-                        return null;
+                        return new ArrayList<>();
                     }
                 }
 
                 if(args.length > 0 && args[0].equalsIgnoreCase("help"))
                 {
-                    return new ArrayList<String>(); // Expand once proper help pages are done.
+                    return new ArrayList<>(); // Expand once proper help pages are done.
                 }
 
                 if((args.length == 0 || args.length == 1))
@@ -162,7 +210,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
             return null;
         }
 
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     private Player getPlayer(boolean condition, CommandSender sender, String[] args, int playerIndex)
@@ -188,6 +236,4 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
             return player;
         }
     }
-
-
 }
