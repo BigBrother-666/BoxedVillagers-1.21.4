@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -33,13 +34,13 @@ public class WitchdoctorGuiManager implements Listener
     public final int buyScrollSlot = GuiUtil.getGuiSlot(1, 8);
     public final int tradeSlotStart = GuiUtil.getGuiSlot(3, 0);
 
-    public WitchdoctorGuiManager(BoxedVillagers plugin)
+    public WitchdoctorGuiManager(final BoxedVillagers plugin)
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.plugin = plugin;
     }
 
-    public void openGui(final HumanEntity player, boolean admin)
+    public void openGui(@NotNull final HumanEntity player, final boolean admin)
     {
         Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE + (admin ? " §4(ADMIN MODE)" : ""));
         WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, plugin, admin);
@@ -65,9 +66,9 @@ public class WitchdoctorGuiManager implements Listener
         }
 
         ItemStack slotItem = event.getCurrentItem();
-        boolean slotEmpty = !Util.isNotNullOrAir(slotItem);
+        boolean slotEmpty = Util.isNullOrAir(slotItem);
         ItemStack cursorItem = view.getCursor();
-        boolean cursorEmpty = !Util.isNotNullOrAir(cursorItem);
+        boolean cursorEmpty = Util.isNullOrAir(cursorItem);
 
         if(!slotEmpty)
         {
@@ -191,7 +192,7 @@ public class WitchdoctorGuiManager implements Listener
     // --- Shenanigans Preventing Handlers
 
     @EventHandler
-    public void onInventoryDragged(InventoryDragEvent event)
+    public void onInventoryDragged(final InventoryDragEvent event)
     {
         InventoryView view = event.getView();
         WitchdoctorGuiController controller = getValidController(view, event.getInventory());
@@ -205,7 +206,7 @@ public class WitchdoctorGuiManager implements Listener
     }
 
     @EventHandler
-    public void onItemDropped(PlayerDropItemEvent event)
+    public void onItemDropped(final PlayerDropItemEvent event)
     {
         if(GuiUtil.isMovable(event.getItemDrop().getItemStack()))
         {
@@ -250,14 +251,14 @@ public class WitchdoctorGuiManager implements Listener
         }
     }
 
-    private void returnItemsAndRemoveFromMap(WitchdoctorGuiController controller, HumanEntity player)
+    private void returnItemsAndRemoveFromMap(@NotNull final WitchdoctorGuiController controller, @NotNull final HumanEntity player)
     {
         if(controller.getScroll() != null)
         {
             player.getInventory().addItem(controller.getScroll());
         }
 
-        for (ItemStack item : controller.getFreeTradeItems())
+        for(ItemStack item : controller.getFreeTradeItems())
         {
             player.getInventory().addItem(item);
         }
@@ -267,7 +268,7 @@ public class WitchdoctorGuiManager implements Listener
 
     // Utility Methods
 
-    private WitchdoctorGuiController getValidController(InventoryView view, Inventory inventory)
+    private WitchdoctorGuiController getValidController(@NotNull InventoryView view, @NotNull final Inventory inventory)
     {
         if(!view.getTitle().startsWith(Strings.UI_WD_TITLE))
         {

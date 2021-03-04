@@ -1,19 +1,20 @@
 package io.gitlab.arkdirfe.boxedvillagers.data;
 
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CostData
 {
-    public static CostData sum(CostData ...data)
+    public static CostData sum(final CostData... data)
     {
         CostData result = new CostData();
         int money = 0;
         int crystals = 0;
 
-        for (CostData d : data)
+        for(CostData d : data)
         {
             money += d.getMoney();
             crystals += d.getCrystals();
@@ -59,7 +60,7 @@ public class CostData
         return crystals;
     }
 
-    public void setCrystals(int crystals)
+    public void setCrystals(final int crystals)
     {
         this.crystals = Math.max(0, crystals);
     }
@@ -69,7 +70,8 @@ public class CostData
         return resources;
     }
 
-    public CostData getMultiplied(float multiplier)
+    @NotNull
+    public CostData getMultiplied(final float multiplier)
     {
         CostData data = new CostData();
 
@@ -78,7 +80,7 @@ public class CostData
             return data;
         }
 
-        for (Map.Entry<Material, Integer> entry : resources.entrySet())
+        for(Map.Entry<Material, Integer> entry : resources.entrySet())
         {
             data.addResource(entry.getKey(), (int) Math.ceil(entry.getValue() * multiplier));
         }
@@ -89,7 +91,7 @@ public class CostData
         return data;
     }
 
-    public void addResource(Material mat, int count)
+    public void addResource(@NotNull final Material mat, final int count)
     {
         resources.put(mat, Math.max(0, count) + resources.getOrDefault(mat, 0));
     }

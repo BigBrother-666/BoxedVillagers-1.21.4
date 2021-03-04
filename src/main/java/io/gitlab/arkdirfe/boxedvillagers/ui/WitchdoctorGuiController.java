@@ -15,6 +15,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -38,7 +40,7 @@ public class WitchdoctorGuiController
     private final WitchdoctorGuiManager manager;
     private final BoxedVillagers plugin;
 
-    public WitchdoctorGuiController(Inventory gui, HumanEntity player,  WitchdoctorGuiManager manager, BoxedVillagers plugin, boolean admin)
+    public WitchdoctorGuiController(@NotNull final Inventory gui, @NotNull final HumanEntity player, @NotNull final WitchdoctorGuiManager manager, @NotNull final BoxedVillagers plugin, final boolean admin)
     {
         this.player = player;
         this.gui = gui;
@@ -83,9 +85,9 @@ public class WitchdoctorGuiController
         tradesMoved = true;
     }
 
-    public void setScroll(ItemStack scroll)
+    public void setScroll(@Nullable final ItemStack scroll)
     {
-        if(Util.isNotNullOrAir(scroll))
+        if(!Util.isNullOrAir(scroll))
         {
             villagerData = new VillagerData(new NBTItem(scroll));
             this.scroll = scroll;
@@ -103,7 +105,7 @@ public class WitchdoctorGuiController
     {
         ItemStack[] items = new ItemStack[54];
 
-        for (int i = 0; i < 54; i++)
+        for(int i = 0; i < 54; i++)
         {
             items[i] = ItemUtil.getUIFillerItem(Material.LIME_STAINED_GLASS_PANE);
         }
@@ -178,7 +180,7 @@ public class WitchdoctorGuiController
 
     // --- General Methods
 
-    public boolean isTradeSlot(int slot)
+    public boolean isTradeSlot(final int slot)
     {
         return slot >= manager.tradeSlotStart && slot < tradeSlotEnd;
     }
@@ -219,14 +221,14 @@ public class WitchdoctorGuiController
             villagerData.setTrades(getModifiedTrades());
             Util.updateBoundScrollTooltip(scroll, villagerData);
             gui.setItem(manager.scrollSlot, villagerData.writeToItem(new NBTItem(scroll)));
-            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+            ((Player) player).playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             resetTracking();
 
             update();
         }
         else
         {
-            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+            ((Player) player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
         }
     }
 
@@ -244,20 +246,20 @@ public class WitchdoctorGuiController
             villagerData.cure(new NBTItem(scroll), 1);
             Util.updateBoundScrollTooltip(scroll, villagerData);
             gui.setItem(manager.scrollSlot, villagerData.writeToItem(new NBTItem(scroll)));
-            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 0.5f, 1);
+            ((Player) player).playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 0.5f, 1);
             updateCureButton();
         }
         else
         {
-            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1);
+            ((Player) player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1);
         }
     }
 
-    public void purgeTrade(int slot)
+    public void purgeTrade(final int slot)
     {
         gui.setItem(slot, null);
 
-        ((Player)player).playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+        ((Player) player).playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
         tradesPurged++;
         updateCommitButton();
     }
@@ -270,11 +272,11 @@ public class WitchdoctorGuiController
         {
             payCosts(scrollCost);
             player.getInventory().addItem(ItemUtil.getUnboundScroll(false));
-            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_WORK_LIBRARIAN, 1f, 1);
+            ((Player) player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_WORK_LIBRARIAN, 1f, 1);
         }
         else
         {
-            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1);
+            ((Player) player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1);
         }
     }
 
@@ -294,25 +296,25 @@ public class WitchdoctorGuiController
             villagerData.addTradeSlots(new NBTItem(scroll), 1);
             Util.updateBoundScrollTooltip(scroll, villagerData);
             gui.setItem(manager.scrollSlot, villagerData.writeToItem(new NBTItem(scroll)));
-            ((Player)player).playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1);
+            ((Player) player).playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1);
             update();
         }
         else
         {
-            ((Player)player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1);
+            ((Player) player).playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1);
         }
     }
 
-    public void extractTrade(int slot) // Already null checked by manager
+    public void extractTrade(final int slot) // Already null checked by manager
     {
         ItemStack item = gui.getItem(slot);
 
-        if(GuiUtil.isFree(item) || GuiUtil.isExtracted(item))
+        if(!Util.isNullOrAir(item) || GuiUtil.isFree(item) || GuiUtil.isExtracted(item))
         {
             return;
         }
 
-        ((Player)player).playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 2);
+        ((Player) player).playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 2);
 
         gui.setItem(slot, ItemUtil.convertTradeToExtracted(item));
         tradesExtracted++;
@@ -321,6 +323,7 @@ public class WitchdoctorGuiController
 
     // --- Utility Methods
 
+    @NotNull
     public List<TradeData> getModifiedTrades()
     {
         List<TradeData> trades = new ArrayList<>();
@@ -329,7 +332,7 @@ public class WitchdoctorGuiController
         {
             ItemStack item = gui.getItem(i);
 
-            if(Util.isNotNullOrAir(item))
+            if(!Util.isNullOrAir(item))
             {
                 NBTItem nbtItem = new NBTItem(item);
                 TradeData tradeData = new TradeData(nbtItem.getCompound(Strings.TAG_SERIALIZED_TRADE_DATA), villagerData.getCures());
@@ -340,15 +343,16 @@ public class WitchdoctorGuiController
         return trades;
     }
 
+    @NotNull
     public List<ItemStack> getFreeTradeItems()
     {
         List<ItemStack> stacks = new ArrayList<>();
 
-        for (int i = manager.tradeSlotStart; i < tradeSlotEnd; i++)
+        for(int i = manager.tradeSlotStart; i < tradeSlotEnd; i++)
         {
             ItemStack item = gui.getItem(i);
 
-            if(Util.isNotNullOrAir(item) && GuiUtil.isFree(item))
+            if(!Util.isNullOrAir(item) && GuiUtil.isFree(item))
             {
                 stacks.add(item);
             }
@@ -357,15 +361,16 @@ public class WitchdoctorGuiController
         return stacks;
     }
 
+    @NotNull
     public List<ItemStack> getExtractedTradeItems() // Gets only freshly extracted trades, not ones that were inserted later
     {
         List<ItemStack> stacks = new ArrayList<>();
 
-        for (int i = manager.tradeSlotStart; i < tradeSlotEnd; i++)
+        for(int i = manager.tradeSlotStart; i < tradeSlotEnd; i++)
         {
             ItemStack item = gui.getItem(i);
 
-            if(Util.isNotNullOrAir(item) && GuiUtil.isExtracted(item) && !GuiUtil.isFree(item))
+            if(!Util.isNullOrAir(item) && GuiUtil.isExtracted(item) && !GuiUtil.isFree(item))
             {
                 stacks.add(item);
             }
@@ -374,30 +379,34 @@ public class WitchdoctorGuiController
         return stacks;
     }
 
+    @NotNull
     private CostData calculateCureCost()
     {
         return plugin.cureCosts.get(villagerData.getCures() + 1);
     }
 
+    @NotNull
     private CostData calculateCommitCost()
     {
         int free = getFreeTradeItems().size();
         return CostData.sum(plugin.purgeCost.getMultiplied(tradesPurged), plugin.extractCost.getMultiplied(tradesExtracted), plugin.addCost.getMultiplied(free));
     }
 
+    @NotNull
     private CostData calculateScrollCost()
     {
         return plugin.scrollCost;
     }
 
+    @NotNull
     private CostData calculateSlotExtensionCost()
     {
         return plugin.slotExtensionCosts.get(villagerData.getTradeSlots() - VillagerData.minTradeSlots);
     }
 
-    private boolean playerCanPay(CostData cost)
+    private boolean playerCanPay(@NotNull final CostData cost)
     {
-        for (Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
+        for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
         {
             if(!player.getInventory().containsAtLeast(new ItemStack(entry.getKey()), entry.getValue()))
             {
@@ -406,13 +415,14 @@ public class WitchdoctorGuiController
         }
 
         // Check for currencies here!
+        Util.logInfo("Reminder to implement money/crystal integration.");
 
         return true;
     }
 
-    private void payCosts(CostData cost)
+    private void payCosts(@NotNull final CostData cost)
     {
-        for (Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
+        for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
         {
             ItemStack item = new ItemStack(entry.getKey());
             item.setAmount(entry.getValue());

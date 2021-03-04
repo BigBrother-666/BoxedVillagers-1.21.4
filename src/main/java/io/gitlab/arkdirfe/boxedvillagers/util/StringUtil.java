@@ -6,42 +6,19 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public final class StringUtil
 {
     public static int defaultCharacterWidth = 6;
-    private static final Map<String, Integer> specialCharacterWidths = Map.ofEntries(
-            new AbstractMap.SimpleEntry<>(" ", 4),
-            new AbstractMap.SimpleEntry<>("!", 2),
-            new AbstractMap.SimpleEntry<>("\"", 5),
-            new AbstractMap.SimpleEntry<>("'", 3),
-            new AbstractMap.SimpleEntry<>(")", 5),
-            new AbstractMap.SimpleEntry<>("*", 5),
-            new AbstractMap.SimpleEntry<>(",", 2),
-            new AbstractMap.SimpleEntry<>(".", 2),
-            new AbstractMap.SimpleEntry<>(":", 2),
-            new AbstractMap.SimpleEntry<>(";", 2),
-            new AbstractMap.SimpleEntry<>("<", 5),
-            new AbstractMap.SimpleEntry<>(">", 5),
-            new AbstractMap.SimpleEntry<>("@", 7),
-            new AbstractMap.SimpleEntry<>("I", 4),
-            new AbstractMap.SimpleEntry<>("[", 4),
-            new AbstractMap.SimpleEntry<>("]", 4),
-            new AbstractMap.SimpleEntry<>("f", 5),
-            new AbstractMap.SimpleEntry<>("i", 2),
-            new AbstractMap.SimpleEntry<>("k", 5),
-            new AbstractMap.SimpleEntry<>("l", 3),
-            new AbstractMap.SimpleEntry<>("t", 4),
-            new AbstractMap.SimpleEntry<>("{", 5),
-            new AbstractMap.SimpleEntry<>("|", 2),
-            new AbstractMap.SimpleEntry<>("}", 5),
-            new AbstractMap.SimpleEntry<>("~", 7));
+    private static final Map<String, Integer> specialCharacterWidths = Map.ofEntries(new AbstractMap.SimpleEntry<>(" ", 4), new AbstractMap.SimpleEntry<>("!", 2), new AbstractMap.SimpleEntry<>("\"", 5), new AbstractMap.SimpleEntry<>("'", 3), new AbstractMap.SimpleEntry<>(")", 5), new AbstractMap.SimpleEntry<>("*", 5), new AbstractMap.SimpleEntry<>(",", 2), new AbstractMap.SimpleEntry<>(".", 2), new AbstractMap.SimpleEntry<>(":", 2), new AbstractMap.SimpleEntry<>(";", 2), new AbstractMap.SimpleEntry<>("<", 5), new AbstractMap.SimpleEntry<>(">", 5), new AbstractMap.SimpleEntry<>("@", 7), new AbstractMap.SimpleEntry<>("I", 4), new AbstractMap.SimpleEntry<>("[", 4), new AbstractMap.SimpleEntry<>("]", 4), new AbstractMap.SimpleEntry<>("f", 5), new AbstractMap.SimpleEntry<>("i", 2), new AbstractMap.SimpleEntry<>("k", 5), new AbstractMap.SimpleEntry<>("l", 3), new AbstractMap.SimpleEntry<>("t", 4), new AbstractMap.SimpleEntry<>("{", 5), new AbstractMap.SimpleEntry<>("|", 2), new AbstractMap.SimpleEntry<>("}", 5), new AbstractMap.SimpleEntry<>("~", 7));
 
+    @NotNull
     public static String numberToRoman(int number) // Only 5 for now, expand if needed
     {
-        switch (number)
+        switch(number)
         {
             case 1:
                 return "I";
@@ -58,26 +35,27 @@ public final class StringUtil
         }
     }
 
-    public static int charWidth(char c)
+    public static int charWidth(final char c)
     {
         return specialCharacterWidths.getOrDefault(String.valueOf(c), defaultCharacterWidth);
     }
 
-    public static int stringWidth(String string)
+    public static int stringWidth(@NotNull final String string)
     {
         int width = 0;
-        for (char c : string.toCharArray())
+        for(char c : string.toCharArray())
         {
             width += charWidth(c);
         }
         return width;
     }
 
-    public static String capitalize(String string, String separator)
+    @NotNull
+    public static String capitalize(@NotNull final String string, @NotNull final String separator)
     {
         String[] words = string.split(separator);
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < words.length; i++)
+        for(int i = 0; i < words.length; i++)
         {
             result.append(words[i].substring(0, 1).toUpperCase()).append(words[i].substring(1).toLowerCase());
             if(i < words.length - 1)
@@ -89,7 +67,8 @@ public final class StringUtil
         return result.toString();
     }
 
-    public static String tradeToString(MerchantRecipe recipe, int baseAmount)
+    @NotNull
+    public static String tradeToString(@NotNull final MerchantRecipe recipe, final int baseAmount)
     {
         ItemStack i1 = recipe.getIngredients().get(0);
         ItemStack i2 = recipe.getIngredients().get(1);
@@ -105,17 +84,21 @@ public final class StringUtil
         result.append(String.format(" = §6%d§f §a%s§f", output.getAmount(), capitalize(output.getType().getKey().getKey(), "_")));
         if(output.getType() == Material.ENCHANTED_BOOK)
         {
-            EnchantmentStorageMeta meta = (EnchantmentStorageMeta)output.getItemMeta();
-            for(Map.Entry<Enchantment, Integer> ench : meta.getStoredEnchants().entrySet())
+            if(output.getItemMeta() instanceof  EnchantmentStorageMeta)
             {
-                result.append(String.format(" §5(%s %s)§f", capitalize(ench.getKey().getKey().getKey(), "_"), numberToRoman(ench.getValue())));
+                EnchantmentStorageMeta meta = (EnchantmentStorageMeta) output.getItemMeta();
+                for(Map.Entry<Enchantment, Integer> ench : meta.getStoredEnchants().entrySet())
+                {
+                    result.append(String.format(" §5(%s %s)§f", capitalize(ench.getKey().getKey().getKey(), "_"), numberToRoman(ench.getValue())));
+                }
             }
         }
 
         return result.toString();
     }
 
-    public static List<String> costToString(CostData cost)
+    @NotNull
+    public static List<String> costToString(@NotNull final CostData cost)
     {
         List<String> strings = new ArrayList<>();
 
@@ -130,7 +113,7 @@ public final class StringUtil
             strings.add(String.format("§r§f   -§6%d §bCrystals", cost.getCrystals()));
         }
 
-        for (Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
+        for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
         {
             strings.add(String.format("§r§f   -§6%d §a%s", entry.getValue(), capitalize(entry.getKey().toString(), "_")));
         }

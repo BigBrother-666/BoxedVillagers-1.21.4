@@ -20,13 +20,13 @@ import org.bukkit.inventory.*;
 
 public class InteractionListener implements Listener
 {
-    public InteractionListener(BoxedVillagers plugin)
+    public InteractionListener(final BoxedVillagers plugin)
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
-    public void onVillagerInteract(PlayerInteractEntityEvent event)
+    public void onVillagerInteract(final PlayerInteractEntityEvent event)
     {
         if(event.getHand() == EquipmentSlot.OFF_HAND)
         {
@@ -86,7 +86,7 @@ public class InteractionListener implements Listener
     }
 
     @EventHandler
-    public void onClickItem(PlayerInteractEvent event)
+    public void onClickItem(final PlayerInteractEvent event)
     {
         if(event.getHand() == EquipmentSlot.OFF_HAND)
         {
@@ -116,7 +116,7 @@ public class InteractionListener implements Listener
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event)
+    public void onInventoryClose(final InventoryCloseEvent event)
     {
         HumanEntity player = event.getPlayer();
         if(player.getOpenInventory().getTopInventory() instanceof MerchantInventory)
@@ -134,7 +134,7 @@ public class InteractionListener implements Listener
     }
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event)
+    public void onInventoryClick(final InventoryClickEvent event)
     {
         NBTItem nbtItem = Util.validateBoundItem(event.getCurrentItem());
 

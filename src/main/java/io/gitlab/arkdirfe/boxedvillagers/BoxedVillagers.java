@@ -11,6 +11,7 @@ import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -34,17 +35,8 @@ public class BoxedVillagers extends JavaPlugin
         Util.plugin = this;
 
         reloadConfig();
+        registerCommandsAndListeners();
 
-        BoxedVillagersCommandExecutor boxedvillagersCmd = new BoxedVillagersCommandExecutor(this);
-        this.getCommand("boxedvillagers").setExecutor(boxedvillagersCmd);
-        this.getCommand("boxedvillagers").setTabCompleter(boxedvillagersCmd);
-
-        witchdoctorGuiManager = new WitchdoctorGuiManager(this);
-        WitchdoctorCommandExecutor witchdoctorCmd = new WitchdoctorCommandExecutor(this, witchdoctorGuiManager);
-        this.getCommand("witchdoctor").setExecutor(witchdoctorCmd);
-        this.getCommand("witchdoctor").setTabCompleter(witchdoctorCmd);
-
-        new InteractionListener(this);
         getLogger().info("Loaded!");
     }
 
@@ -77,6 +69,20 @@ public class BoxedVillagers extends JavaPlugin
         initializeMaps();
     }
 
+    private void registerCommandsAndListeners()
+    {
+        BoxedVillagersCommandExecutor boxedvillagersCmd = new BoxedVillagersCommandExecutor(this);
+        getCommand("boxedvillagers").setExecutor(boxedvillagersCmd);
+        getCommand("boxedvillagers").setTabCompleter(boxedvillagersCmd);
+
+        witchdoctorGuiManager = new WitchdoctorGuiManager(this);
+        WitchdoctorCommandExecutor witchdoctorCmd = new WitchdoctorCommandExecutor(this, witchdoctorGuiManager);
+        getCommand("witchdoctor").setExecutor(witchdoctorCmd);
+        getCommand("witchdoctor").setTabCompleter(witchdoctorCmd);
+
+        new InteractionListener(this);
+    }
+
     private void initializeMaps()
     {
         helpPages = new HashMap<>();
@@ -100,20 +106,20 @@ public class BoxedVillagers extends JavaPlugin
         getLogger().info("Loaded costs for operations!");
     }
 
-    private void initHelpPages(String configSection, Map<String, HelpData> helpPages)
+    private void initHelpPages(@NotNull String configSection, @NotNull Map<String, HelpData> helpPages)
     {
-        for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
+                for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
         {
             String title = "";
             String content = "";
 
-            for (String innerKey : getConfig().getConfigurationSection(configSection + "." + key).getKeys(false))
+            for(String innerKey : getConfig().getConfigurationSection(configSection + "." + key).getKeys(false))
             {
                 if(innerKey.equalsIgnoreCase("title"))
                 {
                     title = getConfig().getString(configSection + "." + key + "." + innerKey);
                 }
-                else if (innerKey.equalsIgnoreCase("content"))
+                else if(innerKey.equalsIgnoreCase("content"))
                 {
                     content = getConfig().getString(configSection + "." + key + "." + innerKey);
                 }
@@ -125,13 +131,13 @@ public class BoxedVillagers extends JavaPlugin
         getLogger().info("Loaded " + helpPages.size() + " help pages!");
     }
 
-    private void initLayeredCostMap(String configSection, List<CostData> costs, int expected)
+    private void initLayeredCostMap(@NotNull String configSection, @NotNull List<CostData> costs, int expected)
     {
         for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
         {
             CostData cost = new CostData();
 
-            for (String innerKey : getConfig().getConfigurationSection(configSection + "." + key).getKeys(false))
+            for(String innerKey : getConfig().getConfigurationSection(configSection + "." + key).getKeys(false))
             {
                 if(innerKey.equalsIgnoreCase("free"))
                 {
@@ -164,11 +170,11 @@ public class BoxedVillagers extends JavaPlugin
 
         if(costs.size() != expected)
         {
-            getLogger().severe("Unexpected number of cost entries for " + configSection + " (got "+ costs.size() + ", expected " + expected + ")! This WILL break!");
+            getLogger().severe("Unexpected number of cost entries for " + configSection + " (got " + costs.size() + ", expected " + expected + ")! This WILL break!");
         }
     }
 
-    private void initSimpleCostMap(String configSection, CostData cost)
+    private void initSimpleCostMap(@NotNull String configSection, @NotNull CostData cost)
     {
         for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
         {

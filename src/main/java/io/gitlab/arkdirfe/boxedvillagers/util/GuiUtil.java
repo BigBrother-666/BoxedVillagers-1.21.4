@@ -2,59 +2,66 @@ package io.gitlab.arkdirfe.boxedvillagers.util;
 
 import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class GuiUtil
 {
-    public static ItemStack setUninteractable(ItemStack item)
+    @NotNull
+    public static ItemStack setUninteractable(@NotNull final ItemStack item)
     {
         return setTag(item, Strings.TAG_UNINTERACTABLE);
     }
 
-    public static ItemStack setMovable(ItemStack item)
+    @NotNull
+    public static ItemStack setMovable(@NotNull final ItemStack item)
     {
         return setTag(item, Strings.TAG_MOVABLE);
     }
 
-    public static ItemStack setFree(ItemStack item)
+    @NotNull
+    public static ItemStack setFree(@NotNull final ItemStack item)
     {
         return setTag(item, Strings.TAG_FREE);
     }
 
-    public static ItemStack setExtracted(ItemStack item)
+    @NotNull
+    public static ItemStack setExtracted(@NotNull final ItemStack item)
     {
         return setTag(item, Strings.TAG_EXTRACTED);
     }
 
-    public static boolean isUninteractable(ItemStack item)
+    public static boolean isUninteractable(@Nullable final ItemStack item)
     {
         return hasTag(item, Strings.TAG_UNINTERACTABLE);
     }
 
-    public static boolean isMovable(ItemStack item)
+    public static boolean isMovable(@Nullable final ItemStack item)
     {
         return hasTag(item, Strings.TAG_MOVABLE);
     }
 
-    public static boolean isFree(ItemStack item)
+    public static boolean isFree(@Nullable final ItemStack item)
     {
         return hasTag(item, Strings.TAG_FREE);
     }
 
-    public static boolean isExtracted(ItemStack item)
+    public static boolean isExtracted(@NotNull final ItemStack item)
     {
         return hasTag(item, Strings.TAG_EXTRACTED);
     }
 
-    private static ItemStack setTag(ItemStack item, String tag)
+    @NotNull
+    private static ItemStack setTag(@NotNull final ItemStack item, @NotNull final String tag)
     {
         NBTItem nbtItem = new NBTItem(item);
         nbtItem.setBoolean(tag, true);
         return nbtItem.getItem();
     }
 
-    private static boolean hasTag(ItemStack item, String tag)
+    private static boolean hasTag(@Nullable final ItemStack item, @NotNull final String tag)
     {
-        if(!Util.isNotNullOrAir(item))
+        if(Util.isNullOrAir(item))
         {
             return false;
         }
@@ -63,9 +70,8 @@ public final class GuiUtil
         return nbtItem.hasKey(tag);
     }
 
-    public static int getGuiSlot(int row, int col)
+    public static int getGuiSlot(final int row, final int col)
     {
         return 9 * row + col;
     }
-
 }

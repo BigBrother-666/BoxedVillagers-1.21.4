@@ -10,12 +10,14 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public final class ItemUtil
 {
-    public static ItemStack getUnboundScroll(boolean nonlethal)
+    @NotNull
+    public static ItemStack getUnboundScroll(final boolean nonlethal)
     {
         ItemStack scroll = new ItemStack(Material.PAPER);
 
@@ -30,9 +32,7 @@ public final class ItemUtil
             lore.add("§r§4NONLETHAL SCROLL (ADMIN ITEM)!");
         }
 
-        Util.setItemTitleLoreAndFlags(scroll,
-                "§aUnbound Villager Scroll",
-                lore, null);
+        Util.setItemTitleLoreAndFlags(scroll, "§aUnbound Villager Scroll", lore, null);
 
         NBTItem nbtscoll = new NBTItem(scroll);
         nbtscoll.setUUID(Strings.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
@@ -46,7 +46,8 @@ public final class ItemUtil
 
     // UI Items
 
-    public static ItemStack getUIFillerItem(Material material)
+    @NotNull
+    public static ItemStack getUIFillerItem(@NotNull final Material material)
     {
         ItemStack item = new ItemStack(material);
 
@@ -55,21 +56,20 @@ public final class ItemUtil
         return GuiUtil.setUninteractable(item);
     }
 
+    @NotNull
     public static ItemStack getNoScrollHelpItem()
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
-        Util.setItemTitleLoreAndFlags(item, "§2Help",
-                Arrays.asList("§r§fPlace your bound scroll below to begin the process.",
-                        "§r§fYou can purchase scrolls at the right."),
-                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        Util.setItemTitleLoreAndFlags(item, "§2Help", Arrays.asList("§r§fPlace your bound scroll below to begin the process.", "§r§fYou can purchase scrolls at the right."), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
         return GuiUtil.setUninteractable(item);
     }
 
-    public static ItemStack getScrollHelpItem(boolean advancedPerms)
+    @NotNull
+    public static ItemStack getScrollHelpItem(final boolean advancedPerms)
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
@@ -85,16 +85,15 @@ public final class ItemUtil
             lore.add("§r§fNote: Prices shown below ignore cures.");
         }
 
-        Util.setItemTitleLoreAndFlags(item, "§2Help",
-                lore,
-                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        Util.setItemTitleLoreAndFlags(item, "§2Help", lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
         return GuiUtil.setUninteractable(item);
     }
 
-    public static ItemStack getSlotExtensionItem(VillagerData villagerData, CostData slotCost)
+    @NotNull
+    public static ItemStack getSlotExtensionItem(@NotNull final VillagerData villagerData, @NotNull CostData slotCost)
     {
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
 
@@ -117,14 +116,13 @@ public final class ItemUtil
             item.setType(Material.BOOK);
         }
 
-        Util.setItemTitleLoreAndFlags(item, "§2Extend Trade Slots",
-                lore,
-                null);
+        Util.setItemTitleLoreAndFlags(item, "§2Extend Trade Slots", lore, null);
 
         return GuiUtil.setUninteractable(item);
     }
 
-    public static ItemStack getBuyScrollItem(CostData scrollCost)
+    @NotNull
+    public static ItemStack getBuyScrollItem(@NotNull final CostData scrollCost)
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
@@ -136,14 +134,13 @@ public final class ItemUtil
             lore.addAll(StringUtil.costToString(scrollCost));
         }
 
-        Util.setItemTitleLoreAndFlags(item, "§2Buy Villager Scroll",
-                lore,
-                null);
+        Util.setItemTitleLoreAndFlags(item, "§2Buy Villager Scroll", lore, null);
 
         return GuiUtil.setUninteractable(item);
     }
 
-    public static ItemStack getCureItem(VillagerData villagerData, CostData cureCost)
+    @NotNull
+    public static ItemStack getCureItem(@NotNull final VillagerData villagerData, @NotNull final CostData cureCost)
     {
         ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
 
@@ -165,14 +162,13 @@ public final class ItemUtil
             item.setType(Material.APPLE);
         }
 
-        Util.setItemTitleLoreAndFlags(item, "§2Cure Villager",
-                lore,
-                null);
+        Util.setItemTitleLoreAndFlags(item, "§2Cure Villager", lore, null);
 
         return GuiUtil.setUninteractable(item);
     }
 
-    public static ItemStack getCommitItem(int free, boolean tradesMoved, int tradesPurged, int tradesExtracted, CostData commitCost)
+    @NotNull
+    public static ItemStack getCommitItem(final int free, final boolean tradesMoved, final int tradesPurged, final int tradesExtracted, @NotNull final CostData commitCost)
     {
         ItemStack item = new ItemStack(Material.ENDER_PEARL);
 
@@ -212,14 +208,13 @@ public final class ItemUtil
             lore.addAll(StringUtil.costToString(commitCost));
         }
 
-        Util.setItemTitleLoreAndFlags(item, "§2Commit Changes",
-                lore,
-                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        Util.setItemTitleLoreAndFlags(item, "§2Commit Changes", lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         return GuiUtil.setUninteractable(item);
     }
 
-    public static ItemStack getTradeItem(TradeData trade, boolean extractPerms)
+    @NotNull
+    public static ItemStack getTradeItem(@NotNull final TradeData trade, final boolean extractPerms)
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
@@ -234,9 +229,7 @@ public final class ItemUtil
             lore.add("§r§fShift Right Click to extract this trade.");
         }
 
-        Util.setItemTitleLoreAndFlags(item, "§aStored Trade",
-                lore,
-                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        Util.setItemTitleLoreAndFlags(item, "§aStored Trade", lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         NBTItem nbtItem = new NBTItem(item);
         NBTCompound compound = nbtItem.addCompound(Strings.TAG_SERIALIZED_TRADE_DATA);
@@ -245,7 +238,8 @@ public final class ItemUtil
         return GuiUtil.setMovable(nbtItem.getItem());
     }
 
-    public static ItemStack convertTradeToExtracted(ItemStack item)
+    @NotNull
+    public static ItemStack convertTradeToExtracted(@NotNull final ItemStack item)
     {
         item.setType(Material.SUGAR_CANE);
 
@@ -262,7 +256,8 @@ public final class ItemUtil
         return GuiUtil.setExtracted(item);
     }
 
-    public static ItemStack convertExtractedToFree(ItemStack item)
+    @NotNull
+    public static ItemStack convertExtractedToFree(@NotNull final ItemStack item)
     {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§aExtracted Trade");

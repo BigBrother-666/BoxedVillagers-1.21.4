@@ -8,6 +8,8 @@ import org.bukkit.World;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,16 +20,9 @@ public final class Util
     public static BoxedVillagers plugin;
     public static String timeWorldName = "";
 
-    public static void updateBoundScrollTooltip(ItemStack item, VillagerData data)
+    public static void updateBoundScrollTooltip(@NotNull final ItemStack item, @NotNull final VillagerData data)
     {
-        setItemTitleLoreAndFlags(item,
-                "§2Bound Villager Scroll",
-                Arrays.asList("§r§fProfession: §a" + data.getProfessionAsString(),
-                        "§r§fRank: " + data.getRankAsString(),
-                        "§r§fCures: " + data.getCuresAsString(),
-                        "§r§fTrade Slots: " + data.getTradeSlotsAsString(),
-                        "§r§aLeft Click in hand to trade!"),
-                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, "§2Bound Villager Scroll", Arrays.asList("§r§fProfession: §a" + data.getProfessionAsString(), "§r§fRank: " + data.getRankAsString(), "§r§fCures: " + data.getCuresAsString(), "§r§fTrade Slots: " + data.getTradeSlotsAsString(), "§r§aLeft Click in hand to trade!"), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
     }
 
     public static long getTotalTime()
@@ -45,14 +40,15 @@ public final class Util
         return -1;
     }
 
-    public static boolean isNotNullOrAir(ItemStack item)
+    public static boolean isNullOrAir(@Nullable final ItemStack item)
     {
-        return !(item == null || item.getType() == Material.AIR);
+        return (item == null || item.getType() == Material.AIR);
     }
 
-    public static NBTItem validateUnboundItem(ItemStack item)
+    @Nullable
+    public static NBTItem validateUnboundItem(@Nullable final ItemStack item)
     {
-        if (!isNotNullOrAir(item))
+        if(isNullOrAir(item))
         {
             return null;
         }
@@ -67,9 +63,10 @@ public final class Util
         return null;
     }
 
-    public static NBTItem validateBoundItem(ItemStack item)
+    @Nullable
+    public static NBTItem validateBoundItem(@Nullable final ItemStack item)
     {
-        if (!isNotNullOrAir(item))
+        if(isNullOrAir(item))
         {
             return null;
         }
@@ -84,13 +81,13 @@ public final class Util
         return null;
     }
 
-    public static void setItemTitleLoreAndFlags(ItemStack item, String title, List<String> lore, List<ItemFlag> flags)
+    public static void setItemTitleLoreAndFlags(@NotNull final ItemStack item, @NotNull final String title, @Nullable final List<String> lore, @Nullable final List<ItemFlag> flags)
     {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(title);
         meta.setLore(lore);
 
-        if (flags != null)
+        if(flags != null)
         {
             for(ItemFlag f : flags)
             {
@@ -102,28 +99,27 @@ public final class Util
     }
 
 
-
-    public static long getDay(long time)
+    public static long getDay(final long time)
     {
         return time / 24000;
     }
 
-    public static long getDayTime(long time)
+    public static long getDayTime(final long time)
     {
         return time % 24000;
     }
 
-    public static void logInfo(String log)
+    public static void logInfo(final String log)
     {
         plugin.getLogger().info(log);
     }
 
-    public static void logWarning(String log)
+    public static void logWarning(final String log)
     {
         plugin.getLogger().warning(log);
     }
 
-    public static void logSevere(String log)
+    public static void logSevere(final String log)
     {
         plugin.getLogger().severe(log);
     }

@@ -10,6 +10,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class VillagerData
     private int tradeSlots;
     private long lastRestocked; // In days
 
-    public VillagerData(Villager fromVillager)
+    public VillagerData(@NotNull final Villager fromVillager)
     {
         cures = 0;
         trades = new ArrayList<>();
@@ -43,7 +44,7 @@ public class VillagerData
         attemptRestock();
     }
 
-    public VillagerData(NBTItem fromItem)
+    public VillagerData(@NotNull final NBTItem fromItem)
     {
         trades = new ArrayList<>();
 
@@ -69,6 +70,7 @@ public class VillagerData
         return cures;
     }
 
+    @NotNull
     public List<TradeData> getTrades()
     {
         return trades;
@@ -81,7 +83,7 @@ public class VillagerData
 
     public String getRankAsString()
     {
-        switch (rank)
+        switch(rank)
         {
             case 1:
                 return "§7Novice";
@@ -98,16 +100,19 @@ public class VillagerData
         return "Invalid!";
     }
 
+    @NotNull
     public String getProfessionAsString()
     {
         return StringUtil.capitalize(profession, " ");
     }
 
+    @NotNull
     public String getCuresAsString()
     {
         return cures != 7 ? "" + cures : "§6" + cures;
     }
 
+    @NotNull
     public String getTradeSlotsAsString()
     {
         return tradeSlots != maxTradeSlots ? String.format("§e%d§f/§6%d", tradeSlots, maxTradeSlots) : String.format("§6%d/%d", maxTradeSlots, maxTradeSlots);
@@ -115,14 +120,15 @@ public class VillagerData
 
     // --- Setters/Accessors
 
-    public void setTrades(List<TradeData> trades)
+    public void setTrades(@NotNull final List<TradeData> trades)
     {
         this.trades = trades;
     }
 
     // --- Serialization
 
-    public ItemStack writeToItem(NBTItem item)
+    @NotNull
+    public ItemStack writeToItem(@NotNull final NBTItem item)
     {
         if(item.hasKey(Strings.TAG_NONLETHAL))
         {
@@ -152,6 +158,7 @@ public class VillagerData
 
     // --- General Methods
 
+    @NotNull
     public List<MerchantRecipe> getMerchantRecipes()
     {
         List<MerchantRecipe> recipes = new ArrayList<>();
@@ -162,21 +169,21 @@ public class VillagerData
         return recipes;
     }
 
-    public void cure(NBTItem item, int times)
+    public void cure(@NotNull final NBTItem item, final int times)
     {
         NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         cures = Math.min(7, cures + times);
         compound.setInteger(Strings.TAG_CURES, cures);
     }
 
-    public void addTradeSlots(NBTItem item, int slots)
+    public void addTradeSlots(@NotNull final NBTItem item, final int slots)
     {
         NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         tradeSlots = Math.min(maxTradeSlots, tradeSlots + slots);
         compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
     }
 
-    public void updateUses(Merchant merchant)
+    public void updateUses(@NotNull final Merchant merchant)
     {
         for(int i = 0; i < trades.size(); i++)
         {
@@ -219,6 +226,4 @@ public class VillagerData
             }
         }
     }
-
-
 }

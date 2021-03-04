@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTCompound;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
@@ -13,14 +14,14 @@ public class TradeData implements Serializable
     private final int baseAmount;
     private final MerchantRecipe recipe;
 
-    public TradeData(int reduction, int baseAmount, MerchantRecipe recipe)
+    public TradeData(final int reduction, final int baseAmount, @NotNull final MerchantRecipe recipe)
     {
         this.reduction = reduction;
         this.baseAmount = baseAmount;
         this.recipe = recipe;
     }
 
-    public TradeData(NBTCompound recipeCompound, int cures)
+    public TradeData(@NotNull final NBTCompound recipeCompound, final int cures)
     {
         recipe = new MerchantRecipe(recipeCompound.getItemStack(Strings.TAG_OUTPUT), recipeCompound.getInteger(Strings.TAG_MAX_USES));
         reduction = recipeCompound.getInteger(Strings.TAG_REDUCTION);
@@ -47,6 +48,7 @@ public class TradeData implements Serializable
         return baseAmount;
     }
 
+    @NotNull
     public MerchantRecipe getRecipe()
     {
         return recipe;
@@ -54,7 +56,7 @@ public class TradeData implements Serializable
 
     // --- Serialization
 
-    public void serializeToNBT(NBTCompound entry)
+    public void serializeToNBT(@NotNull final NBTCompound entry)
     {
         ItemStack i1 = recipe.getIngredients().get(0);
         ItemStack i2 = recipe.getIngredients().get(1);
