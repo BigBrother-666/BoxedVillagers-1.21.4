@@ -8,6 +8,11 @@ import java.util.Map;
 
 public class CostData
 {
+    /**
+     * Returns a new CostData which holds the sum of all the provided CostData objects.
+     * @param data The objects to sum up.
+     * @return The sum.
+     */
     public static CostData sum(final CostData... data)
     {
         CostData result = new CostData();
@@ -35,6 +40,9 @@ public class CostData
     private int crystals = 0;
     private final Map<Material, Integer> resources;
 
+    /**
+     * Container for any cost, includes basic items, money and crystals.
+     */
     public CostData()
     {
         resources = new HashMap<>();
@@ -70,6 +78,11 @@ public class CostData
         return resources;
     }
 
+    /**
+     * Returns a CostData object which is multiplied by a number. Costs cannot go below 1 for each entry.
+     * @param multiplier The number the costs are multiplied with.
+     * @return The multiplied CostData.
+     */
     @NotNull
     public CostData getMultiplied(final float multiplier)
     {
@@ -91,6 +104,11 @@ public class CostData
         return data;
     }
 
+    /**
+     * Adds resources, creates new entries if needed.
+     * @param mat The material of the resource.
+     * @param count The count of the resource.
+     */
     public void addResource(@NotNull final Material mat, final int count)
     {
         resources.put(mat, Math.max(0, count) + resources.getOrDefault(mat, 0));

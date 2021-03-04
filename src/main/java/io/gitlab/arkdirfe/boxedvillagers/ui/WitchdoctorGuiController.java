@@ -13,7 +13,9 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,6 +42,14 @@ public class WitchdoctorGuiController
     private final WitchdoctorGuiManager manager;
     private final BoxedVillagers plugin;
 
+    /**
+     * Responsible for updating the witchdoctor GUI and keeping track of its state.
+     * @param gui The linked GUI.
+     * @param player The player who opened the GUI.
+     * @param manager Reference to the GUI manager.
+     * @param plugin Reference to the plugin.
+     * @param admin Admin mode. If true costs are ignored.
+     */
     public WitchdoctorGuiController(@NotNull final Inventory gui, @NotNull final HumanEntity player, @NotNull final WitchdoctorGuiManager manager, @NotNull final BoxedVillagers plugin, final boolean admin)
     {
         this.player = player;
@@ -53,26 +63,18 @@ public class WitchdoctorGuiController
         extractPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT);
 
         player.openInventory(gui);
-        init();
+        update();
     }
 
     // --- Getters
 
-    public Inventory getGui()
-    {
-        return gui;
-    }
-
+    @Nullable
     public ItemStack getScroll()
     {
         return scroll;
     }
 
-    public VillagerData getVillagerData()
-    {
-        return villagerData;
-    }
-
+    @NotNull
     public HumanEntity getPlayer()
     {
         return player;
@@ -85,9 +87,13 @@ public class WitchdoctorGuiController
         tradesMoved = true;
     }
 
+    /**
+     * Sets the scroll and extracts villager data if it is valid.
+     * @param scroll The scroll.
+     */
     public void setScroll(@Nullable final ItemStack scroll)
     {
-        if(!Util.isNullOrAir(scroll))
+        if(!ItemUtil.isNullOrAir(scroll))
         {
             villagerData = new VillagerData(new NBTItem(scroll));
             this.scroll = scroll;
@@ -101,27 +107,25 @@ public class WitchdoctorGuiController
 
     // --- UI Update Methods
 
-    private void init()
-    {
-        ItemStack[] items = new ItemStack[54];
-
-        for(int i = 0; i < 54; i++)
-        {
-            items[i] = ItemUtil.getUIFillerItem(Material.LIME_STAINED_GLASS_PANE);
-        }
-
-        items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
-        items[manager.helpSlot] = ItemUtil.getNoScrollHelpItem();
-        items[manager.scrollSlot] = null;
-
-        gui.setContents(items);
-    }
-
+    /**
+     * Puts items into the correct slots.
+     */
     public void update()
     {
         if(scroll == null)
         {
-            init();
+            ItemStack[] items = new ItemStack[54];
+
+            for(int i = 0; i < 54; i++)
+            {
+                items[i] = ItemUtil.getUIFillerItem(Material.LIME_STAINED_GLASS_PANE);
+            }
+
+            items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
+            items[manager.helpSlot] = ItemUtil.getNoScrollHelpItem();
+            items[manager.scrollSlot] = null;
+
+            gui.setContents(items);
         }
         else
         {
@@ -165,11 +169,17 @@ public class WitchdoctorGuiController
         }
     }
 
+    /**
+     * Updates only the cure button.
+     */
     public void updateCureButton()
     {
         gui.setItem(manager.cureSlot, ItemUtil.getCureItem(villagerData, calculateCureCost()));
     }
 
+    /**
+     * Updates only the commit button.
+     */
     public void updateCommitButton()
     {
         if(advancedPerms)
@@ -180,24 +190,39 @@ public class WitchdoctorGuiController
 
     // --- General Methods
 
+    /**
+     * Checks if the slot is a valid trade slot.
+     * @param slot The slot to check.
+     * @return True if slot is valid, false otherwise.
+     */
     public boolean isTradeSlot(final int slot)
     {
         return slot >= manager.tradeSlotStart && slot < tradeSlotEnd;
     }
 
+    /**
+     * Checks if changes that warrant a commit have been made.
+     * @return True if yes, false if no.
+     */
     public boolean canCommit()
     {
         int free = getFreeTradeItems().size();
         return (tradesMoved || tradesPurged > 0 || tradesExtracted > 0 || free > 0);
     }
 
-    public void resetTracking()
+    /**
+     * Resets variables that track committable changes.
+     */
+    private void resetTracking()
     {
         tradesMoved = false;
         tradesPurged = 0;
         tradesExtracted = 0;
     }
 
+    /**
+     * Checks whether the player can pay the commit cost, if so changes are written to the scroll item.
+     */
     public void commitChanges()
     {
         CostData commitCost = calculateCommitCost();
@@ -219,8 +244,7 @@ public class WitchdoctorGuiController
             }
 
             villagerData.setTrades(getModifiedTrades());
-            Util.updateBoundScrollTooltip(scroll, villagerData);
-            gui.setItem(manager.scrollSlot, villagerData.writeToItem(new NBTItem(scroll)));
+            gui.setItem(manager.scrollSlot, villagerData.getItem());
             ((Player) player).playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             resetTracking();
 
@@ -232,8 +256,16 @@ public class WitchdoctorGuiController
         }
     }
 
+    /**
+     * Checks whether the player can pay the cure cost, if so the villager is cured once.
+     */
     public void cureVillager()
     {
+        if(villagerData.getCures() == 7)
+        {
+            return;
+        }
+
         CostData cureCost = calculateCureCost();
 
         if(playerCanPay(cureCost) || admin)
@@ -243,9 +275,8 @@ public class WitchdoctorGuiController
                 payCosts(cureCost);
             }
 
-            villagerData.cure(new NBTItem(scroll), 1);
-            Util.updateBoundScrollTooltip(scroll, villagerData);
-            gui.setItem(manager.scrollSlot, villagerData.writeToItem(new NBTItem(scroll)));
+            villagerData.cure(1);
+            gui.setItem(manager.scrollSlot, villagerData.getItem());
             ((Player) player).playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 0.5f, 1);
             updateCureButton();
         }
@@ -255,6 +286,10 @@ public class WitchdoctorGuiController
         }
     }
 
+    /**
+     * Removes an available trade from the villager. Needs to be committed to be permanent.
+     * @param slot The slot the trade is in.
+     */
     public void purgeTrade(final int slot)
     {
         gui.setItem(slot, null);
@@ -264,6 +299,9 @@ public class WitchdoctorGuiController
         updateCommitButton();
     }
 
+    /**
+     * Gives the player a scroll if they can afford it.
+     */
     public void buyScroll()
     {
         CostData scrollCost = calculateScrollCost();
@@ -280,6 +318,9 @@ public class WitchdoctorGuiController
         }
     }
 
+    /**
+     * Extends the villager's trade slots if possible.
+     */
     public void extendSlots()
     {
         if(villagerData.getTradeSlots() == VillagerData.maxTradeSlots)
@@ -293,9 +334,8 @@ public class WitchdoctorGuiController
         {
             payCosts(slotCost);
 
-            villagerData.addTradeSlots(new NBTItem(scroll), 1);
-            Util.updateBoundScrollTooltip(scroll, villagerData);
-            gui.setItem(manager.scrollSlot, villagerData.writeToItem(new NBTItem(scroll)));
+            villagerData.addTradeSlots(1);
+            gui.setItem(manager.scrollSlot, villagerData.getItem());
             ((Player) player).playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1);
             update();
         }
@@ -305,11 +345,15 @@ public class WitchdoctorGuiController
         }
     }
 
+    /**
+     * Transforms a trade into an extracted trade.
+     * @param slot The slot of the trade.
+     */
     public void extractTrade(final int slot) // Already null checked by manager
     {
         ItemStack item = gui.getItem(slot);
 
-        if(!Util.isNullOrAir(item) || GuiUtil.isFree(item) || GuiUtil.isExtracted(item))
+        if(ItemUtil.isNullOrAir(item) || GuiUtil.isFree(item) || GuiUtil.isExtracted(item))
         {
             return;
         }
@@ -321,8 +365,83 @@ public class WitchdoctorGuiController
         updateCommitButton();
     }
 
+    /**
+     * Handles a click on the scroll slot.
+     * @param view The InventoryView that is currently open.
+     * @param slotItem The item in the slot.
+     * @param cursorItem The item on the cursor.
+     * @param slotEmpty Whether the slot is empty.
+     * @param cursorEmpty Whether the cursor is empty.
+     */
+    public void clickScrollSlot(@NotNull final InventoryView view, @Nullable final ItemStack slotItem, @Nullable final ItemStack cursorItem, final boolean slotEmpty, final boolean cursorEmpty)
+    {
+        boolean slotScroll = ItemUtil.validateBoundItem(slotItem) != null;
+        boolean cursorScroll = ItemUtil.validateBoundItem(cursorItem) != null;
+
+        if((slotEmpty && cursorScroll))
+        {
+            gui.setItem(manager.scrollSlot, cursorItem);
+            view.setCursor(new ItemStack(Material.AIR));
+        }
+        else if((slotScroll && cursorScroll))
+        {
+            gui.setItem(manager.scrollSlot, cursorItem);
+            view.setCursor(slotItem);
+        }
+        else if((slotScroll && cursorEmpty))
+        {
+            gui.setItem(manager.scrollSlot, null);
+            view.setCursor(slotItem);
+        }
+
+        resetTracking();
+
+        setScroll(gui.getItem(manager.scrollSlot));
+        update();
+    }
+
+    /**
+     * Handles a click on a trade slot.
+     * @param view The InventoryView that is currently open.
+     * @param slotItem The item in the slot.
+     * @param cursorItem The item on the cursor.
+     * @param event The event that called this.
+     * @param slotIndex The slot in question.
+     * @param slotEmpty Whether the slot is empty.
+     * @param cursorEmpty Whether the cursor is empty.
+     * @param slotMovable Whether the item in the slot is movable.
+     * @param cursorMovable Whether the item on the cursor is movable.
+     */
+    public void clickTradeSlot(@NotNull final InventoryView view, @Nullable final ItemStack slotItem, @Nullable final ItemStack cursorItem, @NotNull final InventoryClickEvent event, final int slotIndex, final boolean slotEmpty, final boolean cursorEmpty, final boolean slotMovable, final boolean cursorMovable)
+    {
+        if((slotEmpty && cursorMovable))
+        {
+            gui.setItem(slotIndex, cursorItem);
+            view.setCursor(new ItemStack(Material.AIR));
+            tradeMoved();
+        }
+        else if((slotMovable && cursorMovable))
+        {
+            gui.setItem(slotIndex, cursorItem);
+            view.setCursor(slotItem);
+            tradeMoved();
+        }
+        else if((slotMovable && cursorEmpty) && event.isLeftClick() && !event.isShiftClick())
+        {
+            gui.setItem(slotIndex, null);
+            view.setCursor(slotItem);
+            tradeMoved();
+        }
+
+        updateCommitButton();
+    }
+
     // --- Utility Methods
 
+    /**
+     * Gets trades from the representations in the trade slots.
+     * @return A list of TradeData.
+     */
     @NotNull
     public List<TradeData> getModifiedTrades()
     {
@@ -332,7 +451,7 @@ public class WitchdoctorGuiController
         {
             ItemStack item = gui.getItem(i);
 
-            if(!Util.isNullOrAir(item))
+            if(!ItemUtil.isNullOrAir(item))
             {
                 NBTItem nbtItem = new NBTItem(item);
                 TradeData tradeData = new TradeData(nbtItem.getCompound(Strings.TAG_SERIALIZED_TRADE_DATA), villagerData.getCures());
@@ -343,6 +462,10 @@ public class WitchdoctorGuiController
         return trades;
     }
 
+    /**
+     * Returns a list of all items in the GUI that have the Free tag (extracted and committed or inserted by the player).
+     * @return The list.
+     */
     @NotNull
     public List<ItemStack> getFreeTradeItems()
     {
@@ -352,7 +475,7 @@ public class WitchdoctorGuiController
         {
             ItemStack item = gui.getItem(i);
 
-            if(!Util.isNullOrAir(item) && GuiUtil.isFree(item))
+            if(!ItemUtil.isNullOrAir(item) && GuiUtil.isFree(item))
             {
                 stacks.add(item);
             }
@@ -361,8 +484,12 @@ public class WitchdoctorGuiController
         return stacks;
     }
 
+    /**
+     * Returns a list of all items in the GUI that have the Extracted tag (set to extract but not yet committed).
+     * @return The list.
+     */
     @NotNull
-    public List<ItemStack> getExtractedTradeItems() // Gets only freshly extracted trades, not ones that were inserted later
+    private List<ItemStack> getExtractedTradeItems() // Gets only freshly extracted trades, not ones that were inserted later
     {
         List<ItemStack> stacks = new ArrayList<>();
 
@@ -370,7 +497,7 @@ public class WitchdoctorGuiController
         {
             ItemStack item = gui.getItem(i);
 
-            if(!Util.isNullOrAir(item) && GuiUtil.isExtracted(item) && !GuiUtil.isFree(item))
+            if(!ItemUtil.isNullOrAir(item) && GuiUtil.isExtracted(item) && !GuiUtil.isFree(item))
             {
                 stacks.add(item);
             }
@@ -379,12 +506,20 @@ public class WitchdoctorGuiController
         return stacks;
     }
 
+    /**
+     * Calculates the cost for curing the current villager.
+     * @return The cost.
+     */
     @NotNull
     private CostData calculateCureCost()
     {
         return plugin.cureCosts.get(villagerData.getCures() + 1);
     }
 
+    /**
+     * Calculates the cost for committing the current changes.
+     * @return The cost.
+     */
     @NotNull
     private CostData calculateCommitCost()
     {
@@ -392,18 +527,31 @@ public class WitchdoctorGuiController
         return CostData.sum(plugin.purgeCost.getMultiplied(tradesPurged), plugin.extractCost.getMultiplied(tradesExtracted), plugin.addCost.getMultiplied(free));
     }
 
+    /**
+     * Calculates the cost for purchasing a scroll.
+     * @return The cost.
+     */
     @NotNull
     private CostData calculateScrollCost()
     {
         return plugin.scrollCost;
     }
 
+    /**
+     * Calculates the cost for extending the trade slots of the current villager.
+     * @return The cost.
+     */
     @NotNull
     private CostData calculateSlotExtensionCost()
     {
         return plugin.slotExtensionCosts.get(villagerData.getTradeSlots() - VillagerData.minTradeSlots);
     }
 
+    /**
+     * Checks whether the player has enough resources in their inventory and money accounts to pay.
+     * @param cost The cost that is checked.
+     * @return True if the player can pay, false otherwise.
+     */
     private boolean playerCanPay(@NotNull final CostData cost)
     {
         for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
@@ -420,6 +568,10 @@ public class WitchdoctorGuiController
         return true;
     }
 
+    /**
+     * Deducts the cost from the player's inventory and money accounts.
+     * @param cost The cost.
+     */
     private void payCosts(@NotNull final CostData cost)
     {
         for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())

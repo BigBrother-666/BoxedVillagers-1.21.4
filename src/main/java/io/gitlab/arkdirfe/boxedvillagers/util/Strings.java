@@ -2,6 +2,14 @@ package io.gitlab.arkdirfe.boxedvillagers.util;
 
 public final class Strings
 {
+    //Command Strings
+    public static String CMD_BV_GIVE = "give";
+    public static String CMD_BV_RELOAD = "reload";
+    public static String CMD_BV_HELP = "help";
+    public static String CMD_BV_GIVE_UNBOUND_SCROLL = "unbound";
+    public static String CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL = "unbound-nonlethal";
+    public static String CMD_BV_GIVE_TRADE = "trade";
+
     // Item Tags
     public static String TAG_BOXED_VILLAGER_ITEM = "BoxedVillagerItem";
     public static String TAG_IS_BOUND = "IsBound";

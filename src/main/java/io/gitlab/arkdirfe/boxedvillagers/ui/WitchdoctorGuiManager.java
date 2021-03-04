@@ -3,8 +3,8 @@ package io.gitlab.arkdirfe.boxedvillagers.ui;
 
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.util.GuiUtil;
+import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
-import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -20,7 +20,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.UUID;
 
 public class WitchdoctorGuiManager implements Listener
 {
@@ -34,12 +34,21 @@ public class WitchdoctorGuiManager implements Listener
     public final int buyScrollSlot = GuiUtil.getGuiSlot(1, 8);
     public final int tradeSlotStart = GuiUtil.getGuiSlot(3, 0);
 
+    /**
+     * Handles creation of witchdoctor GUIs and listens to related events.
+     * @param plugin Reference to the plugin.
+     */
     public WitchdoctorGuiManager(final BoxedVillagers plugin)
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.plugin = plugin;
     }
 
+    /**
+     * Opens a witchdoctor GUI for a player.
+     * @param player Player who ran the command.
+     * @param admin Admin mode, if true costs are disregarded.
+     */
     public void openGui(@NotNull final HumanEntity player, final boolean admin)
     {
         Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE + (admin ? " §4(ADMIN MODE)" : ""));
@@ -49,6 +58,10 @@ public class WitchdoctorGuiManager implements Listener
 
     // --- Interaction Event Handlers
 
+    /**
+     * Handles clicks on the open witchdoctor GUI.
+     * @param event The event.
+     */
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event)
     {
@@ -66,9 +79,9 @@ public class WitchdoctorGuiManager implements Listener
         }
 
         ItemStack slotItem = event.getCurrentItem();
-        boolean slotEmpty = Util.isNullOrAir(slotItem);
+        boolean slotEmpty = ItemUtil.isNullOrAir(slotItem);
         ItemStack cursorItem = view.getCursor();
-        boolean cursorEmpty = Util.isNullOrAir(cursorItem);
+        boolean cursorEmpty = ItemUtil.isNullOrAir(cursorItem);
 
         if(!slotEmpty)
         {
@@ -80,41 +93,14 @@ public class WitchdoctorGuiManager implements Listener
 
         if(event.getRawSlot() == scrollSlot)
         {
-            boolean slotScroll = Util.validateBoundItem(slotItem) != null;
-            boolean cursorScroll = Util.validateBoundItem(cursorItem) != null;
-
             event.setCancelled(true);
-
-            if((slotEmpty && cursorScroll))
-            {
-                controller.getGui().setItem(scrollSlot, cursorItem);
-                view.setCursor(new ItemStack(Material.AIR));
-            }
-            else if((slotScroll && cursorScroll))
-            {
-                controller.getGui().setItem(scrollSlot, cursorItem);
-                view.setCursor(slotItem);
-            }
-            else if((slotScroll && cursorEmpty))
-            {
-                controller.getGui().setItem(scrollSlot, null);
-                view.setCursor(slotItem);
-            }
-
-            controller.resetTracking();
-
-            controller.setScroll(controller.getGui().getItem(scrollSlot));
-            controller.update();
+            controller.clickScrollSlot(view, slotItem, cursorItem, slotEmpty, cursorEmpty);
             return;
         }
 
         if(event.getRawSlot() == cureSlot && controller.getScroll() != null)
         {
-            if(controller.getVillagerData().getCures() != 7)
-            {
-                controller.cureVillager();
-            }
-
+            controller.cureVillager();
             return;
         }
 
@@ -145,26 +131,7 @@ public class WitchdoctorGuiManager implements Listener
         if(controller.isTradeSlot(slotIndex))
         {
             event.setCancelled(true);
-            if((slotEmpty && cursorMovable))
-            {
-                controller.getGui().setItem(slotIndex, cursorItem);
-                view.setCursor(new ItemStack(Material.AIR));
-                controller.tradeMoved();
-            }
-            else if((slotMovable && cursorMovable))
-            {
-                controller.getGui().setItem(slotIndex, cursorItem);
-                view.setCursor(slotItem);
-                controller.tradeMoved();
-            }
-            else if((slotMovable && cursorEmpty) && event.isLeftClick() && !event.isShiftClick())
-            {
-                controller.getGui().setItem(slotIndex, null);
-                view.setCursor(slotItem);
-                controller.tradeMoved();
-            }
-
-            controller.updateCommitButton();
+            controller.clickTradeSlot(view, slotItem, cursorItem, event, slotIndex, slotEmpty, cursorEmpty, slotMovable, cursorMovable);
         }
         else if(cursorMovable && !GuiUtil.isFree(cursorItem))
         {
@@ -191,6 +158,10 @@ public class WitchdoctorGuiManager implements Listener
 
     // --- Shenanigans Preventing Handlers
 
+    /**
+     * Prevents dragging in witchdoctor GUIs.
+     * @param event The event.
+     */
     @EventHandler
     public void onInventoryDragged(final InventoryDragEvent event)
     {
@@ -205,6 +176,10 @@ public class WitchdoctorGuiManager implements Listener
         event.setCancelled(true);
     }
 
+    /**
+     * Prevents a player from dropping movable items out of the witchdoctor GUI by holding them with their cursor and closing the GUI.
+     * @param event The event.
+     */
     @EventHandler
     public void onItemDropped(final PlayerDropItemEvent event)
     {
@@ -214,8 +189,12 @@ public class WitchdoctorGuiManager implements Listener
         }
     }
 
-    // --- Handlers to ensure the player keeps their scroll
+    // --- Handlers to ensure the player keeps their scroll and extracted trades.
 
+    /**
+     * Ensures the player gets their items back when the witchdoctor GUI is closed.
+     * @param event The event.
+     */
     @EventHandler
     public void onCloseInventory(final InventoryCloseEvent event)
     {
@@ -230,6 +209,10 @@ public class WitchdoctorGuiManager implements Listener
         returnItemsAndRemoveFromMap(controller, controller.getPlayer());
     }
 
+    /**
+     * Ensures the player gets their items back when they get disconnected.
+     * @param event The event.
+     */
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event)
     {
@@ -242,6 +225,9 @@ public class WitchdoctorGuiManager implements Listener
 
     // --- Cleanup Methods
 
+    /**
+     * Called on disable, returns items to players who still have a witchdoctor GUI open.
+     */
     public void cleanupOpenGuis()
     {
         for(WitchdoctorGuiController controller : plugin.guiMap.values())
@@ -251,6 +237,11 @@ public class WitchdoctorGuiManager implements Listener
         }
     }
 
+    /**
+     * Returns the scroll as well as any uncommitted free trade items to the player's inventory.
+     * @param controller The controller associated with the witchdoctor GUI.
+     * @param player The player who opened the GUI.
+     */
     private void returnItemsAndRemoveFromMap(@NotNull final WitchdoctorGuiController controller, @NotNull final HumanEntity player)
     {
         if(controller.getScroll() != null)
@@ -268,6 +259,12 @@ public class WitchdoctorGuiManager implements Listener
 
     // Utility Methods
 
+    /**
+     * Checks whether the currently open GUI is a witchdoctor GUI. Protected against renamed chest since those won't have a guiMap entry.
+     * @param view The open inventory view.
+     * @param inventory The open inventory.
+     * @return A WitchdoctorGuiController or null.
+     */
     private WitchdoctorGuiController getValidController(@NotNull InventoryView view, @NotNull final Inventory inventory)
     {
         if(!view.getTitle().startsWith(Strings.UI_WD_TITLE))

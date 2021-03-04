@@ -10,6 +10,7 @@ import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,20 +70,23 @@ public class BoxedVillagers extends JavaPlugin
         initializeMaps();
     }
 
+    /**
+     * Registers commands and listeners and saves a reference to the witchdoctorGuiManager, which is important for cleaning up if the server closes while someone has a GUI open.
+     */
     private void registerCommandsAndListeners()
     {
-        BoxedVillagersCommandExecutor boxedvillagersCmd = new BoxedVillagersCommandExecutor(this);
-        getCommand("boxedvillagers").setExecutor(boxedvillagersCmd);
-        getCommand("boxedvillagers").setTabCompleter(boxedvillagersCmd);
-
         witchdoctorGuiManager = new WitchdoctorGuiManager(this);
-        WitchdoctorCommandExecutor witchdoctorCmd = new WitchdoctorCommandExecutor(this, witchdoctorGuiManager);
-        getCommand("witchdoctor").setExecutor(witchdoctorCmd);
-        getCommand("witchdoctor").setTabCompleter(witchdoctorCmd);
 
+        new BoxedVillagersCommandExecutor(this, "boxedvillagers");
+        new WitchdoctorCommandExecutor(this, witchdoctorGuiManager, "witchdoctor");
         new InteractionListener(this);
+
+        getLogger().info("Registered commands and listeners!");
     }
 
+    /**
+     * Initializes various maps needed for the operation of the plugin.
+     */
     private void initializeMaps()
     {
         helpPages = new HashMap<>();
@@ -93,7 +97,7 @@ public class BoxedVillagers extends JavaPlugin
         extractCost = new CostData();
         addCost = new CostData();
 
-        initHelpPages(Strings.CONFIG_HELP, helpPages);
+        initHelpPages();
 
         initSimpleCostMap(Strings.CONFIG_COST_PURGE, purgeCost);
         initSimpleCostMap(Strings.CONFIG_COST_SCROLL, scrollCost);
@@ -106,23 +110,32 @@ public class BoxedVillagers extends JavaPlugin
         getLogger().info("Loaded costs for operations!");
     }
 
-    private void initHelpPages(@NotNull String configSection, @NotNull Map<String, HelpData> helpPages)
+    /**
+     * Reads help pages from config.
+     */
+    private void initHelpPages()
     {
-                for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
+        ConfigurationSection section = getConfig().getConfigurationSection(Strings.CONFIG_HELP);
+        if(section == null)
         {
-            String title = "";
-            String content = "";
+            getLogger().severe("Config section " + Strings.CONFIG_HELP + " missing!");
+            return;
+        }
 
-            for(String innerKey : getConfig().getConfigurationSection(configSection + "." + key).getKeys(false))
+        for(String key : section.getKeys(false))
+        {
+            String title = getConfig().getString(Strings.CONFIG_HELP + "." + key + ".title");
+            String content = getConfig().getString(Strings.CONFIG_HELP + "." + key + ".content");
+
+            if(title == null)
             {
-                if(innerKey.equalsIgnoreCase("title"))
-                {
-                    title = getConfig().getString(configSection + "." + key + "." + innerKey);
-                }
-                else if(innerKey.equalsIgnoreCase("content"))
-                {
-                    content = getConfig().getString(configSection + "." + key + "." + innerKey);
-                }
+                getLogger().warning("No title found in help page " + key + "!");
+                title = "";
+            }
+            if(content == null)
+            {
+                getLogger().warning("No content found in help page " + key + "!");
+                content = "";
             }
 
             helpPages.put(key, new HelpData(title, content));
@@ -131,9 +144,22 @@ public class BoxedVillagers extends JavaPlugin
         getLogger().info("Loaded " + helpPages.size() + " help pages!");
     }
 
+    /**
+     * Loads a list of CostData from config, validates if it retrieved the correct amount.
+     * @param configSection Config section the list is located in.
+     * @param costs Reference to the list the costs are stored in.
+     * @param expected Expected number of entries.
+     */
     private void initLayeredCostMap(@NotNull String configSection, @NotNull List<CostData> costs, int expected)
     {
-        for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
+        ConfigurationSection section = getConfig().getConfigurationSection(configSection);
+        if(section == null)
+        {
+            getLogger().severe("Config section " + configSection + " missing!");
+            return;
+        }
+
+        for(String key : section.getKeys(false))
         {
             CostData cost = new CostData();
 
@@ -174,9 +200,21 @@ public class BoxedVillagers extends JavaPlugin
         }
     }
 
+    /**
+     * Loads a single CostData from config.
+     * @param configSection Config section the cost is located in.
+     * @param cost Reference to the CostData the cost is stored in.
+     */
     private void initSimpleCostMap(@NotNull String configSection, @NotNull CostData cost)
     {
-        for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
+        ConfigurationSection section = getConfig().getConfigurationSection(configSection);
+        if(section == null)
+        {
+            getLogger().severe("Config section " + configSection + " missing!");
+            return;
+        }
+
+        for(String key : section.getKeys(false))
         {
             Material mat = Material.matchMaterial(key);
             if(mat != null)

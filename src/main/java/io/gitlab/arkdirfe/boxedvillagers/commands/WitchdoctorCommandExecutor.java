@@ -5,6 +5,7 @@ import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -18,10 +19,26 @@ public class WitchdoctorCommandExecutor implements TabExecutor
     private final BoxedVillagers plugin;
     private final WitchdoctorGuiManager gui;
 
-    public WitchdoctorCommandExecutor(final BoxedVillagers plugin, final WitchdoctorGuiManager gui)
+    /**
+     * Handles the /witchdoctor or /wd command.
+     * @param plugin Reference to the plugin.
+     * @param manager The GUI manager class.
+     * @param commandName Name of the command.
+     */
+    public WitchdoctorCommandExecutor(@NotNull final BoxedVillagers plugin, @NotNull final WitchdoctorGuiManager manager, @NotNull String commandName)
     {
         this.plugin = plugin;
-        this.gui = gui;
+        this.gui = manager;
+        PluginCommand cmd = plugin.getCommand(commandName);
+        if(cmd != null)
+        {
+            cmd.setExecutor(this);
+            cmd.setTabCompleter(this);
+        }
+        else
+        {
+            plugin.getLogger().severe("Unable to register BoxedVillager commands! This should never happen, if it does, fix yer damn strings!");
+        }
     }
 
     @Override

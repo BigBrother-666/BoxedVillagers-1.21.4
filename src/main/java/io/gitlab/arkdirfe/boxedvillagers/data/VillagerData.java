@@ -2,17 +2,21 @@ package io.gitlab.arkdirfe.boxedvillagers.data;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Villager;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class VillagerData
@@ -26,8 +30,14 @@ public class VillagerData
     private final int rank;
     private int tradeSlots;
     private long lastRestocked; // In days
+    private ItemStack linkedItem;
 
-    public VillagerData(@NotNull final Villager fromVillager)
+    /**
+     * Creates VillagerData from a villager and an unbound scroll.
+     * @param fromVillager The villager.
+     * @param unboundScroll The unbound scroll.
+     */
+    public VillagerData(@NotNull final Villager fromVillager, @NotNull final NBTItem unboundScroll)
     {
         cures = 0;
         trades = new ArrayList<>();
@@ -41,9 +51,14 @@ public class VillagerData
         rank = fromVillager.getVillagerLevel();
         lastRestocked = Util.getDay(Util.getTotalTime());
         tradeSlots = Math.max(minTradeSlots, trades.size());
+        linkedItem = unboundScroll.getItem();
         attemptRestock();
     }
 
+    /**
+     * Creates VillagerData from an item. Used when reading from an existing bound scroll.
+     * @param fromItem Item to extract from.
+     */
     public VillagerData(@NotNull final NBTItem fromItem)
     {
         trades = new ArrayList<>();
@@ -61,6 +76,8 @@ public class VillagerData
 
             trades.add(new TradeData(recipeCompound, cures));
         }
+
+        linkedItem = fromItem.getItem();
     }
 
     // --- Getters
@@ -127,16 +144,22 @@ public class VillagerData
 
     // --- Serialization
 
+    /**
+     * Updates the bound scroll and returns it in item stack form.
+     * @return The bound scroll.
+     */
     @NotNull
-    public ItemStack writeToItem(@NotNull final NBTItem item)
+    public ItemStack getItem()
     {
-        if(item.hasKey(Strings.TAG_NONLETHAL))
+        NBTItem nbtItem = new NBTItem(linkedItem);
+
+        if(nbtItem.hasKey(Strings.TAG_NONLETHAL))
         {
-            item.removeKey(Strings.TAG_NONLETHAL);
+            nbtItem.removeKey(Strings.TAG_NONLETHAL);
         }
 
-        item.setBoolean(Strings.TAG_IS_BOUND, true);
-        NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
+        nbtItem.setBoolean(Strings.TAG_IS_BOUND, true);
+        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         compound.setInteger(Strings.TAG_CURES, cures);
         compound.setString(Strings.TAG_PROFESSION, profession);
         compound.setInteger(Strings.TAG_RANK, rank);
@@ -150,14 +173,20 @@ public class VillagerData
             trades.get(i).serializeToNBT(entry);
         }
 
-        ItemStack itemStack = item.getItem();
-        itemStack.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+        linkedItem = nbtItem.getItem();
+        linkedItem.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
-        return itemStack;
+        updateTitleAndLore();
+
+        return linkedItem;
     }
 
     // --- General Methods
 
+    /**
+     * Returns a list of MerchantRecipe, needed due to TradeData objects holding the individual entries.
+     * @return The list.
+     */
     @NotNull
     public List<MerchantRecipe> getMerchantRecipes()
     {
@@ -169,20 +198,36 @@ public class VillagerData
         return recipes;
     }
 
-    public void cure(@NotNull final NBTItem item, final int times)
+    /**
+     * Cures the villager.
+     * @param times How many times to cure.
+     */
+    public void cure(final int times)
     {
-        NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
+        NBTItem nbtItem = new NBTItem(linkedItem);
+        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         cures = Math.min(7, cures + times);
         compound.setInteger(Strings.TAG_CURES, cures);
+        linkedItem = nbtItem.getItem();
     }
 
-    public void addTradeSlots(@NotNull final NBTItem item, final int slots)
+    /**
+     * Adds trade slots to the villager.
+     * @param slots How many slots.
+     */
+    public void addTradeSlots(final int slots)
     {
-        NBTCompound compound = item.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
+        NBTItem nbtItem = new NBTItem(linkedItem);
+        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         tradeSlots = Math.min(maxTradeSlots, tradeSlots + slots);
         compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
+        linkedItem = nbtItem.getItem();
     }
 
+    /**
+     * Updates how many uses the trades have left.
+     * @param merchant The merchant generated for the trade GUI.
+     */
     public void updateUses(@NotNull final Merchant merchant)
     {
         for(int i = 0; i < trades.size(); i++)
@@ -192,6 +237,9 @@ public class VillagerData
         }
     }
 
+    /**
+     * Attempts to restock the villager, succeeds or fails based on time passed since last restock.
+     */
     public void attemptRestock()
     {
         long time = Util.getTotalTime();
@@ -225,5 +273,13 @@ public class VillagerData
                 data.getRecipe().setUses(0);
             }
         }
+    }
+
+    /**
+     * Updates item title and lore.
+     */
+    private void updateTitleAndLore()
+    {
+        ItemUtil.setItemTitleLoreAndFlags(linkedItem, "§2Bound Villager Scroll", Arrays.asList("§r§fProfession: §a" + getProfessionAsString(), "§r§fRank: " + getRankAsString(), "§r§fCures: " + getCuresAsString(), "§r§fTrade Slots: " + getTradeSlotsAsString(), "§r§aLeft Click in hand to trade!"), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
     }
 }

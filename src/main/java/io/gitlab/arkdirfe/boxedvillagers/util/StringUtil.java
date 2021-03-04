@@ -15,6 +15,11 @@ public final class StringUtil
     public static int defaultCharacterWidth = 6;
     private static final Map<String, Integer> specialCharacterWidths = Map.ofEntries(new AbstractMap.SimpleEntry<>(" ", 4), new AbstractMap.SimpleEntry<>("!", 2), new AbstractMap.SimpleEntry<>("\"", 5), new AbstractMap.SimpleEntry<>("'", 3), new AbstractMap.SimpleEntry<>(")", 5), new AbstractMap.SimpleEntry<>("*", 5), new AbstractMap.SimpleEntry<>(",", 2), new AbstractMap.SimpleEntry<>(".", 2), new AbstractMap.SimpleEntry<>(":", 2), new AbstractMap.SimpleEntry<>(";", 2), new AbstractMap.SimpleEntry<>("<", 5), new AbstractMap.SimpleEntry<>(">", 5), new AbstractMap.SimpleEntry<>("@", 7), new AbstractMap.SimpleEntry<>("I", 4), new AbstractMap.SimpleEntry<>("[", 4), new AbstractMap.SimpleEntry<>("]", 4), new AbstractMap.SimpleEntry<>("f", 5), new AbstractMap.SimpleEntry<>("i", 2), new AbstractMap.SimpleEntry<>("k", 5), new AbstractMap.SimpleEntry<>("l", 3), new AbstractMap.SimpleEntry<>("t", 4), new AbstractMap.SimpleEntry<>("{", 5), new AbstractMap.SimpleEntry<>("|", 2), new AbstractMap.SimpleEntry<>("}", 5), new AbstractMap.SimpleEntry<>("~", 7));
 
+    /**
+     * Returns a number as roman numerals for enchantment display.
+     * @param number The number to convert.
+     * @return String with the roman numeral.
+     */
     @NotNull
     public static String numberToRoman(int number) // Only 5 for now, expand if needed
     {
@@ -35,11 +40,21 @@ public final class StringUtil
         }
     }
 
+    /**
+     * Returns pixel width of a char.
+     * @param c Char to check.
+     * @return Pixel width.
+     */
     public static int charWidth(final char c)
     {
         return specialCharacterWidths.getOrDefault(String.valueOf(c), defaultCharacterWidth);
     }
 
+    /**
+     * Returns the pixel width of a string.
+     * @param string String to check.
+     * @return Pixel width.
+     */
     public static int stringWidth(@NotNull final String string)
     {
         int width = 0;
@@ -50,6 +65,12 @@ public final class StringUtil
         return width;
     }
 
+    /**
+     * Converts a string to a capitalized version.
+     * @param string The string to convert.
+     * @param separator String to convert to spaces.
+     * @return The capitalized string.
+     */
     @NotNull
     public static String capitalize(@NotNull final String string, @NotNull final String separator)
     {
@@ -67,6 +88,12 @@ public final class StringUtil
         return result.toString();
     }
 
+    /**
+     * Converts a trade to a readable string.
+     * @param recipe The recipe to convert.
+     * @param baseAmount Base amount of first ingredient before cures.
+     * @return The converted recipe.
+     */
     @NotNull
     public static String tradeToString(@NotNull final MerchantRecipe recipe, final int baseAmount)
     {
@@ -97,6 +124,11 @@ public final class StringUtil
         return result.toString();
     }
 
+    /**
+     * Converts a CostData to a series of strings.
+     * @param cost The CostData to convert.
+     * @return List of strings representing the cost.
+     */
     @NotNull
     public static List<String> costToString(@NotNull final CostData cost)
     {

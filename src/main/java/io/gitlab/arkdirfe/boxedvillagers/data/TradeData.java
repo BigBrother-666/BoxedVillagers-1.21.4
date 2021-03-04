@@ -14,6 +14,12 @@ public class TradeData implements Serializable
     private final int baseAmount;
     private final MerchantRecipe recipe;
 
+    /**
+     * From MerchantRecipe
+     * @param reduction By how much each cure reduces the price of the first ingredient.
+     * @param baseAmount Stack size of the first ingredient before reduction.
+     * @param recipe A merchant recipe representing the trade.
+     */
     public TradeData(final int reduction, final int baseAmount, @NotNull final MerchantRecipe recipe)
     {
         this.reduction = reduction;
@@ -21,6 +27,11 @@ public class TradeData implements Serializable
         this.recipe = recipe;
     }
 
+    /**
+     * From NBTCompound
+     * @param recipeCompound The NBTCompound the trade is stored in.
+     * @param cures How often the villager has been cured.
+     */
     public TradeData(@NotNull final NBTCompound recipeCompound, final int cures)
     {
         recipe = new MerchantRecipe(recipeCompound.getItemStack(Strings.TAG_OUTPUT), recipeCompound.getInteger(Strings.TAG_MAX_USES));
@@ -56,6 +67,10 @@ public class TradeData implements Serializable
 
     // --- Serialization
 
+    /**
+     * Adds a serialized representation to an NBTCompound.
+     * @param entry The compound to add to.
+     */
     public void serializeToNBT(@NotNull final NBTCompound entry)
     {
         ItemStack i1 = recipe.getIngredients().get(0);

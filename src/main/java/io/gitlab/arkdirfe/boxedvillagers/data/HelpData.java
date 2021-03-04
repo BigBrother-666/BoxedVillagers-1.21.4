@@ -11,12 +11,22 @@ public class HelpData
     private final String title;
     private final String content;
 
-    public HelpData(final String title, final String content)
+    /**
+     * Describes a single help page.
+     * @param title Title of the help page.
+     * @param content Content of the help page.
+     */
+    public HelpData(@NotNull final String title, @NotNull final String content)
     {
         this.title = title;
         this.content = content;
     }
 
+    /**
+     * Formats the help page to be printed out in chat.
+     * @param lineWidth How many standard symbols wide the message should be before a line wraps.
+     * @return An array of lines.
+     */
     @NotNull
     public String[] getFormatted(final int lineWidth)
     {
@@ -35,6 +45,11 @@ public class HelpData
         return lines.toArray(new String[0]);
     }
 
+    /**
+     * Formats the content to fit.
+     * @param lineWidth How many standard symbols wide the message should be before a line wraps.
+     * @return List of lines.
+     */
     @NotNull
     private List<String> getContent(final int lineWidth)
     {
@@ -51,6 +66,13 @@ public class HelpData
             {
                 line.append(word.toString()).append(" ");
                 word = new StringBuilder();
+            }
+            else if(c == '\n')
+            {
+                line.append(word.toString()).append(" ");
+                word = new StringBuilder();
+                lines.add(line.toString());
+                line = new StringBuilder();
             }
             else
             {
@@ -70,6 +92,12 @@ public class HelpData
         return lines;
     }
 
+    /**
+     * Pads a string to be as centered as possible.
+     * @param string The string to pad.
+     * @param targetWidth How wide the line is.
+     * @return The padded string.
+     */
     @NotNull
     private String getCenterPadded(@NotNull final String string, final int targetWidth)
     {
