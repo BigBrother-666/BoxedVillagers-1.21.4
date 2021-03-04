@@ -10,7 +10,6 @@ import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -31,9 +30,10 @@ public class BoxedVillagers extends JavaPlugin
     @Override
     public void onEnable()
     {
+        guiMap = new HashMap<>();
         Util.plugin = this;
-        saveDefaultConfig();
-        initializeMaps();
+
+        reloadConfig();
 
         BoxedVillagersCommandExecutor boxedvillagersCmd = new BoxedVillagersCommandExecutor(this);
         this.getCommand("boxedvillagers").setExecutor(boxedvillagersCmd);
@@ -46,11 +46,6 @@ public class BoxedVillagers extends JavaPlugin
 
         new InteractionListener(this);
         getLogger().info("Loaded!");
-
-        if(getServer().getWorld(getConfig().getString(Strings.CONFIG_TIME_WORLD)) == null)
-        {
-            getLogger().severe("No world with name " + Strings.CONFIG_TIME_WORLD + ", this WILL break!");
-        }
     }
 
     @Override
@@ -60,9 +55,30 @@ public class BoxedVillagers extends JavaPlugin
         getLogger().info("Unloaded!");
     }
 
+    @Override
+    public void reloadConfig()
+    {
+        super.reloadConfig();
+        saveDefaultConfig();
+
+        Util.timeWorldName = getConfig().getString(Strings.CONFIG_TIME_WORLD);
+        if(Util.timeWorldName == null)
+        {
+            getLogger().severe("Error loading time world from config!");
+        }
+        else
+        {
+            if(getServer().getWorld(Util.timeWorldName) == null)
+            {
+                getLogger().severe("No world with name " + Strings.CONFIG_TIME_WORLD + ", this WILL break!");
+            }
+        }
+
+        initializeMaps();
+    }
+
     private void initializeMaps()
     {
-        guiMap = new HashMap<>();
         helpPages = new HashMap<>();
         cureCosts = new ArrayList<>();
         slotExtensionCosts = new ArrayList<>();
@@ -78,10 +94,10 @@ public class BoxedVillagers extends JavaPlugin
         initSimpleCostMap(Strings.CONFIG_COST_EXTRACT, extractCost);
         initSimpleCostMap(Strings.CONFIG_COST_ADD, addCost);
 
-        initLayeredCostMap(Strings.CONFIG_COST_CURE, cureCosts, 1, 7);
-        initLayeredCostMap(Strings.CONFIG_COST_SLOT, slotExtensionCosts, 11, 17);
+        initLayeredCostMap(Strings.CONFIG_COST_CURE, cureCosts, 7);
+        initLayeredCostMap(Strings.CONFIG_COST_SLOT, slotExtensionCosts, 17);
 
-        getLogger().info("Registered costs for operations!");
+        getLogger().info("Loaded costs for operations!");
     }
 
     private void initHelpPages(String configSection, Map<String, HelpData> helpPages)
@@ -106,18 +122,16 @@ public class BoxedVillagers extends JavaPlugin
             helpPages.put(key, new HelpData(title, content));
         }
 
-        getLogger().info("Registered " + helpPages.size() + " help pages!");
+        getLogger().info("Loaded " + helpPages.size() + " help pages!");
     }
 
-    private void initLayeredCostMap(String configSection, List<CostData> costs, int from, int expected)
+    private void initLayeredCostMap(String configSection, List<CostData> costs, int expected)
     {
-        int i = from;
-
         for(String key : getConfig().getConfigurationSection(configSection).getKeys(false))
         {
             CostData cost = new CostData();
 
-            for (String innerKey : getConfig().getConfigurationSection(configSection + "." + i).getKeys(false))
+            for (String innerKey : getConfig().getConfigurationSection(configSection + "." + key).getKeys(false))
             {
                 if(innerKey.equalsIgnoreCase("free"))
                 {
@@ -127,17 +141,17 @@ public class BoxedVillagers extends JavaPlugin
                 Material mat = Material.matchMaterial(innerKey);
                 if(mat != null)
                 {
-                    cost.addResource(mat, getConfig().getInt(configSection + "." + i + "." + mat.toString()));
+                    cost.addResource(mat, getConfig().getInt(configSection + "." + key + "." + mat.toString()));
                     continue;
                 }
 
                 if(innerKey.equalsIgnoreCase("money"))
                 {
-                    cost.setMoney(getConfig().getInt(configSection + "." + i + "." + innerKey));
+                    cost.setMoney(getConfig().getInt(configSection + "." + key + "." + innerKey));
                 }
                 else if(innerKey.equalsIgnoreCase("crystals"))
                 {
-                    cost.setCrystals(getConfig().getInt(configSection + "." + i + "." + innerKey));
+                    cost.setCrystals(getConfig().getInt(configSection + "." + key + "." + innerKey));
                 }
                 else
                 {
@@ -146,7 +160,6 @@ public class BoxedVillagers extends JavaPlugin
             }
 
             costs.add(cost);
-            i++;
         }
 
         if(costs.size() != expected)

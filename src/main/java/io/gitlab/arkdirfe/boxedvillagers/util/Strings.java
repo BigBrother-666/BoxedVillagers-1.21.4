@@ -1,16 +1,5 @@
 package io.gitlab.arkdirfe.boxedvillagers.util;
 
-import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MerchantRecipe;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 public final class Strings
 {
     // Item Tags

@@ -2,7 +2,6 @@ package io.gitlab.arkdirfe.boxedvillagers.ui;
 
 
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
-import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
 import io.gitlab.arkdirfe.boxedvillagers.util.GuiUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
@@ -25,13 +24,6 @@ import java.util.*;
 public class WitchdoctorGuiManager implements Listener
 {
     private final BoxedVillagers plugin;
-    private final Map<UUID, WitchdoctorGuiController> guiMap;
-    public final List<CostData> cureCosts;
-    public final List<CostData> slotExtensionCosts;
-    public final CostData purgeCost;
-    public final CostData scrollCost;
-    public final CostData extractCost;
-    public final CostData addCost;
 
     public final int scrollSlot = GuiUtil.getGuiSlot(1, 4);
     public final int helpSlot = GuiUtil.getGuiSlot(0, 4);
@@ -44,22 +36,14 @@ public class WitchdoctorGuiManager implements Listener
     public WitchdoctorGuiManager(BoxedVillagers plugin)
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-
         this.plugin = plugin;
-        this.guiMap = plugin.guiMap;
-        this.cureCosts = plugin.cureCosts;
-        this.slotExtensionCosts = plugin.slotExtensionCosts;
-        this.purgeCost = plugin.purgeCost;
-        this.scrollCost = plugin.scrollCost;
-        this.extractCost = plugin.extractCost;
-        this.addCost = plugin.addCost;
     }
 
     public void openGui(final HumanEntity player, boolean admin)
     {
         Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE + (admin ? " §4(ADMIN MODE)" : ""));
-        WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, admin);
-        guiMap.put(player.getUniqueId(), controller);
+        WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, plugin, admin);
+        plugin.guiMap.put(player.getUniqueId(), controller);
     }
 
     // --- Interaction Event Handlers
@@ -68,13 +52,7 @@ public class WitchdoctorGuiManager implements Listener
     public void onInventoryClick(final InventoryClickEvent event)
     {
         InventoryView view = event.getView();
-        if(!view.getTitle().startsWith(Strings.UI_WD_TITLE))
-        {
-            return;
-        }
-
-        HumanEntity player =  event.getInventory().getViewers().get(0);
-        WitchdoctorGuiController controller = guiMap.get(player.getUniqueId());
+        WitchdoctorGuiController controller = getValidController(view, event.getInventory());
 
         if(controller == null)
         {
@@ -216,7 +194,9 @@ public class WitchdoctorGuiManager implements Listener
     public void onInventoryDragged(InventoryDragEvent event)
     {
         InventoryView view = event.getView();
-        if(!view.getTitle().startsWith(Strings.UI_WD_TITLE))
+        WitchdoctorGuiController controller = getValidController(view, event.getInventory());
+
+        if(controller == null)
         {
             return;
         }
@@ -238,34 +218,24 @@ public class WitchdoctorGuiManager implements Listener
     @EventHandler
     public void onCloseInventory(final InventoryCloseEvent event)
     {
-        if(!event.getView().getTitle().startsWith(Strings.UI_WD_TITLE))
-        {
-            return;
-        }
-
-        if(guiMap.size() == 0)
-        {
-            return;
-        }
-
-        HumanEntity player = event.getInventory().getViewers().get(0);
-        WitchdoctorGuiController controller = guiMap.get(player.getUniqueId());
+        InventoryView view = event.getView();
+        WitchdoctorGuiController controller = getValidController(view, event.getInventory());
 
         if(controller == null)
         {
             return;
         }
 
-        returnItemsAndRemoveFromMap(controller, player);
+        returnItemsAndRemoveFromMap(controller, controller.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event)
     {
         UUID uuid = event.getPlayer().getUniqueId();
-        if(guiMap.containsKey(uuid))
+        if(plugin.guiMap.containsKey(uuid))
         {
-            returnItemsAndRemoveFromMap(guiMap.get(uuid), event.getPlayer());
+            returnItemsAndRemoveFromMap(plugin.guiMap.get(uuid), event.getPlayer());
         }
     }
 
@@ -273,7 +243,7 @@ public class WitchdoctorGuiManager implements Listener
 
     public void cleanupOpenGuis()
     {
-        for(WitchdoctorGuiController controller : guiMap.values())
+        for(WitchdoctorGuiController controller : plugin.guiMap.values())
         {
             HumanEntity player = controller.getPlayer();
             returnItemsAndRemoveFromMap(controller, player);
@@ -292,6 +262,19 @@ public class WitchdoctorGuiManager implements Listener
             player.getInventory().addItem(item);
         }
 
-        guiMap.remove(player.getUniqueId());
+        plugin.guiMap.remove(player.getUniqueId());
+    }
+
+    // Utility Methods
+
+    private WitchdoctorGuiController getValidController(InventoryView view, Inventory inventory)
+    {
+        if(!view.getTitle().startsWith(Strings.UI_WD_TITLE))
+        {
+            return null;
+        }
+
+        HumanEntity player = inventory.getViewers().get(0);
+        return plugin.guiMap.get(player.getUniqueId());
     }
 }

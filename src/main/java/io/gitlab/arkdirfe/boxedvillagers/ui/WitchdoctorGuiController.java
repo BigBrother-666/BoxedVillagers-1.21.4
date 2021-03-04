@@ -1,7 +1,7 @@
 package io.gitlab.arkdirfe.boxedvillagers.ui;
 
-import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
 import io.gitlab.arkdirfe.boxedvillagers.data.TradeData;
 import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
@@ -11,13 +11,10 @@ import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
@@ -39,12 +36,14 @@ public class WitchdoctorGuiController
     public final boolean extractPerms;
 
     private final WitchdoctorGuiManager manager;
+    private final BoxedVillagers plugin;
 
-    public WitchdoctorGuiController(Inventory gui, HumanEntity player,  WitchdoctorGuiManager manager, boolean admin)
+    public WitchdoctorGuiController(Inventory gui, HumanEntity player,  WitchdoctorGuiManager manager, BoxedVillagers plugin, boolean admin)
     {
         this.player = player;
         this.gui = gui;
         this.manager = manager;
+        this.plugin = plugin;
         this.admin = admin;
         tradeSlotEnd = manager.tradeSlotStart;
 
@@ -166,7 +165,7 @@ public class WitchdoctorGuiController
 
     public void updateCureButton()
     {
-        gui.setItem(manager.cureSlot, ItemUtil.getCureItem(villagerData.getCures(), villagerData, calculateCureCost()));
+        gui.setItem(manager.cureSlot, ItemUtil.getCureItem(villagerData, calculateCureCost()));
     }
 
     public void updateCommitButton()
@@ -377,23 +376,23 @@ public class WitchdoctorGuiController
 
     private CostData calculateCureCost()
     {
-        return manager.cureCosts.get(villagerData.getCures() + 1);
+        return plugin.cureCosts.get(villagerData.getCures() + 1);
     }
 
     private CostData calculateCommitCost()
     {
         int free = getFreeTradeItems().size();
-        return CostData.sum(manager.purgeCost.getMultiplied(tradesPurged), manager.extractCost.getMultiplied(tradesExtracted), manager.addCost.getMultiplied(free));
+        return CostData.sum(plugin.purgeCost.getMultiplied(tradesPurged), plugin.extractCost.getMultiplied(tradesExtracted), plugin.addCost.getMultiplied(free));
     }
 
     private CostData calculateScrollCost()
     {
-        return manager.scrollCost;
+        return plugin.scrollCost;
     }
 
     private CostData calculateSlotExtensionCost()
     {
-        return manager.slotExtensionCosts.get(villagerData.getTradeSlots() - VillagerData.minTradeSlots);
+        return plugin.slotExtensionCosts.get(villagerData.getTradeSlots() - VillagerData.minTradeSlots);
     }
 
     private boolean playerCanPay(CostData cost)

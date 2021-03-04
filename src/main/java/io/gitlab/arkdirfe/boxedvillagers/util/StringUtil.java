@@ -12,7 +12,7 @@ import java.util.*;
 public final class StringUtil
 {
     public static int defaultCharacterWidth = 6;
-    private static Map<String, Integer> specialCharacterWidths = Map.ofEntries(
+    private static final Map<String, Integer> specialCharacterWidths = Map.ofEntries(
             new AbstractMap.SimpleEntry<>(" ", 4),
             new AbstractMap.SimpleEntry<>("!", 2),
             new AbstractMap.SimpleEntry<>("\"", 5),

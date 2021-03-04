@@ -11,10 +11,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public final class ItemUtil
 {
@@ -65,7 +62,7 @@ public final class ItemUtil
         Util.setItemTitleLoreAndFlags(item, "§2Help",
                 Arrays.asList("§r§fPlace your bound scroll below to begin the process.",
                         "§r§fYou can purchase scrolls at the right."),
-                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
+                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
@@ -90,7 +87,7 @@ public final class ItemUtil
 
         Util.setItemTitleLoreAndFlags(item, "§2Help",
                 lore,
-                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
+                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
@@ -146,7 +143,7 @@ public final class ItemUtil
         return GuiUtil.setUninteractable(item);
     }
 
-    public static ItemStack getCureItem(int cures, VillagerData villagerData, CostData cureCost)
+    public static ItemStack getCureItem(VillagerData villagerData, CostData cureCost)
     {
         ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
 
@@ -217,7 +214,7 @@ public final class ItemUtil
 
         Util.setItemTitleLoreAndFlags(item, "§2Commit Changes",
                 lore,
-                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
+                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         return GuiUtil.setUninteractable(item);
     }
@@ -239,7 +236,7 @@ public final class ItemUtil
 
         Util.setItemTitleLoreAndFlags(item, "§aStored Trade",
                 lore,
-                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
+                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         NBTItem nbtItem = new NBTItem(item);
         NBTCompound compound = nbtItem.addCompound(Strings.TAG_SERIALIZED_TRADE_DATA);

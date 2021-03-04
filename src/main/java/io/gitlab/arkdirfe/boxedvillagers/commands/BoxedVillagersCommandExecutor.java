@@ -20,7 +20,6 @@ import org.bukkit.inventory.MerchantRecipe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 public class BoxedVillagersCommandExecutor implements TabExecutor
 {
@@ -156,7 +155,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     }
                     return true;
                 }
-                else if(args[0].equalsIgnoreCase("help"))
+                else if(subCmd.equalsIgnoreCase("help"))
                 {
                     if(args.length == 1 && plugin.helpPages.containsKey("default"))
                     {
@@ -174,6 +173,11 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                             sender.sendMessage("§cNo help page available under this name!");
                         }
                     }
+                    return true;
+                }
+                else if(subCmd.equalsIgnoreCase("reload"))
+                {
+                    plugin.reloadConfig();
                     return true;
                 }
             }
@@ -216,7 +220,14 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
                 if((args.length == 0 || args.length == 1))
                 {
-                    return Arrays.asList("give", "cure", "help");
+                    if(sender.hasPermission(Strings.PERM_ADMIN))
+                    {
+                        return Arrays.asList("give", "cure", "help", "reload");
+                    }
+                    else
+                    {
+                        return Arrays.asList("help");
+                    }
                 }
             }
         }

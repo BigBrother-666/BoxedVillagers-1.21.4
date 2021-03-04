@@ -9,14 +9,14 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 public final class Util
 {
     public static BoxedVillagers plugin;
+    public static String timeWorldName = "";
 
     public static void updateBoundScrollTooltip(ItemStack item, VillagerData data)
     {
@@ -27,28 +27,19 @@ public final class Util
                         "§r§fCures: " + data.getCuresAsString(),
                         "§r§fTrade Slots: " + data.getTradeSlotsAsString(),
                         "§r§aLeft Click in hand to trade!"),
-                Arrays.asList(ItemFlag.HIDE_ENCHANTS));
+                Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
     }
 
     public static long getTotalTime()
     {
-        String worldName = plugin.getConfig().getString(Strings.CONFIG_TIME_WORLD);
-
-        if(worldName != null)
+        World world = plugin.getServer().getWorld(timeWorldName);
+        if(world != null)
         {
-            World world = plugin.getServer().getWorld(worldName);
-            if(world != null)
-            {
-                return world.getFullTime();
-            }
-            else
-            {
-                logSevere("No world named " + worldName + "!");
-            }
+            return world.getFullTime();
         }
         else
         {
-            logSevere("Error retrieving world name from config!");
+            plugin.getLogger().severe("No world named " + timeWorldName + "!");
         }
 
         return -1;
@@ -93,7 +84,7 @@ public final class Util
         return null;
     }
 
-    public static ItemStack setItemTitleLoreAndFlags(ItemStack item, String title, List<String> lore, List<ItemFlag> flags)
+    public static void setItemTitleLoreAndFlags(ItemStack item, String title, List<String> lore, List<ItemFlag> flags)
     {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(title);
@@ -108,8 +99,6 @@ public final class Util
         }
 
         item.setItemMeta(meta);
-
-        return item;
     }
 
 
