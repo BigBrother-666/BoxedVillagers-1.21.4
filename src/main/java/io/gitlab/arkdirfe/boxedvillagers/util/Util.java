@@ -23,7 +23,7 @@ public final class Util
         }
         else
         {
-            plugin.getLogger().severe("No world named " + timeWorldName + "!");
+            plugin.getLogger().severe(String.format("No world named %s!", timeWorldName));
         }
 
         return -1;

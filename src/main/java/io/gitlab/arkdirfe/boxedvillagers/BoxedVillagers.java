@@ -63,7 +63,7 @@ public class BoxedVillagers extends JavaPlugin
         {
             if(getServer().getWorld(Util.timeWorldName) == null)
             {
-                getLogger().severe("No world with name " + Strings.CONFIG_TIME_WORLD + ", this WILL break!");
+                getLogger().severe(String.format(Strings.LOG_DYN_NO_WORLD, Util.timeWorldName));
             }
         }
 
@@ -118,7 +118,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = getConfig().getConfigurationSection(Strings.CONFIG_HELP);
         if(section == null)
         {
-            getLogger().severe(String.format("Config section %s missing!", Strings.CONFIG_HELP));
+            getLogger().severe(String.format(Strings.LOG_DYN_MISSING_CONFIG_SECTION, Strings.CONFIG_HELP));
             return;
         }
 
@@ -129,12 +129,12 @@ public class BoxedVillagers extends JavaPlugin
 
             if(title == null)
             {
-                getLogger().warning(String.format("No title found in help page %s!", key));
+                getLogger().warning(String.format(Strings.LOG_DYN_NO_TITLE, key));
                 title = "";
             }
             if(content == null)
             {
-                getLogger().warning(String.format("No content found in help page %s!", key));
+                getLogger().warning(String.format(Strings.LOG_DYN_NO_CONTENT, key));
                 content = "";
             }
 
@@ -155,7 +155,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().severe(String.format("Config section %s missing!", configSection));
+            getLogger().severe(String.format(Strings.LOG_DYN_MISSING_CONFIG_SECTION, configSection));
             return;
         }
 
@@ -187,7 +187,7 @@ public class BoxedVillagers extends JavaPlugin
                 }
                 else
                 {
-                    getLogger().warning(String.format("Unknown material or unsupported currency %s! Ignoring.", innerKey));
+                    getLogger().warning(String.format(Strings.LOG_DYN_UNKNOWN_MATERIAL, innerKey));
                 }
             }
 
@@ -196,7 +196,7 @@ public class BoxedVillagers extends JavaPlugin
 
         if(costs.size() != expected)
         {
-            getLogger().severe(String.format("Unexpected number of cost entries for %s (got %d, expected %d)! This WILL break!", configSection, costs.size(), expected));
+            getLogger().severe(String.format(Strings.LOG_DYN_UNEXPECTED_NUMBER, configSection, costs.size(), expected));
         }
     }
 
@@ -210,7 +210,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().severe(String.format("Config section %s missing!", configSection));
+            getLogger().severe(String.format(Strings.LOG_DYN_MISSING_CONFIG_SECTION, configSection));
             return;
         }
 

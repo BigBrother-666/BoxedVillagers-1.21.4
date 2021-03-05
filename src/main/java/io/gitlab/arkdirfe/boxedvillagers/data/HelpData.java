@@ -35,9 +35,9 @@ public class HelpData
 
         lines.add("");
         lines.add("<info>" + "=".repeat(lineWidth));
-        lines.add("<info>" + getCenterPadded(title, lineWidth * StringUtil.defaultCharacterWidth));
+        lines.add("<info>" + getCenterPadded(title, lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
         lines.add("<info>" + "=".repeat(lineWidth));
-        lines.addAll(getContent(lineWidth * StringUtil.defaultCharacterWidth));
+        lines.addAll(getContent(lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
         lines.add("<info>" + "-".repeat(lineWidth));
 
         return StringFormatter.formatAll(lines).toArray(new String[0]);

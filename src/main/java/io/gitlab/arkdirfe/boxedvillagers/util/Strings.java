@@ -84,8 +84,8 @@ public final class Strings
     // Dynamic Tooltip Strings
     public static final String TT_DYN_BOUND_SCROLL_LORE = "Name: %s\nCures: %s\nTrade Slots: %s\n<info>Right Click in hand to trade!"; // string name, string cures as string, string slots as string
     public static final String TT_DYN_SLOTS_AS_STRING_NOT_FULL = "<dynamic>%d<norm>/<static final>%d"; // int current, int max
-    public static final String TT_DYN_SLOTS_AS_STRING_FULL = "<dynamic>%d/%d"; // int max, int max;
-    public static final String TT_DYN_SLOT_EXTENSION_SLOTS = "A villager can hold up to <static final>%d<norm> trades.\nIt can currently hold <dynamic>%d<norm>."; // int max, int current
+    public static final String TT_DYN_SLOTS_AS_STRING_FULL = "<dynamic>%d/%d"; // int max slots, int max slots;
+    public static final String TT_DYN_SLOT_EXTENSION_SLOTS = "A villager can hold up to <static final>%d<norm> trades.\nIt can currently hold <dynamic>%d<norm>."; // int max slots, int current slots
     public static final String TT_DYN_COMMIT_PURGED = "<static final>%d<norm> trades were purged."; // int purged
     public static final String TT_DYN_COMMIT_EXTRACTED = "<static final>%d<norm> trades were extracted."; // int extracted
     public static final String TT_DYN_COMMIT_ADDED = "<static final>%d<norm> new trades were added."; // int added
@@ -111,4 +111,12 @@ public final class Strings
     public static final String CHAT_NO_HELP_PAGE = "<warn>No help page available under this name!";
     public static final String CHAT_SCROLL_BOUND = "<warn>Scroll already bound!";
     public static final String CHAT_NO_TRADES = "<warn>That villager has no trades!";
+
+    // Dynamic Debug Strings (Logger-facing)
+    public static final String LOG_DYN_NO_WORLD = "No world with name %s, this WILL break!"; // string world name
+    public static final String LOG_DYN_MISSING_CONFIG_SECTION = "Config section %s missing!"; // string config section
+    public static final String LOG_DYN_NO_TITLE = "No title found in help page %s!"; // string help title
+    public static final String LOG_DYN_NO_CONTENT = "No content found in help page %s!"; // string help content
+    public static final String LOG_DYN_UNKNOWN_MATERIAL = "Unknown material or unsupported currency %s! Ignoring."; // string currency key
+    public static final String LOG_DYN_UNEXPECTED_NUMBER = "Unexpected number of cost entries for %s (got %d, expected %d)! This WILL break!"; // string config section, int list size, int expected size
 }
