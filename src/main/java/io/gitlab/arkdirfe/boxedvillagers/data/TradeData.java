@@ -6,9 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
-
-public class TradeData implements Serializable
+public class TradeData
 {
     private final int reduction;
     private final int baseAmount;

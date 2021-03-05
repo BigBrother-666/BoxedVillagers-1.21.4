@@ -17,8 +17,8 @@ import java.util.List;
 
 public class VillagerData
 {
-    public static int maxTradeSlots = 27;
-    public static int minTradeSlots = 10;
+    public static final int MAX_TRADE_SLOTS = 27;
+    public static final int MIN_TRADE_SLOTS = 10;
 
     private int cures;
     private List<TradeData> trades;
@@ -47,7 +47,7 @@ public class VillagerData
         profession = fromVillager.getProfession().name();
         rank = fromVillager.getVillagerLevel();
         lastRestocked = Util.getDay(Util.getTotalTime());
-        tradeSlots = Math.max(minTradeSlots, trades.size());
+        tradeSlots = Math.max(MIN_TRADE_SLOTS, trades.size());
         linkedItem = unboundScroll.getItem();
         name = fromVillager.getName();
         attemptRestock();
@@ -106,7 +106,7 @@ public class VillagerData
     @NotNull
     public String getTradeSlotsAsString()
     {
-        return tradeSlots != maxTradeSlots ? String.format(Strings.TT_DYN_SLOTS_AS_STRING_NOT_FULL, tradeSlots, maxTradeSlots) : String.format(Strings.TT_DYN_SLOTS_AS_STRING_FULL, maxTradeSlots, maxTradeSlots);
+        return tradeSlots != MAX_TRADE_SLOTS ? String.format(Strings.TT_DYN_SLOTS_AS_STRING_NOT_FULL, tradeSlots, MAX_TRADE_SLOTS) : String.format(Strings.TT_DYN_SLOTS_AS_STRING_FULL, MAX_TRADE_SLOTS, MAX_TRADE_SLOTS);
     }
 
     // --- Setters/Accessors
@@ -194,7 +194,7 @@ public class VillagerData
     {
         NBTItem nbtItem = new NBTItem(linkedItem);
         NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
-        tradeSlots = Math.min(maxTradeSlots, tradeSlots + slots);
+        tradeSlots = Math.min(MAX_TRADE_SLOTS, tradeSlots + slots);
         compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
         linkedItem = nbtItem.getItem();
     }

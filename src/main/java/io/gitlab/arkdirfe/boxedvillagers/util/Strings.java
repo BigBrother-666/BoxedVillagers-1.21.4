@@ -84,7 +84,7 @@ public final class Strings
     // Dynamic Tooltip Strings
     public static final String TT_DYN_BOUND_SCROLL_LORE = "Name: %s\nCures: %s\nTrade Slots: %s\n<info>Right Click in hand to trade!"; // string name, string cures as string, string slots as string
     public static final String TT_DYN_SLOTS_AS_STRING_NOT_FULL = "<dynamic>%d<norm>/<static final>%d"; // int current, int max
-    public static final String TT_DYN_SLOTS_AS_STRING_FULL = "<dynamic>%d/%d"; // int max slots, int max slots;
+    public static final String TT_DYN_SLOTS_AS_STRING_FULL = "<dynamic>%d/%d"; // int max slots, int max slots
     public static final String TT_DYN_SLOT_EXTENSION_SLOTS = "A villager can hold up to <static final>%d<norm> trades.\nIt can currently hold <dynamic>%d<norm>."; // int max slots, int current slots
     public static final String TT_DYN_COMMIT_PURGED = "<static final>%d<norm> trades were purged."; // int purged
     public static final String TT_DYN_COMMIT_EXTRACTED = "<static final>%d<norm> trades were extracted."; // int extracted

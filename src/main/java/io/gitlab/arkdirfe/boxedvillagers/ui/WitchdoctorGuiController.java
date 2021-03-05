@@ -340,7 +340,7 @@ public class WitchdoctorGuiController
      */
     public void extendSlots()
     {
-        if(villagerData.getTradeSlots() == VillagerData.maxTradeSlots)
+        if(villagerData.getTradeSlots() == VillagerData.MAX_TRADE_SLOTS)
         {
             return;
         }
@@ -565,11 +565,11 @@ public class WitchdoctorGuiController
     @Nullable
     private CostData calculateSlotExtensionCost()
     {
-        if(villagerData.getTradeSlots() == VillagerData.maxTradeSlots)
+        if(villagerData.getTradeSlots() == VillagerData.MAX_TRADE_SLOTS)
         {
             return null;
         }
-        return plugin.slotExtensionCosts.get(villagerData.getTradeSlots() - VillagerData.minTradeSlots);
+        return plugin.slotExtensionCosts.get(villagerData.getTradeSlots() - VillagerData.MIN_TRADE_SLOTS);
     }
 
     /**

@@ -54,16 +54,16 @@ public class BoxedVillagers extends JavaPlugin
         super.reloadConfig();
         saveDefaultConfig();
 
-        Util.timeWorldName = getConfig().getString(Strings.CONFIG_TIME_WORLD);
-        if(Util.timeWorldName == null)
+        String timeWorldName = getConfig().getString(Strings.CONFIG_TIME_WORLD);
+        if(timeWorldName == null)
         {
             getLogger().severe("Error loading time world from config!");
         }
         else
         {
-            if(getServer().getWorld(Util.timeWorldName) == null)
+            if(getServer().getWorld(timeWorldName) == null)
             {
-                getLogger().severe(String.format(Strings.LOG_DYN_NO_WORLD, Util.timeWorldName));
+                getLogger().severe(String.format(Strings.LOG_DYN_NO_WORLD, timeWorldName));
             }
         }
 
@@ -174,10 +174,8 @@ public class BoxedVillagers extends JavaPlugin
                 if(mat != null)
                 {
                     cost.addResource(mat, getConfig().getInt(configSection + "." + key + "." + mat.toString()));
-                    continue;
                 }
-
-                if(innerKey.equalsIgnoreCase("money"))
+                else if(innerKey.equalsIgnoreCase("money"))
                 {
                     cost.setMoney(getConfig().getInt(configSection + "." + key + "." + innerKey));
                 }

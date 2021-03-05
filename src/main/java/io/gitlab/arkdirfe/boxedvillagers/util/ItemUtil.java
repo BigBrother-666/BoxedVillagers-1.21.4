@@ -267,7 +267,7 @@ public final class ItemUtil
 
         if(slotCost != null)
         {
-            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_SLOT_EXTENSION_SLOTS, VillagerData.maxTradeSlots, villagerData.getTradeSlots())));
+            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_SLOT_EXTENSION_SLOTS, VillagerData.MAX_TRADE_SLOTS, villagerData.getTradeSlots())));
             lore.add(Strings.TT_APPLIES_INSTANTLY);
 
             if(slotCost.hasCost())

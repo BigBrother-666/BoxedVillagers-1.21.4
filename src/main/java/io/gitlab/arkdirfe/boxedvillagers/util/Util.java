@@ -8,7 +8,6 @@ public final class Util
     private Util(){}
 
     public static BoxedVillagers plugin;
-    public static String timeWorldName = "";
 
     /**
      * Gets the total world time from the configured world. This value is used for keeping track of villager restocks.
@@ -16,14 +15,18 @@ public final class Util
      */
     public static long getTotalTime()
     {
-        World world = plugin.getServer().getWorld(timeWorldName);
-        if(world != null)
+        String timeWorldName = plugin.getConfig().getString(Strings.CONFIG_TIME_WORLD);
+        if(timeWorldName != null)
         {
-            return world.getFullTime();
-        }
-        else
-        {
-            plugin.getLogger().severe(String.format("No world named %s!", timeWorldName));
+            World world = plugin.getServer().getWorld(timeWorldName);
+            if(world != null)
+            {
+                return world.getFullTime();
+            }
+            else
+            {
+                plugin.getLogger().severe(String.format(Strings.LOG_DYN_NO_WORLD, timeWorldName));
+            }
         }
 
         return -1;

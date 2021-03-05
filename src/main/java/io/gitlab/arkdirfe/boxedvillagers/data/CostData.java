@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 public class CostData
