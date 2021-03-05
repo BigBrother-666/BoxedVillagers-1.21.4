@@ -1,7 +1,9 @@
 package io.gitlab.arkdirfe.boxedvillagers.commands;
 
+import de.tr7zw.nbtapi.NBTItem;
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.data.HelpData;
+import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
 import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.Bukkit;
@@ -12,15 +14,16 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class BoxedVillagersCommandExecutor implements TabExecutor
 {
     private final BoxedVillagers plugin;
+    private final int helpWidth;
 
     /**
      * Handles the /boxedvillagers or /bv commands
@@ -30,6 +33,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
     public BoxedVillagersCommandExecutor(@NotNull final BoxedVillagers plugin, @NotNull final String commandName)
     {
         this.plugin = plugin;
+        this.helpWidth = plugin.getConfig().getInt(Strings.CONFIG_HELP_WIDTH);
         PluginCommand cmd = plugin.getCommand(commandName);
         if(cmd != null)
         {
@@ -58,7 +62,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                         String itemName = args[1];
                         if(itemName.equalsIgnoreCase(Strings.CMD_BV_GIVE_UNBOUND_SCROLL))
                         {
-                            Player player = getPlayer(args.length == 3, sender, "");
+                            Player player = getPlayer(args, sender, args.length == 2, args.length == 3);
                             if(player != null)
                             {
                                 player.getInventory().addItem(ItemUtil.getUnboundScroll(false));
@@ -66,7 +70,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                         }
                         else if(itemName.equalsIgnoreCase(Strings.CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL))
                         {
-                            Player player = getPlayer(args.length == 3, sender, "");
+                            Player player = getPlayer(args, sender, args.length == 2, args.length == 3);
                             if(player != null)
                             {
                                 player.getInventory().addItem(ItemUtil.getUnboundScroll(true));
@@ -74,7 +78,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                         }
                         else if(itemName.equalsIgnoreCase(Strings.CMD_BV_GIVE_TRADE))
                         {
-                            Player player = getPlayer(args.length == 7, sender, "");
+                            Player player = getPlayer(args, sender, args.length == 7, args.length == 8);
                             if(player != null)
                             {
                                 ItemStack item = ItemUtil.getGeneratedTradeItem(player, args);
@@ -102,18 +106,44 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
             {
                 if(args.length == 1 && plugin.helpPages.containsKey("default"))
                 {
-                    sender.sendMessage(plugin.helpPages.get("default").getFormatted(50));
+                    sender.sendMessage(plugin.helpPages.get("default").getFormatted(helpWidth));
                 }
                 else if(args.length == 2)
                 {
                     HelpData help = plugin.helpPages.get(args[1]);
                     if(help != null)
                     {
-                        sender.sendMessage(help.getFormatted(50));
+                        sender.sendMessage(help.getFormatted(helpWidth));
                     }
                     else
                     {
                         sender.sendMessage("§cNo help page available under this name!");
+                    }
+                }
+            }
+            else if(subCmd.equalsIgnoreCase(Strings.CMD_BV_RENAME))
+            {
+                if(args.length > 1)
+                {
+                    if(sender instanceof Player)
+                    {
+                        Player player = (Player) sender;
+
+                        ItemStack item = player.getInventory().getItemInMainHand();
+                        NBTItem nbtItem = ItemUtil.validateBoundItem(item);
+                        if(nbtItem != null)
+                        {
+                            StringBuilder newName = new StringBuilder();
+
+                            for(int i = 1; i < args.length; i++)
+                            {
+                                newName.append(args[i]).append(" ");
+                            }
+
+                            VillagerData data = new VillagerData(nbtItem);
+                            data.rename(newName.toString());
+                            player.getInventory().setItemInMainHand(data.getItem());
+                        }
                     }
                 }
             }
@@ -141,13 +171,10 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
                 if((args.length == 0 || args.length == 1))
                 {
-                    if(sender.hasPermission(Strings.PERM_ADMIN))
-                    {
-                        return Arrays.asList(Strings.CMD_BV_GIVE, Strings.CMD_BV_HELP, Strings.CMD_BV_RELOAD);
-                    }
+                    return Arrays.asList(Strings.CMD_BV_GIVE, Strings.CMD_BV_HELP, Strings.CMD_BV_RELOAD, Strings.CMD_BV_RENAME);
                 }
 
-                if(args.length >= 2 && args[0].equalsIgnoreCase(Strings.CMD_BV_GIVE) && args[1].equalsIgnoreCase(Strings.CMD_BV_GIVE_TRADE))
+                if(args[0].equalsIgnoreCase(Strings.CMD_BV_GIVE) && args[1].equalsIgnoreCase(Strings.CMD_BV_GIVE_TRADE))
                 {
                     return new ArrayList<>();
                 }
@@ -162,7 +189,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
             if((args.length == 0 || args.length == 1))
             {
-                return Collections.singletonList(Strings.CMD_BV_HELP);
+                return Arrays.asList(Strings.CMD_BV_HELP, Strings.CMD_BV_RENAME);
             }
 
             if(args.length == 3 && !args[0].equalsIgnoreCase(Strings.CMD_BV_HELP))
@@ -175,15 +202,17 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
     }
 
     /**
-     * Gets player based on condition.
-     * @param condition If true tries to convert sender into player, if false tries to get player from server.
+     * Returns a player object depending on conditions.
+     * @param args Command arguments.
      * @param sender Command sender.
-     * @param playerName Name of player on server.
-     * @return Player object if successful or null.
+     * @param senderPlayer Condition for when to interpret the sender as a player.
+     * @param argPlayer Condition for when to get an online player from the args.
+     * @return Player object if possible, null otherwise.
      */
-    private Player getPlayer(final boolean condition, @NotNull final CommandSender sender, @NotNull final String playerName)
+    @Nullable
+    private Player getPlayer(@NotNull final String[] args, @NotNull final CommandSender sender, final boolean senderPlayer, final boolean argPlayer)
     {
-        if(condition)
+        if(senderPlayer)
         {
             if(!(sender instanceof Player))
             {
@@ -193,9 +222,9 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
             return (Player) sender;
         }
-        else
+        if(argPlayer)
         {
-            Player player = Bukkit.getServer().getPlayer(playerName);
+            Player player = Bukkit.getServer().getPlayer(args[args.length - 1]);
             if(player == null)
             {
                 sender.sendMessage("Player offline!");
@@ -203,5 +232,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
             return player;
         }
+
+        return null;
     }
 }

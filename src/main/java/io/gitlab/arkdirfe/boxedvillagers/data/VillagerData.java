@@ -2,10 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.data;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
-import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
-import io.gitlab.arkdirfe.boxedvillagers.util.StringUtil;
-import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
-import io.gitlab.arkdirfe.boxedvillagers.util.Util;
+import io.gitlab.arkdirfe.boxedvillagers.util.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemFlag;
@@ -15,7 +12,6 @@ import org.bukkit.inventory.MerchantRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +27,7 @@ public class VillagerData
     private int tradeSlots;
     private long lastRestocked; // In days
     private ItemStack linkedItem;
+    private String name;
 
     /**
      * Creates VillagerData from a villager and an unbound scroll.
@@ -52,6 +49,7 @@ public class VillagerData
         lastRestocked = Util.getDay(Util.getTotalTime());
         tradeSlots = Math.max(minTradeSlots, trades.size());
         linkedItem = unboundScroll.getItem();
+        name = fromVillager.getName();
         attemptRestock();
     }
 
@@ -69,6 +67,7 @@ public class VillagerData
         rank = compound.getInteger(Strings.TAG_RANK);
         lastRestocked = compound.getLong(Strings.TAG_TIMESTAMP);
         tradeSlots = compound.getInteger(Strings.TAG_TRADE_SLOTS);
+        name = compound.getString(Strings.TAG_NAME);
 
         for(int i = 0; i < compound.getInteger(Strings.TAG_TRADE_COUNT); i++)
         {
@@ -98,41 +97,16 @@ public class VillagerData
         return tradeSlots;
     }
 
-    public String getRankAsString()
-    {
-        switch(rank)
-        {
-            case 1:
-                return "§7Novice";
-            case 2:
-                return "§eApprentice";
-            case 3:
-                return "§6Journeyman";
-            case 4:
-                return "§aExpert";
-            case 5:
-                return "§bMaster";
-        }
-
-        return "Invalid!";
-    }
-
-    @NotNull
-    public String getProfessionAsString()
-    {
-        return StringUtil.capitalize(profession, " ");
-    }
-
     @NotNull
     public String getCuresAsString()
     {
-        return cures != 7 ? "" + cures : "§6" + cures;
+        return cures != 7 ? "" + cures : "<static>" + cures;
     }
 
     @NotNull
     public String getTradeSlotsAsString()
     {
-        return tradeSlots != maxTradeSlots ? String.format("§e%d§f/§6%d", tradeSlots, maxTradeSlots) : String.format("§6%d/%d", maxTradeSlots, maxTradeSlots);
+        return tradeSlots != maxTradeSlots ? String.format(Strings.TT_DYN_SLOTS_AS_STRING_NOT_FULL, tradeSlots, maxTradeSlots) : String.format(Strings.TT_DYN_SLOTS_AS_STRING_FULL, maxTradeSlots, maxTradeSlots);
     }
 
     // --- Setters/Accessors
@@ -166,6 +140,7 @@ public class VillagerData
         compound.setInteger(Strings.TAG_TRADE_COUNT, trades.size());
         compound.setLong(Strings.TAG_TIMESTAMP, lastRestocked);
         compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
+        compound.setString(Strings.TAG_NAME, name);
 
         for(int i = 0; i < trades.size(); i++)
         {
@@ -225,6 +200,18 @@ public class VillagerData
     }
 
     /**
+     * Renames the villager.
+     * @param newName The new name, should not be empty or blank.
+     */
+    public void rename(@NotNull final String newName)
+    {
+        if(!newName.isBlank() && !newName.isEmpty() && newName.length() < 50)
+        {
+            name = newName;
+        }
+    }
+
+    /**
      * Updates how many uses the trades have left.
      * @param merchant The merchant generated for the trade GUI.
      */
@@ -280,6 +267,6 @@ public class VillagerData
      */
     private void updateTitleAndLore()
     {
-        ItemUtil.setItemTitleLoreAndFlags(linkedItem, "§2Bound Villager Scroll", Arrays.asList("§r§fProfession: §a" + getProfessionAsString(), "§r§fRank: " + getRankAsString(), "§r§fCures: " + getCuresAsString(), "§r§fTrade Slots: " + getTradeSlotsAsString(), "§r§aLeft Click in hand to trade!"), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        ItemUtil.setItemTitleLoreAndFlags(linkedItem, StringFormatter.formatLine(Strings.TT_BOUND_SCROLL_TITLE), StringFormatter.splitAndFormatLines(String.format(Strings.TT_DYN_BOUND_SCROLL_LORE, name, getCuresAsString(), getTradeSlotsAsString())), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
     }
 }

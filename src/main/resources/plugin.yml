@@ -1,6 +1,7 @@
 name: BoxedVillagers
-version: 1.0
+version: 1.0.0
 main: io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers
+author: Arkdirfe
 api-version: 1.16
 depend: [NBTAPI]
 commands:

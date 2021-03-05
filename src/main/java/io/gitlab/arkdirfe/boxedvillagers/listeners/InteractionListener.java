@@ -41,7 +41,7 @@ public class InteractionListener implements Listener
     @EventHandler
     public void onVillagerInteract(final PlayerInteractEntityEvent event)
     {
-        if(event.getHand() == EquipmentSlot.OFF_HAND)
+        if(event.getHand() == EquipmentSlot.OFF_HAND || !event.getPlayer().isSneaking())
         {
             return;
         }
@@ -102,7 +102,7 @@ public class InteractionListener implements Listener
     @EventHandler
     public void onClickItem(final PlayerInteractEvent event)
     {
-        if(event.getHand() == EquipmentSlot.OFF_HAND)
+        if(event.getHand() == EquipmentSlot.OFF_HAND || event.getPlayer().isSneaking())
         {
             return;
         }
@@ -114,7 +114,7 @@ public class InteractionListener implements Listener
         {
             event.setCancelled(true);
 
-            if(event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
+            if(event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)
             {
                 return;
             }

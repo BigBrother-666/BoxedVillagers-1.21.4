@@ -19,6 +19,8 @@ import java.util.*;
 
 public final class ItemUtil
 {
+    private ItemUtil(){}
+
     // Check and Update Methods
 
     /**
@@ -118,18 +120,15 @@ public final class ItemUtil
     {
         ItemStack scroll = new ItemStack(Material.PAPER);
 
-        List<String> lore = new ArrayList<>();
-
-        lore.add("§r§fRight click on a villager to §4§mensnare its mortal soul§r§f capture it.");
-        lore.add("§r§fCaptured villagers do not benefit from previous cures or");
-        lore.add("§r§fHero of the Village and can not unlock additional trades.");
+        List<String> lore = new ArrayList<>(StringFormatter.split(Strings.TT_UNBOUND_SCROLL_LORE));
 
         if(nonlethal)
         {
-            lore.add("§r§4NONLETHAL SCROLL (ADMIN ITEM)!");
+            List<String> strings = StringFormatter.split(Strings.TT_NONLETHAL_ADMIN_ITEM);
+            lore.addAll(strings);
         }
 
-        setItemTitleLoreAndFlags(scroll, "§aUnbound Villager Scroll", lore, null);
+        setItemTitleLoreAndFlags(scroll, StringFormatter.formatLine(Strings.TT_UNBOUND_SCROLL_TITLE), StringFormatter.formatAll(lore), null);
 
         NBTItem nbtscoll = new NBTItem(scroll);
         nbtscoll.setUUID(Strings.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
@@ -185,6 +184,10 @@ public final class ItemUtil
             {
                 trade.addIngredient(input2);
             }
+            else
+            {
+                trade.addIngredient(new ItemStack(Material.AIR));
+            }
 
             TradeData data = new TradeData(reduction, input1.getAmount(), trade);
 
@@ -220,7 +223,7 @@ public final class ItemUtil
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
-        setItemTitleLoreAndFlags(item, "§2Help", Arrays.asList("§r§fPlace your bound scroll below to begin the process.", "§r§fYou can purchase scrolls at the right."), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_HELP_TITLE), StringFormatter.splitAndFormatLines(Strings.TT_HELP_NO_SCROLL), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
@@ -237,19 +240,14 @@ public final class ItemUtil
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
-        List<String> lore = new ArrayList<>();
-
-        lore.add("§r§fEdit trades below.");
-        lore.add("§r§fYou can purchase scrolls at the right.");
-        lore.add("§r§fUse the buttons on the left to upgrade your villager.");
+        List<String> lore = new ArrayList<>(StringFormatter.splitAndFormatLines(Strings.TT_HELP_HAS_SCROLL));
 
         if(advancedPerms)
         {
-            lore.add("§r§fUse the button on the right to commit your changes.");
-            lore.add("§r§fNote: Prices shown below ignore cures.");
+            lore.addAll(StringFormatter.splitAndFormatLines(Strings.TT_HELP_HAS_SCROLL_ADVANCED));
         }
 
-        setItemTitleLoreAndFlags(item, "§2Help", lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_HELP_TITLE), lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
@@ -263,17 +261,16 @@ public final class ItemUtil
      * @return Item as ItemStack.
      */
     @NotNull
-    public static ItemStack getSlotExtensionItem(@NotNull final VillagerData villagerData, @NotNull CostData slotCost)
+    public static ItemStack getSlotExtensionItem(@NotNull final VillagerData villagerData, @Nullable CostData slotCost)
     {
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
 
         List<String> lore = new ArrayList<>();
 
-        if(villagerData.getTradeSlots() < VillagerData.maxTradeSlots)
+        if(slotCost != null)
         {
-            lore.add(String.format("§r§fYour villager hold up to §6%d§f trades.", VillagerData.maxTradeSlots));
-            lore.add(String.format("§r§fIt can currently hold §6%d§f.", villagerData.getTradeSlots()));
-            lore.add("§r§4Applies instantly, irreversible.");
+            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_SLOT_EXTENSION_SLOTS, VillagerData.maxTradeSlots, villagerData.getTradeSlots())));
+            lore.add(Strings.TT_APPLIES_INSTANTLY);
 
             if(slotCost.hasCost())
             {
@@ -282,11 +279,11 @@ public final class ItemUtil
         }
         else
         {
-            lore.add("§r§fYour villager has full trade slots.");
+            lore.add(Strings.TT_SLOT_EXTENSION_FULL);
             item.setType(Material.BOOK);
         }
 
-        setItemTitleLoreAndFlags(item, "§2Extend Trade Slots", lore, null);
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_SLOT_EXTENSION_TITLE), StringFormatter.formatAll(lore), null);
 
         return GuiUtil.setUninteractable(item);
     }
@@ -302,35 +299,34 @@ public final class ItemUtil
         ItemStack item = new ItemStack(Material.PAPER);
 
         List<String> lore = new ArrayList<>();
-        lore.add("§r§fUse it to capture villagers.");
+        lore.add(Strings.TT_BUY_LORE);
 
         if(scrollCost.hasCost())
         {
             lore.addAll(StringUtil.costToString(scrollCost));
         }
 
-        setItemTitleLoreAndFlags(item, "§2Buy Villager Scroll", lore, null);
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_BUY_TITLE), StringFormatter.formatAll(lore), null);
 
         return GuiUtil.setUninteractable(item);
     }
 
     /**
      * Returns item that acts as a cure button.
-     * @param villagerData Data about the villager on the scroll.
      * @param cureCost Cost of curing.
      * @return Item as ItemStack.
      */
     @NotNull
-    public static ItemStack getCureItem(@NotNull final VillagerData villagerData, @NotNull final CostData cureCost)
+    public static ItemStack getCureItem(@Nullable final CostData cureCost)
     {
         ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
 
         List<String> lore = new ArrayList<>();
 
-        if(villagerData.getCures() != 7)
+        if(cureCost != null)
         {
-            lore.add("§r§fReduces all prices but never below 1.");
-            lore.add("§r§4Applies instantly, irreversible.");
+            lore.addAll(StringFormatter.split(Strings.TT_CURE_LORE));
+            lore.add(Strings.TT_APPLIES_INSTANTLY);
 
             if(cureCost.hasCost())
             {
@@ -339,11 +335,11 @@ public final class ItemUtil
         }
         else
         {
-            lore.add("§r§fVillager is at max cures!");
+            lore.addAll(StringFormatter.split(Strings.TT_CURE_FULL));
             item.setType(Material.APPLE);
         }
 
-        setItemTitleLoreAndFlags(item, "§2Cure Villager", lore, null);
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_CURE_TITLE), StringFormatter.formatAll(lore), null);
 
         return GuiUtil.setUninteractable(item);
     }
@@ -366,31 +362,31 @@ public final class ItemUtil
 
         if(!tradesMoved && tradesPurged == 0 && tradesExtracted == 0 && free == 0)
         {
-            lore.add("§r§fNo changes to commit!");
+            lore.add(Strings.TT_COMMIT_NO_CHANGES);
         }
         else
         {
-            lore.add("§r§fUncommitted changes!");
+            lore.add(Strings.TT_COMMIT_CHANGES);
             item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
         }
 
         if(tradesMoved)
         {
-            lore.add("§r§fTrades were moved.");
+            lore.add(Strings.TT_COMMIT_MOVED);
         }
         if(tradesPurged > 0)
         {
-            lore.add(String.format("§r§6%d§f trades were purged.", tradesPurged));
+            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_COMMIT_PURGED, tradesPurged)));
         }
 
         if(tradesExtracted > 0)
         {
-            lore.add(String.format("§r§6%d§f trades were extracted.", tradesExtracted));
+            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_COMMIT_EXTRACTED, tradesExtracted)));
         }
 
         if(free > 0)
         {
-            lore.add(String.format("§r§6%d§f new trades were added.", free));
+            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_COMMIT_ADDED, free)));
         }
 
         if(commitCost.hasCost())
@@ -398,7 +394,7 @@ public final class ItemUtil
             lore.addAll(StringUtil.costToString(commitCost));
         }
 
-        setItemTitleLoreAndFlags(item, "§2Commit Changes", lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_COMMIT_TITLE), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         return GuiUtil.setUninteractable(item);
     }
@@ -416,16 +412,16 @@ public final class ItemUtil
 
         List<String> lore = new ArrayList<>();
 
-        lore.add(StringUtil.tradeToString(trade.getRecipe(), trade.getBaseAmount()));
-        lore.add("§r§fPrice reduced by §6" + trade.getReduction() + "§f for each cure.");
-        lore.add("§r§fShift Left Click to purge this trade.");
+        lore.addAll(StringFormatter.split(StringUtil.tradeToString(trade.getRecipe(), trade.getBaseAmount())));
+        lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_TRADE_REDUCTION, trade.getReduction())));
+        lore.addAll(StringFormatter.split(Strings.TT_TRADE_PURGE));
 
         if(extractPerms)
         {
-            lore.add("§r§fShift Right Click to extract this trade.");
+            lore.addAll(StringFormatter.split(Strings.TT_TRADE_EXTRACT));
         }
 
-        setItemTitleLoreAndFlags(item, "§aStored Trade", lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_TRADE_TITLE), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         NBTItem nbtItem = new NBTItem(item);
         NBTCompound compound = nbtItem.addCompound(Strings.TAG_SERIALIZED_TRADE_DATA);
@@ -445,12 +441,15 @@ public final class ItemUtil
         item.setType(Material.SUGAR_CANE);
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§aExtracted Trade");
+        meta.setDisplayName(StringFormatter.formatLine(Strings.TT_CONVERT_EXTRACTED_TITLE));
         List<String> lore = new ArrayList<>();
-        lore.add(meta.getLore().get(0));
-        lore.add(meta.getLore().get(1));
-        lore.add("§r§fCommit to receive item.");
-        meta.setLore(lore);
+        if(meta.getLore().size() > 1)
+        {
+            lore.add(meta.getLore().get(0));
+            lore.add(meta.getLore().get(1));
+        }
+        lore.addAll(StringFormatter.split(Strings.TT_CONVERT_EXTRACTED_LORE));
+        meta.setLore(StringFormatter.formatAll(lore));
         item.setItemMeta(meta);
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
@@ -466,13 +465,15 @@ public final class ItemUtil
     public static ItemStack convertExtractedToFree(@NotNull final ItemStack item)
     {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§aExtracted Trade");
+        meta.setDisplayName(StringFormatter.formatLine(Strings.TT_CONVERT_FREE_TITLE));
         List<String> lore = new ArrayList<>();
-        lore.add(meta.getLore().get(0));
-        lore.add(meta.getLore().get(1));
-        lore.add("§r§fActs like a regular trade in the Witch Doctor.");
-        lore.add("§r§fGets added to scroll if committed.");
-        meta.setLore(lore);
+        if(meta.getLore().size() > 1)
+        {
+            lore.add(meta.getLore().get(0));
+            lore.add(meta.getLore().get(1));
+        }
+        lore.addAll(StringFormatter.split(Strings.TT_CONVERT_FREE_LORE));
+        meta.setLore(StringFormatter.formatAll(lore));
         item.setItemMeta(meta);
 
         return GuiUtil.setFree(item);

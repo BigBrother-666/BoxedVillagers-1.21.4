@@ -79,6 +79,8 @@ extractCost:
 addCost:
   SPONGE: 1
 
+# How many standard characters a help page should be wide, larger values may break for players with narrow chat.
+helpWidth: 50
 # Help pages, use \n to force linebreaks
 helpPages:
   default:

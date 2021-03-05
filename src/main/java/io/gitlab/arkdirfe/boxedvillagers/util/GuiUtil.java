@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 public final class GuiUtil
 {
+    private GuiUtil(){}
+
     /**
      * Gives an item a tag.
      * @param item The item to give the tag to.

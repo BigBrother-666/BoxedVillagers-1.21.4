@@ -5,6 +5,8 @@ import org.bukkit.World;
 
 public final class Util
 {
+    private Util(){}
+
     public static BoxedVillagers plugin;
     public static String timeWorldName = "";
 

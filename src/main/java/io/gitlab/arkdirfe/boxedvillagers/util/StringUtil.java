@@ -8,15 +8,23 @@ import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public final class StringUtil
 {
+    private StringUtil()
+    {
+    }
+
     public static int defaultCharacterWidth = 6;
     private static final Map<String, Integer> specialCharacterWidths = Map.ofEntries(new AbstractMap.SimpleEntry<>(" ", 4), new AbstractMap.SimpleEntry<>("!", 2), new AbstractMap.SimpleEntry<>("\"", 5), new AbstractMap.SimpleEntry<>("'", 3), new AbstractMap.SimpleEntry<>(")", 5), new AbstractMap.SimpleEntry<>("*", 5), new AbstractMap.SimpleEntry<>(",", 2), new AbstractMap.SimpleEntry<>(".", 2), new AbstractMap.SimpleEntry<>(":", 2), new AbstractMap.SimpleEntry<>(";", 2), new AbstractMap.SimpleEntry<>("<", 5), new AbstractMap.SimpleEntry<>(">", 5), new AbstractMap.SimpleEntry<>("@", 7), new AbstractMap.SimpleEntry<>("I", 4), new AbstractMap.SimpleEntry<>("[", 4), new AbstractMap.SimpleEntry<>("]", 4), new AbstractMap.SimpleEntry<>("f", 5), new AbstractMap.SimpleEntry<>("i", 2), new AbstractMap.SimpleEntry<>("k", 5), new AbstractMap.SimpleEntry<>("l", 3), new AbstractMap.SimpleEntry<>("t", 4), new AbstractMap.SimpleEntry<>("{", 5), new AbstractMap.SimpleEntry<>("|", 2), new AbstractMap.SimpleEntry<>("}", 5), new AbstractMap.SimpleEntry<>("~", 7));
 
     /**
      * Returns a number as roman numerals for enchantment display.
+     *
      * @param number The number to convert.
      * @return String with the roman numeral.
      */
@@ -42,6 +50,7 @@ public final class StringUtil
 
     /**
      * Returns pixel width of a char.
+     *
      * @param c Char to check.
      * @return Pixel width.
      */
@@ -52,6 +61,7 @@ public final class StringUtil
 
     /**
      * Returns the pixel width of a string.
+     *
      * @param string String to check.
      * @return Pixel width.
      */
@@ -67,7 +77,8 @@ public final class StringUtil
 
     /**
      * Converts a string to a capitalized version.
-     * @param string The string to convert.
+     *
+     * @param string    The string to convert.
      * @param separator String to convert to spaces.
      * @return The capitalized string.
      */
@@ -90,6 +101,7 @@ public final class StringUtil
 
     /**
      * Converts a trade to a readable string.
+     *
      * @param recipe The recipe to convert.
      * @param baseAmount Base amount of first ingredient before cures.
      * @return The converted recipe.
@@ -102,22 +114,55 @@ public final class StringUtil
         ItemStack output = recipe.getResult();
 
         StringBuilder result = new StringBuilder();
-        result.append("§r§f");
-        result.append(String.format("§6%d §a%s§f", baseAmount, capitalize(i1.getType().getKey().getKey(), "_")));
-        if(i2.getType() != Material.AIR)
+        result.append(itemToString(i1, baseAmount));
+        if(!ItemUtil.isNullOrAir(i2))
         {
-            result.append(String.format(" + §6%d§f §a%s§f", i2.getAmount(), capitalize(i2.getType().getKey().getKey(), "_")));
+            result.append(" + ").append(itemToString(i2, i2.getAmount()));
         }
-        result.append(String.format(" = §6%d§f §a%s§f", output.getAmount(), capitalize(output.getType().getKey().getKey(), "_")));
-        if(output.getType() == Material.ENCHANTED_BOOK)
+        result.append("\n= ").append(itemToString(output, output.getAmount()));
+
+        return result.toString();
+    }
+
+    /**
+     * Converts an item into a readable string.
+     * @param item Item to be converted.
+     * @param amount Amount of the item (important for trades).
+     * @return Item as string.
+     */
+    private static String itemToString(@NotNull final ItemStack item, final int amount)
+    {
+        StringBuilder result = new StringBuilder(String.format(Strings.TT_DYN_TRADE_TO_STRING_ITEM, amount, capitalize(item.getType().getKey().getKey(), "_")));
+
+        if(item.getItemMeta() instanceof EnchantmentStorageMeta)
         {
-            if(output.getItemMeta() instanceof  EnchantmentStorageMeta)
+            EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemMeta();
+            Map<Enchantment, Integer> enchants = null;
+            if(meta.getStoredEnchants().size() > 0)
             {
-                EnchantmentStorageMeta meta = (EnchantmentStorageMeta) output.getItemMeta();
-                for(Map.Entry<Enchantment, Integer> ench : meta.getStoredEnchants().entrySet())
+                enchants = meta.getStoredEnchants();
+            }
+            if(meta.getEnchants().size() > 0)
+            {
+                enchants = meta.getEnchants();
+            }
+
+            if(enchants != null)
+            {
+                int i = 0;
+                result.append(" <enchant>(");
+                for(Map.Entry<Enchantment, Integer> ench : enchants.entrySet())
                 {
-                    result.append(String.format(" §5(%s %s)§f", capitalize(ench.getKey().getKey().getKey(), "_"), numberToRoman(ench.getValue())));
+                    result.append(String.format("%s %s", capitalize(ench.getKey().getKey().getKey(), "_"), numberToRoman(ench.getValue())));
+
+                    if(i < enchants.size() - 1)
+                    {
+                        result.append(", ");
+                    }
+
+                    i++;
                 }
+                result.append(")");
             }
         }
 
@@ -126,6 +171,7 @@ public final class StringUtil
 
     /**
      * Converts a CostData to a series of strings.
+     *
      * @param cost The CostData to convert.
      * @return List of strings representing the cost.
      */
@@ -134,20 +180,20 @@ public final class StringUtil
     {
         List<String> strings = new ArrayList<>();
 
-        strings.add("§r§fCosts:");
+        strings.add(Strings.TT_COST_TO_STRING_HEADER);
         if(cost.getMoney() > 0)
         {
-            strings.add(String.format("§r§f   -§6%d §eMoney", cost.getMoney()));
+            strings.add(String.format(Strings.TT_DYN_COST_TO_STRING_MONEY, cost.getMoney()));
         }
 
         if(cost.getCrystals() > 0)
         {
-            strings.add(String.format("§r§f   -§6%d §bCrystals", cost.getCrystals()));
+            strings.add(String.format(Strings.TT_DYN_COST_TO_STRING_CRYSTALS, cost.getCrystals()));
         }
 
         for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
         {
-            strings.add(String.format("§r§f   -§6%d §a%s", entry.getValue(), capitalize(entry.getKey().toString(), "_")));
+            strings.add(String.format(Strings.TT_DYN_COST_TO_STRING_ITEM, entry.getValue(), capitalize(entry.getKey().toString(), "_")));
         }
 
         return strings;

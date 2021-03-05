@@ -4,6 +4,7 @@ package io.gitlab.arkdirfe.boxedvillagers.ui;
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.util.GuiUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
+import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -51,7 +52,7 @@ public class WitchdoctorGuiManager implements Listener
      */
     public void openGui(@NotNull final HumanEntity player, final boolean admin)
     {
-        Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE + (admin ? " §4(ADMIN MODE)" : ""));
+        Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE + (admin ? StringFormatter.formatLine(" <warn>(ADMIN MODE)") : ""));
         WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, plugin, admin);
         plugin.guiMap.put(player.getUniqueId(), controller);
     }
@@ -183,7 +184,8 @@ public class WitchdoctorGuiManager implements Listener
     @EventHandler
     public void onItemDropped(final PlayerDropItemEvent event)
     {
-        if(GuiUtil.isMovable(event.getItemDrop().getItemStack()))
+        ItemStack item = event.getItemDrop().getItemStack();
+        if(GuiUtil.isMovable(item) && !GuiUtil.isFree(item))
         {
             event.getItemDrop().remove();
         }

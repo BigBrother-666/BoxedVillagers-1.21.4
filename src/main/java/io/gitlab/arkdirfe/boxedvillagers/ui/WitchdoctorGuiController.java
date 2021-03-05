@@ -8,7 +8,6 @@ import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
 import io.gitlab.arkdirfe.boxedvillagers.util.GuiUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
-import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
@@ -20,7 +19,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class WitchdoctorGuiController
 {
@@ -174,7 +175,7 @@ public class WitchdoctorGuiController
      */
     public void updateCureButton()
     {
-        gui.setItem(manager.cureSlot, ItemUtil.getCureItem(villagerData, calculateCureCost()));
+        gui.setItem(manager.cureSlot, ItemUtil.getCureItem(calculateCureCost()));
     }
 
     /**
@@ -510,10 +511,14 @@ public class WitchdoctorGuiController
      * Calculates the cost for curing the current villager.
      * @return The cost.
      */
-    @NotNull
+    @Nullable
     private CostData calculateCureCost()
     {
-        return plugin.cureCosts.get(villagerData.getCures() + 1);
+        if(villagerData.getCures() == 7)
+        {
+            return null;
+        }
+        return plugin.cureCosts.get(villagerData.getCures());
     }
 
     /**
@@ -541,9 +546,13 @@ public class WitchdoctorGuiController
      * Calculates the cost for extending the trade slots of the current villager.
      * @return The cost.
      */
-    @NotNull
+    @Nullable
     private CostData calculateSlotExtensionCost()
     {
+        if(villagerData.getTradeSlots() == VillagerData.maxTradeSlots)
+        {
+            return null;
+        }
         return plugin.slotExtensionCosts.get(villagerData.getTradeSlots() - VillagerData.minTradeSlots);
     }
 
@@ -552,8 +561,13 @@ public class WitchdoctorGuiController
      * @param cost The cost that is checked.
      * @return True if the player can pay, false otherwise.
      */
-    private boolean playerCanPay(@NotNull final CostData cost)
+    private boolean playerCanPay(@Nullable final CostData cost)
     {
+        if(cost == null)
+        {
+            return true;
+        }
+
         for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
         {
             if(!player.getInventory().containsAtLeast(new ItemStack(entry.getKey()), entry.getValue()))
@@ -563,7 +577,6 @@ public class WitchdoctorGuiController
         }
 
         // Check for currencies here!
-        Util.logInfo("Reminder to implement money/crystal integration.");
 
         return true;
     }
@@ -572,8 +585,13 @@ public class WitchdoctorGuiController
      * Deducts the cost from the player's inventory and money accounts.
      * @param cost The cost.
      */
-    private void payCosts(@NotNull final CostData cost)
+    private void payCosts(@Nullable final CostData cost)
     {
+        if(cost == null)
+        {
+            return;
+        }
+
         for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
         {
             ItemStack item = new ItemStack(entry.getKey());

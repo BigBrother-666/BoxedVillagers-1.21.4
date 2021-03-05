@@ -1,5 +1,6 @@
 package io.gitlab.arkdirfe.boxedvillagers.data;
 
+import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,16 +34,13 @@ public class HelpData
         List<String> lines = new ArrayList<>();
 
         lines.add("");
-        lines.add("§e" + "=".repeat(lineWidth));
-        lines.add("§e" + getCenterPadded(title, lineWidth * StringUtil.defaultCharacterWidth));
-        lines.add("§e" + "=".repeat(lineWidth));
+        lines.add("<info>" + "=".repeat(lineWidth));
+        lines.add("<info>" + getCenterPadded(title, lineWidth * StringUtil.defaultCharacterWidth));
+        lines.add("<info>" + "=".repeat(lineWidth));
         lines.addAll(getContent(lineWidth * StringUtil.defaultCharacterWidth));
-        lines.add("§e" + "-".repeat(lineWidth));
+        lines.add("<info>" + "-".repeat(lineWidth));
 
-        System.out.println("Title Length " + title.length());
-        System.out.println("Difference " + (lineWidth - title.length()));
-
-        return lines.toArray(new String[0]);
+        return StringFormatter.formatAll(lines).toArray(new String[0]);
     }
 
     /**
