@@ -5,6 +5,7 @@ import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.data.HelpData;
 import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
 import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
+import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -88,21 +89,28 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                                 }
                                 else
                                 {
-                                    sender.sendMessage(Strings.ERROR_GIVE_TRADE_INVALID_SLOT);
+                                    sender.sendMessage(StringFormatter.splitAndFormatLines(Strings.CHAT_GIVE_TRADE_USAGE).toArray(new String[0]));
                                 }
+                            }
+                            else
+                            {
+                                sender.sendMessage(StringFormatter.splitAndFormatLines(Strings.CHAT_GIVE_TRADE_USAGE).toArray(new String[0]));
                             }
                         }
                     }
+
+                    return true;
                 }
                 else if(subCmd.equalsIgnoreCase(Strings.CMD_BV_RELOAD))
                 {
                     plugin.reloadConfig();
+                    return true;
                 }
             }
 
             // Player Commands
 
-            if(subCmd.equalsIgnoreCase("help"))
+            if(subCmd.equalsIgnoreCase(Strings.CMD_BV_HELP))
             {
                 if(args.length == 1 && plugin.helpPages.containsKey("default"))
                 {
@@ -117,7 +125,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     }
                     else
                     {
-                        sender.sendMessage("§cNo help page available under this name!");
+                        sender.sendMessage(StringFormatter.formatLine(Strings.CHAT_NO_HELP_PAGE));
                     }
                 }
             }
@@ -146,6 +154,10 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                         }
                     }
                 }
+            }
+            else
+            {
+                sender.sendMessage(StringFormatter.formatLine(Strings.CHAT_UNKNOWN_SUB_COMMAND));
             }
 
             return true;

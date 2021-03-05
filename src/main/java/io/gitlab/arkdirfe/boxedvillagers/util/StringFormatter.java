@@ -15,7 +15,9 @@ public final class StringFormatter
 
     private static final Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
 
-    private static final Map<String, String> colorPlaceholders = Map.ofEntries(new AbstractMap.SimpleImmutableEntry<>("<norm>", "#ffffff"), // Normal Text
+    private static final Map<String, String> colorPlaceholders = Map.ofEntries(
+            // Tooltip Colors
+            new AbstractMap.SimpleImmutableEntry<>("<norm>", "#ffffff"), // Normal Text
             new AbstractMap.SimpleImmutableEntry<>("<info>", "#00b7ff"), // Info
             new AbstractMap.SimpleImmutableEntry<>("<basic>", "#55ff55"), // Basic item
             new AbstractMap.SimpleImmutableEntry<>("<advanced>", "#00ff00"), // Advanced item
@@ -32,6 +34,7 @@ public final class StringFormatter
 
     /**
      * Replaces the color indicators with their hex color.
+     *
      * @param string The string to replace in.
      * @return String with replaced indicators.
      */
@@ -48,6 +51,7 @@ public final class StringFormatter
 
     /**
      * Formats the hex codes.
+     *
      * @param string String with hex codes.
      * @return Formatted string.
      */
@@ -67,6 +71,7 @@ public final class StringFormatter
 
     /**
      * Formats a single line.
+     *
      * @param line The line to format.
      * @return Formatted line.
      */
@@ -78,6 +83,7 @@ public final class StringFormatter
 
     /**
      * Splits a string at \n and formats the lines.
+     *
      * @param string String to process.
      * @return List of lines.
      */
@@ -96,6 +102,7 @@ public final class StringFormatter
 
     /**
      * Formats a list of lines.
+     *
      * @param lines The lines to format.
      * @return Formatted lines.
      */
@@ -112,6 +119,7 @@ public final class StringFormatter
 
     /**
      * Splits along \n.
+     *
      * @param string The string to split.
      * @return List of lines.
      */

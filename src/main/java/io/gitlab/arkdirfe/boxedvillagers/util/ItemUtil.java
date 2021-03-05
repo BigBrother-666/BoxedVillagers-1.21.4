@@ -161,13 +161,11 @@ public final class ItemUtil
         }
         catch(NumberFormatException e)
         {
-            player.sendMessage(Strings.ERROR_GIVE_TRADE_INVALID_SLOT);
             return null;
         }
 
         if(!(slot1 >= 0 && slot1 <= 8 && slot2 >= -1 && slot2 <= 8 && slot3 >= 0 && slot3 <= 8 && uses > 0 && reduction >= 0))
         {
-            player.sendMessage(Strings.ERROR_GIVE_TRADE_INVALID_SLOT);
             return null;
         }
 

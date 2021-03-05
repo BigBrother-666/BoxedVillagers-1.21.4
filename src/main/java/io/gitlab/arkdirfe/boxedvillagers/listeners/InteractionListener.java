@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
 import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
+import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
@@ -57,7 +58,7 @@ public class InteractionListener implements Listener
 
                 if(nbtItem.getBoolean(Strings.TAG_IS_BOUND))
                 {
-                    player.sendMessage("Scroll already bound!");
+                    player.sendMessage(StringFormatter.formatLine(Strings.CHAT_SCROLL_BOUND));
                     return;
                 }
 
@@ -65,7 +66,7 @@ public class InteractionListener implements Listener
 
                 if(villager.getRecipeCount() == 0)
                 {
-                    player.sendMessage("That villager has no trades!");
+                    player.sendMessage(StringFormatter.formatLine(Strings.CHAT_NO_TRADES));
                 }
                 else
                 {

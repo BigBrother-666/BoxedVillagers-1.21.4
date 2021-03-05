@@ -104,6 +104,11 @@ public final class Strings
     public static String PERM_WITCHDOCTOR_EXTRACT = "boxedvillagers.witchdoctor.extract";
     public static String PERM_ADMIN = "boxedvillagers.admin";
 
-    // Error Strings
-    public static String ERROR_GIVE_TRADE_INVALID_SLOT = "Invalid input! Make sure the slot numbers are between 0 and 8 (inclusive) and there are items in the slots! The second slot may be -1 if no second input is desired.)";
+    // Chat Strings (Player-facing chat messages)
+    public static String CHAT_GIVE_TRADE_USAGE = "<info>Usage: /bv give trade <input> <input> <output> <uses> <reduction per cure> [player]\n<info>Use hotbar indices (0-8) for inputs, the second input may be -1 if the trade only has one input.";
+    public static String CHAT_INSUFFICIENT_PERMISSION = "<warn>Insufficient Permission!";
+    public static String CHAT_UNKNOWN_SUB_COMMAND = "<warn>Unknown Sub-Command!";
+    public static String CHAT_NO_HELP_PAGE = "<warn>No help page available under this name!";
+    public static String CHAT_SCROLL_BOUND = "<warn>Scroll already bound!";
+    public static String CHAT_NO_TRADES = "<warn>That villager has no trades!";
 }

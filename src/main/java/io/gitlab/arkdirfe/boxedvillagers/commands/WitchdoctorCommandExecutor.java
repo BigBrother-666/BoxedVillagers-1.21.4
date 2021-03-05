@@ -2,6 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.commands;
 
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
+import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -57,7 +58,7 @@ public class WitchdoctorCommandExecutor implements TabExecutor
             }
             else
             {
-                sender.sendMessage("§cInsufficient Permission!");
+                sender.sendMessage(StringFormatter.formatLine(Strings.CHAT_INSUFFICIENT_PERMISSION));
             }
             return true;
         }
