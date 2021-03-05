@@ -115,59 +115,75 @@ public class WitchdoctorGuiController
     {
         if(scroll == null)
         {
-            ItemStack[] items = new ItemStack[54];
-
-            for(int i = 0; i < 54; i++)
-            {
-                items[i] = ItemUtil.getUIFillerItem(Material.LIME_STAINED_GLASS_PANE);
-            }
-
-            items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
-            items[manager.helpSlot] = ItemUtil.getNoScrollHelpItem();
-            items[manager.scrollSlot] = null;
-
-            gui.setContents(items);
+            updateNoScroll();
         }
         else
         {
-            ItemStack[] items = gui.getContents();
+            updateHasScroll();
+        }
+    }
 
-            items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
-            items[manager.helpSlot] = ItemUtil.getScrollHelpItem(advancedPerms);
+    /**
+     * No scroll, only info slot and buy button.
+     */
+    private void updateNoScroll()
+    {
+        ItemStack[] items = new ItemStack[54];
 
-            if(advancedPerms)
+        for(int i = 0; i < 54; i++)
+        {
+            items[i] = ItemUtil.getUIFillerItem(Material.LIME_STAINED_GLASS_PANE);
+        }
+
+        items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
+        items[manager.helpSlot] = ItemUtil.getNoScrollHelpItem();
+        items[manager.scrollSlot] = null;
+
+        gui.setContents(items);
+    }
+
+    /**
+     * Draw full GUI
+     */
+    private void updateHasScroll()
+    {
+        ItemStack[] items = gui.getContents();
+
+        items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
+        items[manager.helpSlot] = ItemUtil.getScrollHelpItem(advancedPerms);
+
+        if(advancedPerms)
+        {
+            items[manager.extendTradeSlotsSlot] = ItemUtil.getSlotExtensionItem(villagerData, calculateSlotExtensionCost());
+
+            // Draw trades
+            int index = 0;
+
+            tradeSlotEnd = manager.tradeSlotStart + villagerData.getTradeSlots();
+
+            for(int i = manager.tradeSlotStart; i < tradeSlotEnd; i++)
             {
-                items[manager.extendTradeSlotsSlot] = ItemUtil.getSlotExtensionItem(villagerData, calculateSlotExtensionCost());
-
-                // Draw trades
-                int index = 0;
-
-                tradeSlotEnd = manager.tradeSlotStart + villagerData.getTradeSlots();
-
-                for(int i = manager.tradeSlotStart; i < tradeSlotEnd; i++)
+                if(index >= villagerData.getTrades().size())
                 {
-                    if(index >= villagerData.getTrades().size())
-                    {
-                        items[i] = null;
-                        continue;
-                    }
+                    items[i] = null;
+                    continue;
+                }
 
-                    TradeData trade = villagerData.getTrades().get(index++);
-                    if(trade != null)
-                    {
-                        items[i] = ItemUtil.getTradeItem(trade, extractPerms);
-                    }
-                    else
-                    {
-                        items[i] = null;
-                    }
+                TradeData trade = villagerData.getTrades().get(index++);
+                if(trade != null)
+                {
+                    items[i] = ItemUtil.getTradeItem(trade, extractPerms);
+                }
+                else
+                {
+                    items[i] = null;
                 }
             }
-
-            gui.setContents(items);
-            updateCureButton();
-            updateCommitButton();
         }
+
+        gui.setContents(items);
+        updateCureButton();
+        updateCommitButton();
     }
 
     /**

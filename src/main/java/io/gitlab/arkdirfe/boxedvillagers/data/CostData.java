@@ -3,6 +3,7 @@ package io.gitlab.arkdirfe.boxedvillagers.data;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,14 +39,14 @@ public class CostData
 
     private int money = 0;
     private int crystals = 0;
-    private final Map<Material, Integer> resources;
+    private final EnumMap<Material, Integer> resources;
 
     /**
      * Container for any cost, includes basic items, money and crystals.
      */
     public CostData()
     {
-        resources = new HashMap<>();
+        resources = new EnumMap<>(Material.class);
     }
 
     public boolean hasCost()

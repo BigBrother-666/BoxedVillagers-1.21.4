@@ -19,7 +19,7 @@ public final class StringUtil
     {
     }
 
-    public static int defaultCharacterWidth = 6;
+    public static final int defaultCharacterWidth = 6;
     private static final Map<String, Integer> specialCharacterWidths = Map.ofEntries(new AbstractMap.SimpleEntry<>(" ", 4), new AbstractMap.SimpleEntry<>("!", 2), new AbstractMap.SimpleEntry<>("\"", 5), new AbstractMap.SimpleEntry<>("'", 3), new AbstractMap.SimpleEntry<>(")", 5), new AbstractMap.SimpleEntry<>("*", 5), new AbstractMap.SimpleEntry<>(",", 2), new AbstractMap.SimpleEntry<>(".", 2), new AbstractMap.SimpleEntry<>(":", 2), new AbstractMap.SimpleEntry<>(";", 2), new AbstractMap.SimpleEntry<>("<", 5), new AbstractMap.SimpleEntry<>(">", 5), new AbstractMap.SimpleEntry<>("@", 7), new AbstractMap.SimpleEntry<>("I", 4), new AbstractMap.SimpleEntry<>("[", 4), new AbstractMap.SimpleEntry<>("]", 4), new AbstractMap.SimpleEntry<>("f", 5), new AbstractMap.SimpleEntry<>("i", 2), new AbstractMap.SimpleEntry<>("k", 5), new AbstractMap.SimpleEntry<>("l", 3), new AbstractMap.SimpleEntry<>("t", 4), new AbstractMap.SimpleEntry<>("{", 5), new AbstractMap.SimpleEntry<>("|", 2), new AbstractMap.SimpleEntry<>("}", 5), new AbstractMap.SimpleEntry<>("~", 7));
 
     /**

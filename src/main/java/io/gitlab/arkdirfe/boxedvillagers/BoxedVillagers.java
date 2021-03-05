@@ -118,7 +118,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = getConfig().getConfigurationSection(Strings.CONFIG_HELP);
         if(section == null)
         {
-            getLogger().severe("Config section " + Strings.CONFIG_HELP + " missing!");
+            getLogger().severe(String.format("Config section %s missing!", Strings.CONFIG_HELP));
             return;
         }
 
@@ -129,19 +129,19 @@ public class BoxedVillagers extends JavaPlugin
 
             if(title == null)
             {
-                getLogger().warning("No title found in help page " + key + "!");
+                getLogger().warning(String.format("No title found in help page %s!", key));
                 title = "";
             }
             if(content == null)
             {
-                getLogger().warning("No content found in help page " + key + "!");
+                getLogger().warning(String.format("No content found in help page %s!", key));
                 content = "";
             }
 
             helpPages.put(key, new HelpData(title, content));
         }
 
-        getLogger().info("Loaded " + helpPages.size() + " help pages!");
+        getLogger().info(String.format("Loaded %d help pages!", helpPages.size()));
     }
 
     /**
@@ -155,7 +155,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().severe("Config section " + configSection + " missing!");
+            getLogger().severe(String.format("Config section %s missing!", configSection));
             return;
         }
 
@@ -187,7 +187,7 @@ public class BoxedVillagers extends JavaPlugin
                 }
                 else
                 {
-                    getLogger().warning("Unknown material or unsupported currency " + innerKey + "! Ignoring.");
+                    getLogger().warning(String.format("Unknown material or unsupported currency %s! Ignoring.", innerKey));
                 }
             }
 
@@ -196,7 +196,7 @@ public class BoxedVillagers extends JavaPlugin
 
         if(costs.size() != expected)
         {
-            getLogger().severe("Unexpected number of cost entries for " + configSection + " (got " + costs.size() + ", expected " + expected + ")! This WILL break!");
+            getLogger().severe(String.format("Unexpected number of cost entries for %s (got %d, expected %d)! This WILL break!", configSection, costs.size(), expected));
         }
     }
 
@@ -210,7 +210,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().severe("Config section " + configSection + " missing!");
+            getLogger().severe(String.format("Config section %s missing!", configSection));
             return;
         }
 

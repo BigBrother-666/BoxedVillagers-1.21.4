@@ -172,12 +172,9 @@ public class InteractionListener implements Listener
 
         NBTItem nbtItem = ItemUtil.validateBoundItem(event.getCurrentItem());
 
-        if(nbtItem != null)
+        if(nbtItem != null && player.getOpenInventory().getTopInventory() instanceof MerchantInventory)
         {
-            if(player.getOpenInventory().getTopInventory() instanceof MerchantInventory)
-            {
-                event.setCancelled(true);
-            }
+            event.setCancelled(true);
         }
     }
 }

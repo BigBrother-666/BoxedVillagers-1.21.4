@@ -17,7 +17,6 @@ import java.util.List;
 
 public class WitchdoctorCommandExecutor implements TabExecutor
 {
-    private final BoxedVillagers plugin;
     private final WitchdoctorGuiManager gui;
 
     /**
@@ -28,7 +27,6 @@ public class WitchdoctorCommandExecutor implements TabExecutor
      */
     public WitchdoctorCommandExecutor(@NotNull final BoxedVillagers plugin, @NotNull final WitchdoctorGuiManager manager, @NotNull String commandName)
     {
-        this.plugin = plugin;
         this.gui = manager;
         PluginCommand cmd = plugin.getCommand(commandName);
         if(cmd != null)

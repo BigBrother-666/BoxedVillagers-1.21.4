@@ -84,12 +84,9 @@ public class WitchdoctorGuiManager implements Listener
         ItemStack cursorItem = view.getCursor();
         boolean cursorEmpty = ItemUtil.isNullOrAir(cursorItem);
 
-        if(!slotEmpty)
+        if(!slotEmpty && GuiUtil.isUninteractable(slotItem))
         {
-            if(GuiUtil.isUninteractable(slotItem))
-            {
-                event.setCancelled(true);
-            }
+            event.setCancelled(true);
         }
 
         if(event.getRawSlot() == scrollSlot)

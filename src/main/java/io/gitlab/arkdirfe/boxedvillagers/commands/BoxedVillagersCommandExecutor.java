@@ -28,7 +28,8 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
     /**
      * Handles the /boxedvillagers or /bv commands
-     * @param plugin Reference to the plugin.
+     *
+     * @param plugin      Reference to the plugin.
      * @param commandName Name of the command.
      */
     public BoxedVillagersCommandExecutor(@NotNull final BoxedVillagers plugin, @NotNull final String commandName)
@@ -131,27 +132,24 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
             }
             else if(subCmd.equalsIgnoreCase(Strings.CMD_BV_RENAME))
             {
-                if(args.length > 1)
+                if(args.length > 1 && sender instanceof Player)
                 {
-                    if(sender instanceof Player)
+                    Player player = (Player) sender;
+
+                    ItemStack item = player.getInventory().getItemInMainHand();
+                    NBTItem nbtItem = ItemUtil.validateBoundItem(item);
+                    if(nbtItem != null)
                     {
-                        Player player = (Player) sender;
+                        StringBuilder newName = new StringBuilder();
 
-                        ItemStack item = player.getInventory().getItemInMainHand();
-                        NBTItem nbtItem = ItemUtil.validateBoundItem(item);
-                        if(nbtItem != null)
+                        for(int i = 1; i < args.length; i++)
                         {
-                            StringBuilder newName = new StringBuilder();
-
-                            for(int i = 1; i < args.length; i++)
-                            {
-                                newName.append(args[i]).append(" ");
-                            }
-
-                            VillagerData data = new VillagerData(nbtItem);
-                            data.rename(newName.toString());
-                            player.getInventory().setItemInMainHand(data.getItem());
+                            newName.append(args[i]).append(" ");
                         }
+
+                        VillagerData data = new VillagerData(nbtItem);
+                        data.rename(newName.toString());
+                        player.getInventory().setItemInMainHand(data.getItem());
                     }
                 }
             }
@@ -173,12 +171,9 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         {
             if(sender.hasPermission(Strings.PERM_ADMIN))
             {
-                if((args.length == 1 || args.length == 2))
+                if((args.length == 1 || args.length == 2) && args[0].equalsIgnoreCase(Strings.CMD_BV_GIVE))
                 {
-                    if(args[0].equalsIgnoreCase(Strings.CMD_BV_GIVE))
-                    {
-                        return Arrays.asList(Strings.CMD_BV_GIVE_UNBOUND_SCROLL, Strings.CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL, Strings.CMD_BV_GIVE_TRADE);
-                    }
+                    return Arrays.asList(Strings.CMD_BV_GIVE_UNBOUND_SCROLL, Strings.CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL, Strings.CMD_BV_GIVE_TRADE);
                 }
 
                 if((args.length == 0 || args.length == 1))
@@ -215,10 +210,11 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
     /**
      * Returns a player object depending on conditions.
-     * @param args Command arguments.
-     * @param sender Command sender.
+     *
+     * @param args         Command arguments.
+     * @param sender       Command sender.
      * @param senderPlayer Condition for when to interpret the sender as a player.
-     * @param argPlayer Condition for when to get an online player from the args.
+     * @param argPlayer    Condition for when to get an online player from the args.
      * @return Player object if possible, null otherwise.
      */
     @Nullable
