@@ -14,9 +14,9 @@ sonarcloud-check:
     - master
     - develop
 build:
-    image: maven:3.6.3-jdk-11
-    script: mvn clean package
-    artifacts:
-        name: "BoxedVillagers"
-        paths:
-        -"target/*.jar"
+  image: maven:3.6.3-jdk-11
+  script: mvn clean package
+  artifacts:
+    name: "BoxedVillagers"
+    paths:
+    - "target/*.jar"
