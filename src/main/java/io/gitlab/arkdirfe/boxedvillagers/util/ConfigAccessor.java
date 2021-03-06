@@ -37,7 +37,7 @@ public class ConfigAccessor
     private final String fileName;
     private final JavaPlugin plugin;
 
-    private File configFile;
+    private final File configFile;
     private FileConfiguration fileConfiguration;
 
     public ConfigAccessor(JavaPlugin plugin, String fileName)
@@ -48,11 +48,6 @@ public class ConfigAccessor
         }
         this.plugin = plugin;
         this.fileName = fileName;
-        File dataFolder = plugin.getDataFolder();
-        if(dataFolder == null)
-        {
-            throw new IllegalStateException();
-        }
         this.configFile = new File(plugin.getDataFolder(), fileName);
     }
 
