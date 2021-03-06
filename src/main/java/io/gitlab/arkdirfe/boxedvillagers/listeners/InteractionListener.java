@@ -58,9 +58,9 @@ public class InteractionListener implements Listener
             {
                 event.setCancelled(true);
 
-                if(nbtItem.getBoolean(Strings.get("TAG_IS_BOUND")))
+                if(nbtItem.getBoolean(Strings.get(Strings.TAG_IS_BOUND)))
                 {
-                    player.sendMessage(StringFormatter.formatLine(Strings.get("CHAT_SCROLL_BOUND")));
+                    player.sendMessage(StringFormatter.formatLine(Strings.get(Strings.CHAT_SCROLL_BOUND)));
                     return;
                 }
 
@@ -68,11 +68,11 @@ public class InteractionListener implements Listener
 
                 if(villager.getRecipeCount() == 0)
                 {
-                    player.sendMessage(StringFormatter.formatLine(Strings.get("CHAT_NO_TRADES")));
+                    player.sendMessage(StringFormatter.formatLine(Strings.get(Strings.CHAT_NO_TRADES)));
                 }
                 else
                 {
-                    boolean nonlethal = nbtItem.hasKey(Strings.get("TAG_NONLETHAL"));
+                    boolean nonlethal = nbtItem.hasKey(Strings.get(Strings.TAG_NONLETHAL));
                     VillagerData data = new VillagerData(villager, nbtItem);
                     player.getInventory().setItemInMainHand(data.getItem());
 

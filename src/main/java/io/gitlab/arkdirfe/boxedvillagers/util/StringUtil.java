@@ -134,7 +134,7 @@ public final class StringUtil
      */
     private static String itemToString(@NotNull final ItemStack item, final int amount)
     {
-        StringBuilder result = new StringBuilder(String.format(Strings.get("TT_DYN_TRADE_TO_STRING_ITEM"), amount, capitalize(item.getType().getKey().getKey(), "_")));
+        StringBuilder result = new StringBuilder(String.format(Strings.get(Strings.TT_DYN_TRADE_TO_STRING_ITEM), amount, capitalize(item.getType().getKey().getKey(), "_")));
 
         if(item.getItemMeta() instanceof EnchantmentStorageMeta)
         {
@@ -152,7 +152,7 @@ public final class StringUtil
             if(enchants != null)
             {
                 int i = 0;
-                result.append(" " + Strings.get("FORMAT_ENCHANT_COLOR") + "(");
+                result.append(" " + Strings.get(Strings.FORMAT_ENCHANT_COLOR) + "(");
                 for(Map.Entry<Enchantment, Integer> ench : enchants.entrySet())
                 {
                     result.append(String.format("%s %s", capitalize(ench.getKey().getKey().getKey(), "_"), numberToRoman(ench.getValue())));
@@ -182,20 +182,20 @@ public final class StringUtil
     {
         List<String> strings = new ArrayList<>();
 
-        strings.add(Strings.get("TT_COST_TO_STRING_HEADER"));
+        strings.add(Strings.get(Strings.TT_COST_TO_STRING_HEADER));
         if(cost.getMoney() > 0)
         {
-            strings.add(String.format(Strings.get("TT_DYN_COST_TO_STRING_MONEY"), cost.getMoney()));
+            strings.add(String.format(Strings.get(Strings.TT_DYN_COST_TO_STRING_MONEY), cost.getMoney()));
         }
 
         if(cost.getCrystals() > 0)
         {
-            strings.add(String.format(Strings.get("TT_DYN_COST_TO_STRING_CRYSTALS"), cost.getCrystals()));
+            strings.add(String.format(Strings.get(Strings.TT_DYN_COST_TO_STRING_CRYSTALS), cost.getCrystals()));
         }
 
         for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
         {
-            strings.add(String.format(Strings.get("TT_DYN_COST_TO_STRING_ITEM"), entry.getValue(), capitalize(entry.getKey().toString(), "_")));
+            strings.add(String.format(Strings.get(Strings.TT_DYN_COST_TO_STRING_ITEM), entry.getValue(), capitalize(entry.getKey().toString(), "_")));
         }
 
         return strings;

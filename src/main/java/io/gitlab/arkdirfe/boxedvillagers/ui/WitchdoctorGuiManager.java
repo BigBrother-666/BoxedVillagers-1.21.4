@@ -54,7 +54,7 @@ public class WitchdoctorGuiManager implements Listener
      */
     public void openGui(@NotNull final HumanEntity player, final boolean admin)
     {
-        Inventory gui = Bukkit.createInventory(null, 54, (admin ? StringFormatter.formatLine(Strings.get("UI_WD_TITLE_ADMIN")) : StringFormatter.formatLine(Strings.get("UI_WD_TITLE"))));
+        Inventory gui = Bukkit.createInventory(null, 54, (admin ? StringFormatter.formatLine(Strings.get(Strings.UI_WD_TITLE_ADMIN)) : StringFormatter.formatLine(Strings.get(Strings.UI_WD_TITLE))));
         WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, plugin, admin);
         plugin.guiMap.put(player.getUniqueId(), controller);
     }
@@ -275,7 +275,7 @@ public class WitchdoctorGuiManager implements Listener
      */
     private WitchdoctorGuiController getValidController(@NotNull InventoryView view, @NotNull final Inventory inventory)
     {
-        if(!view.getTitle().startsWith(Strings.get("UI_WD_TITLE")))
+        if(!view.getTitle().startsWith(Strings.get(Strings.UI_WD_TITLE)))
         {
             return null;
         }

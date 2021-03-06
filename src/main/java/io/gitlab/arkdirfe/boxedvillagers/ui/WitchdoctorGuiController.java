@@ -61,8 +61,8 @@ public class WitchdoctorGuiController
         this.admin = admin;
         tradeSlotEnd = manager.tradeSlotStart;
 
-        advancedPerms = player.hasPermission(Strings.get("PERM_WITCHDOCTOR_ADVANCED"));
-        extractPerms = player.hasPermission(Strings.get("PERM_WITCHDOCTOR_EXTRACT"));
+        advancedPerms = player.hasPermission(Strings.get(Strings.PERM_WITCHDOCTOR_ADVANCED));
+        extractPerms = player.hasPermission(Strings.get(Strings.PERM_WITCHDOCTOR_EXTRACT));
 
         player.openInventory(gui);
         update();
@@ -480,7 +480,7 @@ public class WitchdoctorGuiController
             if(!ItemUtil.isNullOrAir(item))
             {
                 NBTItem nbtItem = new NBTItem(item);
-                TradeData tradeData = new TradeData(nbtItem.getCompound(Strings.get("TAG_SERIALIZED_TRADE_DATA")), villagerData.getCures());
+                TradeData tradeData = new TradeData(nbtItem.getCompound(Strings.get(Strings.TAG_SERIALIZED_TRADE_DATA)), villagerData.getCures());
                 trades.add(tradeData);
             }
         }

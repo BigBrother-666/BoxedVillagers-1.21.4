@@ -34,15 +34,15 @@ public class TradeData
      */
     public TradeData(@NotNull final NBTCompound recipeCompound, final int cures)
     {
-        recipe = new MerchantRecipe(recipeCompound.getItemStack(Strings.get("TAG_OUTPUT")), recipeCompound.getInteger(Strings.get("TAG_MAX_USES")));
-        reduction = recipeCompound.getInteger(Strings.get("TAG_REDUCTION"));
-        baseAmount = recipeCompound.getInteger(Strings.get("TAG_BASE_AMOUNT"));
+        recipe = new MerchantRecipe(recipeCompound.getItemStack(Strings.get(Strings.TAG_OUTPUT)), recipeCompound.getInteger(Strings.get(Strings.TAG_MAX_USES)));
+        reduction = recipeCompound.getInteger(Strings.get(Strings.TAG_REDUCTION));
+        baseAmount = recipeCompound.getInteger(Strings.get(Strings.TAG_BASE_AMOUNT));
 
-        recipe.setMaxUses(recipeCompound.getInteger(Strings.get("TAG_MAX_USES")));
-        recipe.setUses(recipeCompound.getInteger(Strings.get("TAG_USES")));
-        ItemStack i1 = recipeCompound.getItemStack(Strings.get("TAG_INPUT_1"));
+        recipe.setMaxUses(recipeCompound.getInteger(Strings.get(Strings.TAG_MAX_USES)));
+        recipe.setUses(recipeCompound.getInteger(Strings.get(Strings.TAG_USES)));
+        ItemStack i1 = recipeCompound.getItemStack(Strings.get(Strings.TAG_INPUT_1));
         i1.setAmount(Math.max(baseAmount - reduction * cures, 1));
-        ItemStack i2 = recipeCompound.getItemStack(Strings.get("TAG_INPUT_2"));
+        ItemStack i2 = recipeCompound.getItemStack(Strings.get(Strings.TAG_INPUT_2));
         recipe.addIngredient(i1);
         recipe.addIngredient(i2);
     }
@@ -77,12 +77,12 @@ public class TradeData
         ItemStack i1 = recipe.getIngredients().get(0);
         ItemStack i2 = recipe.getIngredients().get(1);
 
-        entry.setItemStack(Strings.get("TAG_INPUT_1"), i1);
-        entry.setItemStack(Strings.get("TAG_INPUT_2"), i2);
-        entry.setItemStack(Strings.get("TAG_OUTPUT"), recipe.getResult());
-        entry.setInteger(Strings.get("TAG_MAX_USES"), recipe.getMaxUses());
-        entry.setInteger(Strings.get("TAG_USES"), recipe.getUses());
-        entry.setInteger(Strings.get("TAG_REDUCTION"), reduction);
-        entry.setInteger(Strings.get("TAG_BASE_AMOUNT"), baseAmount);
+        entry.setItemStack(Strings.get(Strings.TAG_INPUT_1), i1);
+        entry.setItemStack(Strings.get(Strings.TAG_INPUT_2), i2);
+        entry.setItemStack(Strings.get(Strings.TAG_OUTPUT), recipe.getResult());
+        entry.setInteger(Strings.get(Strings.TAG_MAX_USES), recipe.getMaxUses());
+        entry.setInteger(Strings.get(Strings.TAG_USES), recipe.getUses());
+        entry.setInteger(Strings.get(Strings.TAG_REDUCTION), reduction);
+        entry.setInteger(Strings.get(Strings.TAG_BASE_AMOUNT), baseAmount);
     }
 }

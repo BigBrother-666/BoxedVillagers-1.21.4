@@ -37,11 +37,11 @@ public class HelpData
         List<String> lines = new ArrayList<>();
 
         lines.add("");
-        lines.add(Strings.get("FORMAT_HELP_COLOR") + "=".repeat(lineWidth));
-        lines.add(Strings.get("FORMAT_HELP_COLOR") + getCenterPadded(title, lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
-        lines.add(Strings.get("FORMAT_HELP_COLOR") + "=".repeat(lineWidth));
+        lines.add(Strings.get(Strings.FORMAT_HELP_COLOR) + "=".repeat(lineWidth));
+        lines.add(Strings.get(Strings.FORMAT_HELP_COLOR) + getCenterPadded(title, lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
+        lines.add(Strings.get(Strings.FORMAT_HELP_COLOR) + "=".repeat(lineWidth));
         lines.addAll(getContent(lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
-        lines.add(Strings.get("FORMAT_HELP_COLOR") + "-".repeat(lineWidth));
+        lines.add(Strings.get(Strings.FORMAT_HELP_COLOR) + "-".repeat(lineWidth));
 
         return StringFormatter.formatAll(lines).toArray(new String[0]);
     }

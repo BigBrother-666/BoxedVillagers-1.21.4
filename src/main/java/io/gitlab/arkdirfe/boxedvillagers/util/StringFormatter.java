@@ -132,7 +132,7 @@ public final class StringFormatter
     @NotNull
     public static String formatLine(@NotNull final String line)
     {
-        return "§r" + formatHex(replaceIndicators(Strings.get("FORMAT_DEFAULT_COLOR") + line));
+        return "§r" + formatHex(replaceIndicators(Strings.get(Strings.FORMAT_DEFAULT_COLOR) + line));
     }
 
     /**
@@ -172,7 +172,7 @@ public final class StringFormatter
     }
 
     /**
-     * Splits along \n.
+     * Splits strings along \n.
      *
      * @param string The string to split.
      * @return List of lines.

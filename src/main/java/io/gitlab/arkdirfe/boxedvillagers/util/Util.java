@@ -18,7 +18,7 @@ public final class Util
      */
     public static long getTotalTime()
     {
-        String timeWorldName = plugin.getConfig().getString(Strings.get("CONFIG_TIME_WORLD"));
+        String timeWorldName = plugin.getConfig().getString(Strings.get(Strings.CONFIG_TIME_WORLD));
         if(timeWorldName != null)
         {
             World world = plugin.getServer().getWorld(timeWorldName);
@@ -28,7 +28,7 @@ public final class Util
             }
             else
             {
-                plugin.getLogger().severe(String.format(Strings.get("LOG_DYN_NO_WORLD"), timeWorldName));
+                plugin.getLogger().severe(String.format(Strings.get(Strings.LOG_DYN_NO_WORLD), timeWorldName));
             }
         }
 
