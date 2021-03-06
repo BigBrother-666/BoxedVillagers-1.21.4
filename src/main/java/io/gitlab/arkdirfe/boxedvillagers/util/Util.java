@@ -5,17 +5,20 @@ import org.bukkit.World;
 
 public final class Util
 {
-    private Util(){}
+    private Util()
+    {
+    }
 
     public static BoxedVillagers plugin;
 
     /**
      * Gets the total world time from the configured world. This value is used for keeping track of villager restocks.
+     *
      * @return The total world time.
      */
     public static long getTotalTime()
     {
-        String timeWorldName = plugin.getConfig().getString(Strings.CONFIG_TIME_WORLD);
+        String timeWorldName = plugin.getConfig().getString(Strings.get("CONFIG_TIME_WORLD"));
         if(timeWorldName != null)
         {
             World world = plugin.getServer().getWorld(timeWorldName);
@@ -25,7 +28,7 @@ public final class Util
             }
             else
             {
-                plugin.getLogger().severe(String.format(Strings.LOG_DYN_NO_WORLD, timeWorldName));
+                plugin.getLogger().severe(String.format(Strings.get("LOG_DYN_NO_WORLD"), timeWorldName));
             }
         }
 

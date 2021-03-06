@@ -15,16 +15,22 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 public final class ItemUtil
 {
-    private ItemUtil(){}
+    private ItemUtil()
+    {
+    }
 
     // Check and Update Methods
 
     /**
      * Checks if an item is null or AIR, if it is either it is dangerous to use.
+     *
      * @param item The item to check.
      * @return True if either null or air, false otherwise.
      */
@@ -35,6 +41,7 @@ public final class ItemUtil
 
     /**
      * Checks if an item is an unbound scroll.
+     *
      * @param item Item to check.
      * @return True if it item is unbound scroll, false if item is not or is null.
      */
@@ -48,7 +55,7 @@ public final class ItemUtil
 
         NBTItem nbtItem = new NBTItem(item);
 
-        if(nbtItem.hasKey(Strings.TAG_BOXED_VILLAGER_ITEM))
+        if(nbtItem.hasKey(Strings.get("TAG_BOXED_VILLAGER_ITEM")))
         {
             return nbtItem;
         }
@@ -58,6 +65,7 @@ public final class ItemUtil
 
     /**
      * Checks if an item is a bound scroll.
+     *
      * @param item Item to check.
      * @return True if it item is bound scroll, false if item is not or is null.
      */
@@ -71,7 +79,7 @@ public final class ItemUtil
 
         NBTItem nbtItem = new NBTItem(item);
 
-        if(nbtItem.hasKey(Strings.TAG_BOXED_VILLAGER_ITEM) && nbtItem.getBoolean(Strings.TAG_IS_BOUND))
+        if(nbtItem.hasKey(Strings.get("TAG_BOXED_VILLAGER_ITEM")) && nbtItem.getBoolean(Strings.get("TAG_IS_BOUND")))
         {
             return nbtItem;
         }
@@ -81,9 +89,10 @@ public final class ItemUtil
 
     /**
      * Sets title, lore and flags of an item.
-     * @param item Item to change.
+     *
+     * @param item  Item to change.
      * @param title New title.
-     * @param lore New lore.
+     * @param lore  New lore.
      * @param flags New flags.
      */
     public static void setItemTitleLoreAndFlags(@NotNull final ItemStack item, @NotNull final String title, @Nullable final List<String> lore, @Nullable final List<ItemFlag> flags)
@@ -112,6 +121,7 @@ public final class ItemUtil
 
     /**
      * Returns an unbound scroll.
+     *
      * @param nonlethal Whether the scroll should be nonlethal (does not kill villager, admin only).
      * @return The unbound scroll as an ItemStack.
      */
@@ -120,30 +130,31 @@ public final class ItemUtil
     {
         ItemStack scroll = new ItemStack(Material.PAPER);
 
-        List<String> lore = new ArrayList<>(StringFormatter.split(Strings.TT_UNBOUND_SCROLL_LORE));
+        List<String> lore = new ArrayList<>(StringFormatter.split(Strings.get("TT_UNBOUND_SCROLL_LORE")));
 
         if(nonlethal)
         {
-            List<String> strings = StringFormatter.split(Strings.TT_NONLETHAL_ADMIN_ITEM);
+            List<String> strings = StringFormatter.split(Strings.get("TT_NONLETHAL_ADMIN_ITEM"));
             lore.addAll(strings);
         }
 
-        setItemTitleLoreAndFlags(scroll, StringFormatter.formatLine(Strings.TT_UNBOUND_SCROLL_TITLE), StringFormatter.formatAll(lore), null);
+        setItemTitleLoreAndFlags(scroll, StringFormatter.formatLine(Strings.get("TT_UNBOUND_SCROLL_TITLE")), StringFormatter.formatAll(lore), null);
 
         NBTItem nbtscoll = new NBTItem(scroll);
-        nbtscoll.setUUID(Strings.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
-        nbtscoll.setBoolean(Strings.TAG_IS_BOUND, false);
+        nbtscoll.setUUID(Strings.get("TAG_BOXED_VILLAGER_ITEM"), UUID.randomUUID());
+        nbtscoll.setBoolean(Strings.get("TAG_IS_BOUND"), false);
         if(nonlethal)
         {
-            nbtscoll.setBoolean(Strings.TAG_NONLETHAL, true);
+            nbtscoll.setBoolean(Strings.get("TAG_NONLETHAL"), true);
         }
         return nbtscoll.getItem();
     }
 
     /**
      * Generates a trade item for the /boxedvillagers give trade command.
+     *
      * @param player The player the item is for.
-     * @param args Arguments passed from the command, includes the hotbar slots the items should be used as templates, the trade capacity and the cure reduction.
+     * @param args   Arguments passed from the command, includes the hotbar slots the items should be used as templates, the trade capacity and the cure reduction.
      * @return Item as ItemStack.
      */
     @Nullable
@@ -199,6 +210,7 @@ public final class ItemUtil
 
     /**
      * Returns uninteractable item.
+     *
      * @param material Material to use for the item.
      * @return Item as ItemStack.
      */
@@ -214,6 +226,7 @@ public final class ItemUtil
 
     /**
      * Returns the help item for when there is no scroll present.
+     *
      * @return Item as ItemStack.
      */
     @NotNull
@@ -221,7 +234,7 @@ public final class ItemUtil
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_HELP_TITLE), StringFormatter.splitAndFormatLines(Strings.TT_HELP_NO_SCROLL), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get("TT_HELP_TITLE")), StringFormatter.splitAndFormatLines(Strings.get("TT_HELP_NO_SCROLL")), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
@@ -230,6 +243,7 @@ public final class ItemUtil
 
     /**
      * Returns the help item for when there is a scroll present.
+     *
      * @param advancedPerms Whether the user can manipulate trades.
      * @return Item as ItemStack.
      */
@@ -238,14 +252,14 @@ public final class ItemUtil
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
-        List<String> lore = new ArrayList<>(StringFormatter.splitAndFormatLines(Strings.TT_HELP_HAS_SCROLL));
+        List<String> lore = new ArrayList<>(StringFormatter.splitAndFormatLines(Strings.get("TT_HELP_HAS_SCROLL")));
 
         if(advancedPerms)
         {
-            lore.addAll(StringFormatter.splitAndFormatLines(Strings.TT_HELP_HAS_SCROLL_ADVANCED));
+            lore.addAll(StringFormatter.splitAndFormatLines(Strings.get("TT_HELP_HAS_SCROLL_ADVANCED")));
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_HELP_TITLE), lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get("TT_HELP_TITLE")), lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
@@ -254,8 +268,9 @@ public final class ItemUtil
 
     /**
      * Returns the item that acts as the slot extension button.
+     *
      * @param villagerData Data about the villager on the scroll.
-     * @param slotCost The cost of the slot.
+     * @param slotCost     The cost of the slot.
      * @return Item as ItemStack.
      */
     @NotNull
@@ -267,8 +282,8 @@ public final class ItemUtil
 
         if(slotCost != null)
         {
-            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_SLOT_EXTENSION_SLOTS, VillagerData.MAX_TRADE_SLOTS, villagerData.getTradeSlots())));
-            lore.add(Strings.TT_APPLIES_INSTANTLY);
+            lore.addAll(StringFormatter.split(String.format(Strings.get("TT_DYN_SLOT_EXTENSION_SLOTS"), VillagerData.MAX_TRADE_SLOTS, villagerData.getTradeSlots())));
+            lore.add(Strings.get("TT_APPLIES_INSTANTLY"));
 
             if(slotCost.hasCost())
             {
@@ -277,17 +292,18 @@ public final class ItemUtil
         }
         else
         {
-            lore.add(Strings.TT_SLOT_EXTENSION_FULL);
+            lore.add(Strings.get("TT_SLOT_EXTENSION_FULL"));
             item.setType(Material.BOOK);
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_SLOT_EXTENSION_TITLE), StringFormatter.formatAll(lore), null);
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get("TT_SLOT_EXTENSION_TITLE")), StringFormatter.formatAll(lore), null);
 
         return GuiUtil.setUninteractable(item);
     }
 
     /**
      * Returns item that acts as a button to buy unbound scrolls.
+     *
      * @param scrollCost Cost of a scroll.
      * @return Item as ItemStack.
      */
@@ -297,20 +313,21 @@ public final class ItemUtil
         ItemStack item = new ItemStack(Material.PAPER);
 
         List<String> lore = new ArrayList<>();
-        lore.add(Strings.TT_BUY_LORE);
+        lore.add(Strings.get("TT_BUY_LORE"));
 
         if(scrollCost.hasCost())
         {
             lore.addAll(StringUtil.costToString(scrollCost));
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_BUY_TITLE), StringFormatter.formatAll(lore), null);
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get("TT_BUY_TITLE")), StringFormatter.formatAll(lore), null);
 
         return GuiUtil.setUninteractable(item);
     }
 
     /**
      * Returns item that acts as a cure button.
+     *
      * @param cureCost Cost of curing.
      * @return Item as ItemStack.
      */
@@ -323,8 +340,8 @@ public final class ItemUtil
 
         if(cureCost != null)
         {
-            lore.addAll(StringFormatter.split(Strings.TT_CURE_LORE));
-            lore.add(Strings.TT_APPLIES_INSTANTLY);
+            lore.addAll(StringFormatter.split(Strings.get("TT_CURE_LORE")));
+            lore.add(Strings.get("TT_APPLIES_INSTANTLY"));
 
             if(cureCost.hasCost())
             {
@@ -333,22 +350,23 @@ public final class ItemUtil
         }
         else
         {
-            lore.addAll(StringFormatter.split(Strings.TT_CURE_FULL));
+            lore.addAll(StringFormatter.split(Strings.get("TT_CURE_FULL")));
             item.setType(Material.APPLE);
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_CURE_TITLE), StringFormatter.formatAll(lore), null);
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get("TT_CURE_TITLE")), StringFormatter.formatAll(lore), null);
 
         return GuiUtil.setUninteractable(item);
     }
 
     /**
      * Returns item that acts as a commit button.
-     * @param free How many free (newly inserted) trades are in the GUI.
-     * @param tradesMoved Whether trades were moved.
-     * @param tradesPurged How many trades were purged.
+     *
+     * @param free            How many free (newly inserted) trades are in the GUI.
+     * @param tradesMoved     Whether trades were moved.
+     * @param tradesPurged    How many trades were purged.
      * @param tradesExtracted How many trades were extracted.
-     * @param commitCost Cost of committing.
+     * @param commitCost      Cost of committing.
      * @return Item as ItemStack.
      */
     @NotNull
@@ -360,31 +378,31 @@ public final class ItemUtil
 
         if(!tradesMoved && tradesPurged == 0 && tradesExtracted == 0 && free == 0)
         {
-            lore.add(Strings.TT_COMMIT_NO_CHANGES);
+            lore.add(Strings.get("TT_COMMIT_NO_CHANGES"));
         }
         else
         {
-            lore.add(Strings.TT_COMMIT_CHANGES);
+            lore.add(Strings.get("TT_COMMIT_CHANGES"));
             item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
         }
 
         if(tradesMoved)
         {
-            lore.add(Strings.TT_COMMIT_MOVED);
+            lore.add(Strings.get("TT_COMMIT_MOVED"));
         }
         if(tradesPurged > 0)
         {
-            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_COMMIT_PURGED, tradesPurged)));
+            lore.addAll(StringFormatter.split(String.format(Strings.get("TT_DYN_COMMIT_PURGED"), tradesPurged)));
         }
 
         if(tradesExtracted > 0)
         {
-            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_COMMIT_EXTRACTED, tradesExtracted)));
+            lore.addAll(StringFormatter.split(String.format(Strings.get("TT_DYN_COMMIT_EXTRACTED"), tradesExtracted)));
         }
 
         if(free > 0)
         {
-            lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_COMMIT_ADDED, free)));
+            lore.addAll(StringFormatter.split(String.format(Strings.get("TT_DYN_COMMIT_ADDED"), free)));
         }
 
         if(commitCost.hasCost())
@@ -392,14 +410,15 @@ public final class ItemUtil
             lore.addAll(StringUtil.costToString(commitCost));
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_COMMIT_TITLE), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get("TT_COMMIT_TITLE")), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         return GuiUtil.setUninteractable(item);
     }
 
     /**
      * Returns item that represents a trade.
-     * @param trade Which trade the item represents.
+     *
+     * @param trade        Which trade the item represents.
      * @param extractPerms Whether the player has permission to extract trades.
      * @return Item as ItemStack.
      */
@@ -411,18 +430,18 @@ public final class ItemUtil
         List<String> lore = new ArrayList<>();
 
         lore.addAll(StringFormatter.split(StringUtil.tradeToString(trade.getRecipe(), trade.getBaseAmount())));
-        lore.addAll(StringFormatter.split(String.format(Strings.TT_DYN_TRADE_REDUCTION, trade.getReduction())));
-        lore.addAll(StringFormatter.split(Strings.TT_TRADE_PURGE));
+        lore.addAll(StringFormatter.split(String.format(Strings.get("TT_DYN_TRADE_REDUCTION"), trade.getReduction())));
+        lore.addAll(StringFormatter.split(Strings.get("TT_TRADE_PURGE")));
 
         if(extractPerms)
         {
-            lore.addAll(StringFormatter.split(Strings.TT_TRADE_EXTRACT));
+            lore.addAll(StringFormatter.split(Strings.get("TT_TRADE_EXTRACT")));
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.TT_TRADE_TITLE), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get("TT_TRADE_TITLE")), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         NBTItem nbtItem = new NBTItem(item);
-        NBTCompound compound = nbtItem.addCompound(Strings.TAG_SERIALIZED_TRADE_DATA);
+        NBTCompound compound = nbtItem.addCompound(Strings.get("TAG_SERIALIZED_TRADE_DATA"));
         trade.serializeToNBT(compound);
 
         return GuiUtil.setMovable(nbtItem.getItem());
@@ -430,6 +449,7 @@ public final class ItemUtil
 
     /**
      * Converts a trade item to an extracted one.
+     *
      * @param item The trade  item to convert.
      * @return Item as ItemStack.
      */
@@ -439,14 +459,14 @@ public final class ItemUtil
         item.setType(Material.SUGAR_CANE);
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(StringFormatter.formatLine(Strings.TT_CONVERT_EXTRACTED_TITLE));
+        meta.setDisplayName(StringFormatter.formatLine(Strings.get("TT_CONVERT_EXTRACTED_TITLE")));
         List<String> lore = new ArrayList<>();
         if(meta.getLore().size() > 1)
         {
             lore.add(meta.getLore().get(0));
             lore.add(meta.getLore().get(1));
         }
-        lore.addAll(StringFormatter.split(Strings.TT_CONVERT_EXTRACTED_LORE));
+        lore.addAll(StringFormatter.split(Strings.get("TT_CONVERT_EXTRACTED_LORE")));
         meta.setLore(StringFormatter.formatAll(lore));
         item.setItemMeta(meta);
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
@@ -456,6 +476,7 @@ public final class ItemUtil
 
     /**
      * Converts an extracted trade item to a free one.
+     *
      * @param item The trade item to convert.
      * @return Item as ItemStack.
      */
@@ -463,14 +484,14 @@ public final class ItemUtil
     public static ItemStack convertExtractedToFree(@NotNull final ItemStack item)
     {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(StringFormatter.formatLine(Strings.TT_CONVERT_FREE_TITLE));
+        meta.setDisplayName(StringFormatter.formatLine(Strings.get("TT_CONVERT_FREE_TITLE")));
         List<String> lore = new ArrayList<>();
         if(meta.getLore().size() > 1)
         {
             lore.add(meta.getLore().get(0));
             lore.add(meta.getLore().get(1));
         }
-        lore.addAll(StringFormatter.split(Strings.TT_CONVERT_FREE_LORE));
+        lore.addAll(StringFormatter.split(Strings.get("TT_CONVERT_FREE_LORE")));
         meta.setLore(StringFormatter.formatAll(lore));
         item.setItemMeta(meta);
 

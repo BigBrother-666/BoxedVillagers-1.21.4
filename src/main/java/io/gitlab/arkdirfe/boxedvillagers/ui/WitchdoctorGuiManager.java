@@ -37,6 +37,7 @@ public class WitchdoctorGuiManager implements Listener
 
     /**
      * Handles creation of witchdoctor GUIs and listens to related events.
+     *
      * @param plugin Reference to the plugin.
      */
     public WitchdoctorGuiManager(final BoxedVillagers plugin)
@@ -47,12 +48,13 @@ public class WitchdoctorGuiManager implements Listener
 
     /**
      * Opens a witchdoctor GUI for a player.
+     *
      * @param player Player who ran the command.
-     * @param admin Admin mode, if true costs are disregarded.
+     * @param admin  Admin mode, if true costs are disregarded.
      */
     public void openGui(@NotNull final HumanEntity player, final boolean admin)
     {
-        Inventory gui = Bukkit.createInventory(null, 54, Strings.UI_WD_TITLE + (admin ? StringFormatter.formatLine(" <warn>(ADMIN MODE)") : ""));
+        Inventory gui = Bukkit.createInventory(null, 54, (admin ? StringFormatter.formatLine(Strings.get("UI_WD_TITLE_ADMIN")) : StringFormatter.formatLine(Strings.get("UI_WD_TITLE"))));
         WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, plugin, admin);
         plugin.guiMap.put(player.getUniqueId(), controller);
     }
@@ -61,6 +63,7 @@ public class WitchdoctorGuiManager implements Listener
 
     /**
      * Handles clicks on the open witchdoctor GUI.
+     *
      * @param event The event.
      */
     @EventHandler
@@ -158,6 +161,7 @@ public class WitchdoctorGuiManager implements Listener
 
     /**
      * Prevents dragging in witchdoctor GUIs.
+     *
      * @param event The event.
      */
     @EventHandler
@@ -176,6 +180,7 @@ public class WitchdoctorGuiManager implements Listener
 
     /**
      * Prevents a player from dropping movable items out of the witchdoctor GUI by holding them with their cursor and closing the GUI.
+     *
      * @param event The event.
      */
     @EventHandler
@@ -192,6 +197,7 @@ public class WitchdoctorGuiManager implements Listener
 
     /**
      * Ensures the player gets their items back when the witchdoctor GUI is closed.
+     *
      * @param event The event.
      */
     @EventHandler
@@ -210,6 +216,7 @@ public class WitchdoctorGuiManager implements Listener
 
     /**
      * Ensures the player gets their items back when they get disconnected.
+     *
      * @param event The event.
      */
     @EventHandler
@@ -238,8 +245,9 @@ public class WitchdoctorGuiManager implements Listener
 
     /**
      * Returns the scroll as well as any uncommitted free trade items to the player's inventory.
+     *
      * @param controller The controller associated with the witchdoctor GUI.
-     * @param player The player who opened the GUI.
+     * @param player     The player who opened the GUI.
      */
     private void returnItemsAndRemoveFromMap(@NotNull final WitchdoctorGuiController controller, @NotNull final HumanEntity player)
     {
@@ -260,13 +268,14 @@ public class WitchdoctorGuiManager implements Listener
 
     /**
      * Checks whether the currently open GUI is a witchdoctor GUI. Protected against renamed chest since those won't have a guiMap entry.
-     * @param view The open inventory view.
+     *
+     * @param view      The open inventory view.
      * @param inventory The open inventory.
      * @return A WitchdoctorGuiController or null.
      */
     private WitchdoctorGuiController getValidController(@NotNull InventoryView view, @NotNull final Inventory inventory)
     {
-        if(!view.getTitle().startsWith(Strings.UI_WD_TITLE))
+        if(!view.getTitle().startsWith(Strings.get("UI_WD_TITLE")))
         {
             return null;
         }

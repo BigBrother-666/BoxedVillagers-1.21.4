@@ -31,7 +31,8 @@ public class VillagerData
 
     /**
      * Creates VillagerData from a villager and an unbound scroll.
-     * @param fromVillager The villager.
+     *
+     * @param fromVillager  The villager.
      * @param unboundScroll The unbound scroll.
      */
     public VillagerData(@NotNull final Villager fromVillager, @NotNull final NBTItem unboundScroll)
@@ -55,21 +56,22 @@ public class VillagerData
 
     /**
      * Creates VillagerData from an item. Used when reading from an existing bound scroll.
+     *
      * @param fromItem Item to extract from.
      */
     public VillagerData(@NotNull final NBTItem fromItem)
     {
         trades = new ArrayList<>();
 
-        NBTCompound compound = fromItem.getCompound(Strings.TAG_DATA_COMPOUND);
-        cures = compound.getInteger(Strings.TAG_CURES);
-        profession = compound.getString(Strings.TAG_PROFESSION);
-        rank = compound.getInteger(Strings.TAG_RANK);
-        lastRestocked = compound.getLong(Strings.TAG_TIMESTAMP);
-        tradeSlots = compound.getInteger(Strings.TAG_TRADE_SLOTS);
-        name = compound.getString(Strings.TAG_NAME);
+        NBTCompound compound = fromItem.getCompound(Strings.get("TAG_DATA_COMPOUND"));
+        cures = compound.getInteger(Strings.get("TAG_CURES"));
+        profession = compound.getString(Strings.get("TAG_PROFESSION"));
+        rank = compound.getInteger(Strings.get("TAG_RANK"));
+        lastRestocked = compound.getLong(Strings.get("TAG_TIMESTAMP"));
+        tradeSlots = compound.getInteger(Strings.get("TAG_TRADE_SLOTS"));
+        name = compound.getString(Strings.get("TAG_NAME"));
 
-        for(int i = 0; i < compound.getInteger(Strings.TAG_TRADE_COUNT); i++)
+        for(int i = 0; i < compound.getInteger(Strings.get("TAG_TRADE_COUNT")); i++)
         {
             NBTCompound recipeCompound = compound.getCompound("" + i);
 
@@ -106,7 +108,7 @@ public class VillagerData
     @NotNull
     public String getTradeSlotsAsString()
     {
-        return tradeSlots != MAX_TRADE_SLOTS ? String.format(Strings.TT_DYN_SLOTS_AS_STRING_NOT_FULL, tradeSlots, MAX_TRADE_SLOTS) : String.format(Strings.TT_DYN_SLOTS_AS_STRING_FULL, MAX_TRADE_SLOTS, MAX_TRADE_SLOTS);
+        return tradeSlots != MAX_TRADE_SLOTS ? String.format(Strings.get("TT_DYN_SLOTS_AS_STRING_NOT_FULL"), tradeSlots, MAX_TRADE_SLOTS) : String.format(Strings.get("TT_DYN_SLOTS_AS_STRING_FULL"), MAX_TRADE_SLOTS, MAX_TRADE_SLOTS);
     }
 
     // --- Setters/Accessors
@@ -120,6 +122,7 @@ public class VillagerData
 
     /**
      * Updates the bound scroll and returns it in item stack form.
+     *
      * @return The bound scroll.
      */
     @NotNull
@@ -127,20 +130,20 @@ public class VillagerData
     {
         NBTItem nbtItem = new NBTItem(linkedItem);
 
-        if(nbtItem.hasKey(Strings.TAG_NONLETHAL))
+        if(nbtItem.hasKey(Strings.get("TAG_NONLETHAL")))
         {
-            nbtItem.removeKey(Strings.TAG_NONLETHAL);
+            nbtItem.removeKey(Strings.get("TAG_NONLETHAL"));
         }
 
-        nbtItem.setBoolean(Strings.TAG_IS_BOUND, true);
-        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
-        compound.setInteger(Strings.TAG_CURES, cures);
-        compound.setString(Strings.TAG_PROFESSION, profession);
-        compound.setInteger(Strings.TAG_RANK, rank);
-        compound.setInteger(Strings.TAG_TRADE_COUNT, trades.size());
-        compound.setLong(Strings.TAG_TIMESTAMP, lastRestocked);
-        compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
-        compound.setString(Strings.TAG_NAME, name);
+        nbtItem.setBoolean(Strings.get("TAG_IS_BOUND"), true);
+        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.get("TAG_DATA_COMPOUND"));
+        compound.setInteger(Strings.get("TAG_CURES"), cures);
+        compound.setString(Strings.get("TAG_PROFESSION"), profession);
+        compound.setInteger(Strings.get("TAG_RANK"), rank);
+        compound.setInteger(Strings.get("TAG_TRADE_COUNT"), trades.size());
+        compound.setLong(Strings.get("TAG_TIMESTAMP"), lastRestocked);
+        compound.setInteger(Strings.get("TAG_TRADE_SLOTS"), tradeSlots);
+        compound.setString(Strings.get("TAG_NAME"), name);
 
         for(int i = 0; i < trades.size(); i++)
         {
@@ -160,6 +163,7 @@ public class VillagerData
 
     /**
      * Returns a list of MerchantRecipe, needed due to TradeData objects holding the individual entries.
+     *
      * @return The list.
      */
     @NotNull
@@ -175,32 +179,35 @@ public class VillagerData
 
     /**
      * Cures the villager.
+     *
      * @param times How many times to cure.
      */
     public void cure(final int times)
     {
         NBTItem nbtItem = new NBTItem(linkedItem);
-        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
+        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.get("TAG_DATA_COMPOUND"));
         cures = Math.min(7, cures + times);
-        compound.setInteger(Strings.TAG_CURES, cures);
+        compound.setInteger(Strings.get("TAG_CURES"), cures);
         linkedItem = nbtItem.getItem();
     }
 
     /**
      * Adds trade slots to the villager.
+     *
      * @param slots How many slots.
      */
     public void addTradeSlots(final int slots)
     {
         NBTItem nbtItem = new NBTItem(linkedItem);
-        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
+        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.get("TAG_DATA_COMPOUND"));
         tradeSlots = Math.min(MAX_TRADE_SLOTS, tradeSlots + slots);
-        compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
+        compound.setInteger(Strings.get("TAG_TRADE_SLOTS"), tradeSlots);
         linkedItem = nbtItem.getItem();
     }
 
     /**
      * Renames the villager.
+     *
      * @param newName The new name, should not be empty or blank.
      */
     public void rename(@NotNull final String newName)
@@ -213,6 +220,7 @@ public class VillagerData
 
     /**
      * Updates how many uses the trades have left.
+     *
      * @param merchant The merchant generated for the trade GUI.
      */
     public void updateUses(@NotNull final Merchant merchant)
@@ -237,7 +245,7 @@ public class VillagerData
 
         if(days < lastRestocked)
         {
-            Util.logWarning("Restock attempted with lower world time than last restocked time. If you see this message once it's nothing to worry about, if you see it often you might want to look into things.");
+            Util.logWarning(Strings.get("LOG_RESTOCK_TIME_RAN_BACKWARDS"));
             permitted = true;
         }
 
@@ -267,6 +275,6 @@ public class VillagerData
      */
     private void updateTitleAndLore()
     {
-        ItemUtil.setItemTitleLoreAndFlags(linkedItem, StringFormatter.formatLine(Strings.TT_BOUND_SCROLL_TITLE), StringFormatter.splitAndFormatLines(String.format(Strings.TT_DYN_BOUND_SCROLL_LORE, name, getCuresAsString(), getTradeSlotsAsString())), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        ItemUtil.setItemTitleLoreAndFlags(linkedItem, StringFormatter.formatLine(Strings.get("TT_BOUND_SCROLL_TITLE")), StringFormatter.splitAndFormatLines(String.format(Strings.get("TT_DYN_BOUND_SCROLL_LORE"), name, getCuresAsString(), getTradeSlotsAsString())), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
     }
 }

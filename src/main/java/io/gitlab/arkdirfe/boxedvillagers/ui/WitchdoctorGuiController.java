@@ -45,11 +45,12 @@ public class WitchdoctorGuiController
 
     /**
      * Responsible for updating the witchdoctor GUI and keeping track of its state.
-     * @param gui The linked GUI.
-     * @param player The player who opened the GUI.
+     *
+     * @param gui     The linked GUI.
+     * @param player  The player who opened the GUI.
      * @param manager Reference to the GUI manager.
-     * @param plugin Reference to the plugin.
-     * @param admin Admin mode. If true costs are ignored.
+     * @param plugin  Reference to the plugin.
+     * @param admin   Admin mode. If true costs are ignored.
      */
     public WitchdoctorGuiController(@NotNull final Inventory gui, @NotNull final HumanEntity player, @NotNull final WitchdoctorGuiManager manager, @NotNull final BoxedVillagers plugin, final boolean admin)
     {
@@ -60,8 +61,8 @@ public class WitchdoctorGuiController
         this.admin = admin;
         tradeSlotEnd = manager.tradeSlotStart;
 
-        advancedPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED);
-        extractPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT);
+        advancedPerms = player.hasPermission(Strings.get("PERM_WITCHDOCTOR_ADVANCED"));
+        extractPerms = player.hasPermission(Strings.get("PERM_WITCHDOCTOR_EXTRACT"));
 
         player.openInventory(gui);
         update();
@@ -90,6 +91,7 @@ public class WitchdoctorGuiController
 
     /**
      * Sets the scroll and extracts villager data if it is valid.
+     *
      * @param scroll The scroll.
      */
     public void setScroll(@Nullable final ItemStack scroll)
@@ -209,6 +211,7 @@ public class WitchdoctorGuiController
 
     /**
      * Checks if the slot is a valid trade slot.
+     *
      * @param slot The slot to check.
      * @return True if slot is valid, false otherwise.
      */
@@ -219,6 +222,7 @@ public class WitchdoctorGuiController
 
     /**
      * Checks if changes that warrant a commit have been made.
+     *
      * @return True if yes, false if no.
      */
     public boolean canCommit()
@@ -305,6 +309,7 @@ public class WitchdoctorGuiController
 
     /**
      * Removes an available trade from the villager. Needs to be committed to be permanent.
+     *
      * @param slot The slot the trade is in.
      */
     public void purgeTrade(final int slot)
@@ -364,6 +369,7 @@ public class WitchdoctorGuiController
 
     /**
      * Transforms a trade into an extracted trade.
+     *
      * @param slot The slot of the trade.
      */
     public void extractTrade(final int slot) // Already null checked by manager
@@ -384,10 +390,11 @@ public class WitchdoctorGuiController
 
     /**
      * Handles a click on the scroll slot.
-     * @param view The InventoryView that is currently open.
-     * @param slotItem The item in the slot.
-     * @param cursorItem The item on the cursor.
-     * @param slotEmpty Whether the slot is empty.
+     *
+     * @param view        The InventoryView that is currently open.
+     * @param slotItem    The item in the slot.
+     * @param cursorItem  The item on the cursor.
+     * @param slotEmpty   Whether the slot is empty.
      * @param cursorEmpty Whether the cursor is empty.
      */
     public void clickScrollSlot(@NotNull final InventoryView view, @Nullable final ItemStack slotItem, @Nullable final ItemStack cursorItem, final boolean slotEmpty, final boolean cursorEmpty)
@@ -419,14 +426,15 @@ public class WitchdoctorGuiController
 
     /**
      * Handles a click on a trade slot.
-     * @param view The InventoryView that is currently open.
-     * @param slotItem The item in the slot.
-     * @param cursorItem The item on the cursor.
-     * @param event The event that called this.
-     * @param slotIndex The slot in question.
-     * @param slotEmpty Whether the slot is empty.
-     * @param cursorEmpty Whether the cursor is empty.
-     * @param slotMovable Whether the item in the slot is movable.
+     *
+     * @param view          The InventoryView that is currently open.
+     * @param slotItem      The item in the slot.
+     * @param cursorItem    The item on the cursor.
+     * @param event         The event that called this.
+     * @param slotIndex     The slot in question.
+     * @param slotEmpty     Whether the slot is empty.
+     * @param cursorEmpty   Whether the cursor is empty.
+     * @param slotMovable   Whether the item in the slot is movable.
      * @param cursorMovable Whether the item on the cursor is movable.
      */
     public void clickTradeSlot(@NotNull final InventoryView view, @Nullable final ItemStack slotItem, @Nullable final ItemStack cursorItem, @NotNull final InventoryClickEvent event, final int slotIndex, final boolean slotEmpty, final boolean cursorEmpty, final boolean slotMovable, final boolean cursorMovable)
@@ -457,6 +465,7 @@ public class WitchdoctorGuiController
 
     /**
      * Gets trades from the representations in the trade slots.
+     *
      * @return A list of TradeData.
      */
     @NotNull
@@ -471,7 +480,7 @@ public class WitchdoctorGuiController
             if(!ItemUtil.isNullOrAir(item))
             {
                 NBTItem nbtItem = new NBTItem(item);
-                TradeData tradeData = new TradeData(nbtItem.getCompound(Strings.TAG_SERIALIZED_TRADE_DATA), villagerData.getCures());
+                TradeData tradeData = new TradeData(nbtItem.getCompound(Strings.get("TAG_SERIALIZED_TRADE_DATA")), villagerData.getCures());
                 trades.add(tradeData);
             }
         }
@@ -481,6 +490,7 @@ public class WitchdoctorGuiController
 
     /**
      * Returns a list of all items in the GUI that have the Free tag (extracted and committed or inserted by the player).
+     *
      * @return The list.
      */
     @NotNull
@@ -503,6 +513,7 @@ public class WitchdoctorGuiController
 
     /**
      * Returns a list of all items in the GUI that have the Extracted tag (set to extract but not yet committed).
+     *
      * @return The list.
      */
     @NotNull
@@ -525,6 +536,7 @@ public class WitchdoctorGuiController
 
     /**
      * Calculates the cost for curing the current villager.
+     *
      * @return The cost.
      */
     @Nullable
@@ -539,6 +551,7 @@ public class WitchdoctorGuiController
 
     /**
      * Calculates the cost for committing the current changes.
+     *
      * @return The cost.
      */
     @NotNull
@@ -550,6 +563,7 @@ public class WitchdoctorGuiController
 
     /**
      * Calculates the cost for purchasing a scroll.
+     *
      * @return The cost.
      */
     @NotNull
@@ -560,6 +574,7 @@ public class WitchdoctorGuiController
 
     /**
      * Calculates the cost for extending the trade slots of the current villager.
+     *
      * @return The cost.
      */
     @Nullable
@@ -574,6 +589,7 @@ public class WitchdoctorGuiController
 
     /**
      * Checks whether the player has enough resources in their inventory and money accounts to pay.
+     *
      * @param cost The cost that is checked.
      * @return True if the player can pay, false otherwise.
      */
@@ -599,6 +615,7 @@ public class WitchdoctorGuiController
 
     /**
      * Deducts the cost from the player's inventory and money accounts.
+     *
      * @param cost The cost.
      */
     private void payCosts(@Nullable final CostData cost)

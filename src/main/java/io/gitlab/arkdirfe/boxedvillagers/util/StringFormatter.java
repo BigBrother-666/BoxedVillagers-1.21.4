@@ -3,34 +3,88 @@ package io.gitlab.arkdirfe.boxedvillagers.util;
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class StringFormatter
 {
+    private static final Pattern hexPattern = Pattern.compile("#[a-fA-F0-9]{6}");
+    private static final Pattern formatPattern = Pattern.compile("§[a-f0-9klmnor]");
+    private static Map<String, String> colorCodes = null;
+
     private StringFormatter()
     {
     }
 
-    private static final Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+    /**
+     * Initializes the default color map.
+     */
+    public static void restoreDefaultColors()
+    {
+        colorCodes = new HashMap<>();
+        colorCodes.put("<norm>", "#ffffff"); // Normal Text
+        colorCodes.put("<uiheader>", "#3f3f3f"); // UI Header
+        colorCodes.put("<info>", "#00b7ff"); // Info
+        colorCodes.put("<basic>", "#55ff55"); // Basic item
+        colorCodes.put("<advanced>", "#00ff00"); // Advanced item
+        colorCodes.put("<item>", "#8bff8b"); // Item in tooltip
+        colorCodes.put("<warn>", "#ff0000"); // Warning
+        colorCodes.put("<evil>", "#990000"); // Evil
+        colorCodes.put("<static>", "#ffb300"); // Static Number (costs, caps for cures/slots)
+        colorCodes.put("<dynamic>", "#ffce52"); // Dynamic Number (current values)
+        colorCodes.put("<title>", "#008100"); // Title
+        colorCodes.put("<money>", "#ffdc00"); // Money
+        colorCodes.put("<crystals>", "#008eff"); // Crystals
+        colorCodes.put("<enchant>", "#b52fff"); // Heading
+    }
 
-    private static final Map<String, String> colorPlaceholders = Map.ofEntries(
-            // Tooltip Colors
-            new AbstractMap.SimpleImmutableEntry<>("<norm>", "#ffffff"), // Normal Text
-            new AbstractMap.SimpleImmutableEntry<>("<info>", "#00b7ff"), // Info
-            new AbstractMap.SimpleImmutableEntry<>("<basic>", "#55ff55"), // Basic item
-            new AbstractMap.SimpleImmutableEntry<>("<advanced>", "#00ff00"), // Advanced item
-            new AbstractMap.SimpleImmutableEntry<>("<item>", "#8bff8b"), // Item in tooltip
-            new AbstractMap.SimpleImmutableEntry<>("<warn>", "#ff0000"), // Warning
-            new AbstractMap.SimpleImmutableEntry<>("<evil>", "#990000"), // Evil
-            new AbstractMap.SimpleImmutableEntry<>("<static>", "#ffb300"), // Static Number (costs, caps for cures/slots)
-            new AbstractMap.SimpleImmutableEntry<>("<dynamic>", "#ffce52"), // Dynamic Number (current values)
-            new AbstractMap.SimpleImmutableEntry<>("<title>", "#008100"), // Title
-            new AbstractMap.SimpleImmutableEntry<>("<money>", "#ffdc00"), // Money
-            new AbstractMap.SimpleImmutableEntry<>("<crystals>", "#008eff"), // Crystals
-            new AbstractMap.SimpleImmutableEntry<>("<enchant>", "#b52fff") // Heading
-    );
+    /**
+     * Sets a value on the color map if it is correctly formatted.
+     *
+     * @param key   Which value to set.
+     * @param value The new value (needs to be in hex format (#xxxxxx).
+     * @return True if the value was properly formatted and not new, false otherwise.
+     */
+    public static boolean setColor(@NotNull final String key, @NotNull final String value)
+    {
+        if(!colorCodes.containsKey(key) || !hexPattern.matcher(value).matches())
+        {
+            return false;
+        }
+
+        colorCodes.put(key, value);
+        return true;
+    }
+
+    /**
+     * Strips all formatting symbols from a string for accurate length calculation.
+     *
+     * @param string The string to process.
+     * @return The string without formatting symbols.
+     */
+    @NotNull
+    public static String stripFormatting(@NotNull String string)
+    {
+        for(Map.Entry<String, String> e : colorCodes.entrySet())
+        {
+            string = string.replace(e.getKey(), "");
+        }
+
+        Matcher match = formatPattern.matcher(string);
+        while(match.find())
+        {
+            String found = string.substring(match.start(), match.end());
+            string = string.replace(found, "");
+            match = formatPattern.matcher(string);
+        }
+
+        return string;
+    }
 
     /**
      * Replaces the color indicators with their hex color.
@@ -41,7 +95,7 @@ public final class StringFormatter
     @NotNull
     private static String replaceIndicators(@NotNull String string)
     {
-        for(Map.Entry<String, String> e : colorPlaceholders.entrySet())
+        for(Map.Entry<String, String> e : colorCodes.entrySet())
         {
             string = string.replace(e.getKey(), e.getValue());
 
@@ -58,13 +112,13 @@ public final class StringFormatter
     @NotNull
     private static String formatHex(@NotNull String string)
     {
-        Matcher match = pattern.matcher(string);
+        Matcher match = hexPattern.matcher(string);
 
         while(match.find())
         {
             String color = string.substring(match.start(), match.end());
             string = string.replace(color, ChatColor.of(color) + "");
-            match = pattern.matcher(string);
+            match = hexPattern.matcher(string);
         }
         return ChatColor.translateAlternateColorCodes('&', string);
     }
@@ -78,7 +132,7 @@ public final class StringFormatter
     @NotNull
     public static String formatLine(@NotNull final String line)
     {
-        return "§r" + formatHex(replaceIndicators("<norm>" + line));
+        return "§r" + formatHex(replaceIndicators(Strings.get("FORMAT_DEFAULT_COLOR") + line));
     }
 
     /**

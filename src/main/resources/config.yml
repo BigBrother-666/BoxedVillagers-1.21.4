@@ -81,7 +81,7 @@ addCost:
 
 # How many standard characters a help page should be wide, larger values may break for players with narrow chat.
 helpWidth: 50
-# Help pages, use \n to force linebreaks
+# Help pages, use \n to force line breaks. Both vanilla formatting and color codes work in principle but do not carry over line breaks, use at your own responsibility.
 helpPages:
   default:
     title: "Boxed Villagers Help Pages"

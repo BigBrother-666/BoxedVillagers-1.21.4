@@ -67,8 +67,9 @@ public final class StringUtil
      */
     public static int stringWidth(@NotNull final String string)
     {
+        String stripped = StringFormatter.stripFormatting(string);
         int width = 0;
-        for(char c : string.toCharArray())
+        for(char c : stripped.toCharArray())
         {
             width += charWidth(c);
         }
@@ -102,7 +103,7 @@ public final class StringUtil
     /**
      * Converts a trade to a readable string.
      *
-     * @param recipe The recipe to convert.
+     * @param recipe     The recipe to convert.
      * @param baseAmount Base amount of first ingredient before cures.
      * @return The converted recipe.
      */
@@ -126,13 +127,14 @@ public final class StringUtil
 
     /**
      * Converts an item into a readable string.
-     * @param item Item to be converted.
+     *
+     * @param item   Item to be converted.
      * @param amount Amount of the item (important for trades).
      * @return Item as string.
      */
     private static String itemToString(@NotNull final ItemStack item, final int amount)
     {
-        StringBuilder result = new StringBuilder(String.format(Strings.TT_DYN_TRADE_TO_STRING_ITEM, amount, capitalize(item.getType().getKey().getKey(), "_")));
+        StringBuilder result = new StringBuilder(String.format(Strings.get("TT_DYN_TRADE_TO_STRING_ITEM"), amount, capitalize(item.getType().getKey().getKey(), "_")));
 
         if(item.getItemMeta() instanceof EnchantmentStorageMeta)
         {
@@ -150,7 +152,7 @@ public final class StringUtil
             if(enchants != null)
             {
                 int i = 0;
-                result.append(" <enchant>(");
+                result.append(" " + Strings.get("FORMAT_ENCHANT_COLOR") + "(");
                 for(Map.Entry<Enchantment, Integer> ench : enchants.entrySet())
                 {
                     result.append(String.format("%s %s", capitalize(ench.getKey().getKey().getKey(), "_"), numberToRoman(ench.getValue())));
@@ -180,20 +182,20 @@ public final class StringUtil
     {
         List<String> strings = new ArrayList<>();
 
-        strings.add(Strings.TT_COST_TO_STRING_HEADER);
+        strings.add(Strings.get("TT_COST_TO_STRING_HEADER"));
         if(cost.getMoney() > 0)
         {
-            strings.add(String.format(Strings.TT_DYN_COST_TO_STRING_MONEY, cost.getMoney()));
+            strings.add(String.format(Strings.get("TT_DYN_COST_TO_STRING_MONEY"), cost.getMoney()));
         }
 
         if(cost.getCrystals() > 0)
         {
-            strings.add(String.format(Strings.TT_DYN_COST_TO_STRING_CRYSTALS, cost.getCrystals()));
+            strings.add(String.format(Strings.get("TT_DYN_COST_TO_STRING_CRYSTALS"), cost.getCrystals()));
         }
 
         for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
         {
-            strings.add(String.format(Strings.TT_DYN_COST_TO_STRING_ITEM, entry.getValue(), capitalize(entry.getKey().toString(), "_")));
+            strings.add(String.format(Strings.get("TT_DYN_COST_TO_STRING_ITEM"), entry.getValue(), capitalize(entry.getKey().toString(), "_")));
         }
 
         return strings;

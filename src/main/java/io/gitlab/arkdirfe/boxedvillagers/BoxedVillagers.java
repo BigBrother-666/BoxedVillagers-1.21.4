@@ -7,6 +7,8 @@ import io.gitlab.arkdirfe.boxedvillagers.data.HelpData;
 import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiController;
 import io.gitlab.arkdirfe.boxedvillagers.listeners.InteractionListener;
 import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
+import io.gitlab.arkdirfe.boxedvillagers.util.ConfigAccessor;
+import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import io.gitlab.arkdirfe.boxedvillagers.util.Util;
 import org.bukkit.Material;
@@ -14,7 +16,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class BoxedVillagers extends JavaPlugin
 {
@@ -29,45 +35,122 @@ public class BoxedVillagers extends JavaPlugin
     public CostData extractCost;
     public CostData addCost;
 
+    private ConfigAccessor stringsConfig;
+
     @Override
     public void onEnable()
     {
+        stringsConfig = new ConfigAccessor(this, "strings.yml");
+
         guiMap = new HashMap<>();
         Util.plugin = this;
 
         reloadConfig();
         registerCommandsAndListeners();
 
-        getLogger().info("Loaded!");
+        getLogger().info(Strings.get("LOG_LOADED"));
     }
 
     @Override
     public void onDisable()
     {
         witchdoctorGuiManager.cleanupOpenGuis();
-        getLogger().info("Unloaded!");
+        getLogger().info(Strings.get("LOG_UNLOADED"));
     }
 
     @Override
     public void reloadConfig()
     {
-        super.reloadConfig();
+        reloadColorsAndStrings();
         saveDefaultConfig();
+        super.reloadConfig();
 
-        String timeWorldName = getConfig().getString(Strings.CONFIG_TIME_WORLD);
+        String timeWorldName = getConfig().getString(Strings.get("CONFIG_TIME_WORLD"));
         if(timeWorldName == null)
         {
-            getLogger().severe("Error loading time world from config!");
+            getLogger().severe(Strings.get("LOG_ERROR_TIME_WORLD"));
         }
         else
         {
             if(getServer().getWorld(timeWorldName) == null)
             {
-                getLogger().severe(String.format(Strings.LOG_DYN_NO_WORLD, timeWorldName));
+                getLogger().severe(String.format(Strings.get("LOG_DYN_NO_WORLD"), timeWorldName));
             }
         }
 
         initializeMaps();
+    }
+
+    private void reloadColorsAndStrings()
+    {
+        stringsConfig.saveDefaultConfig();
+        stringsConfig.reloadConfig();
+        Strings.restoreDefaults(); // Call before it is ever accessed, should guarantee that the strings are there
+        StringFormatter.restoreDefaultColors();
+        loadColors();
+        loadStrings();
+    }
+
+    private void loadColors()
+    {
+        String configSection = Strings.get("CONFIG_STRINGS_COLORS");
+        ConfigurationSection section = stringsConfig.getConfig().getConfigurationSection(configSection);
+        if(section == null)
+        {
+            getLogger().info(String.format(Strings.get("LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES"), configSection));
+            return;
+        }
+
+        int count = 0;
+
+        for(String key : section.getKeys(false))
+        {
+            String value = stringsConfig.getConfig().getString(configSection + "." + key);
+            if(value != null)
+            {
+                if(!StringFormatter.setColor(key, value))
+                {
+                    getLogger().warning(Strings.get("LOG_INVALID_STRING_OVERRIDE"));
+                }
+                else
+                {
+                    count++;
+                }
+            }
+        }
+
+        getLogger().info(String.format(Strings.get("LOG_DYN_LOAD_COLOR_OVERRIDES"), count));
+    }
+
+    private void loadStrings()
+    {
+        String configSection = Strings.get("CONFIG_STRINGS_STRING_ENTRIES");
+        ConfigurationSection section = stringsConfig.getConfig().getConfigurationSection(configSection);
+        if(section == null)
+        {
+            getLogger().info(String.format(Strings.get("LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES"), configSection));
+            return;
+        }
+
+        int count = 0;
+
+        for(String key : section.getKeys(false))
+        {
+            String value = stringsConfig.getConfig().getString(configSection + "." + key);
+            if(value != null)
+            {
+                if(!Strings.set(key, value))
+                {
+                    getLogger().warning(Strings.get("LOG_INVALID_STRING_OVERRIDE"));
+                }
+                else
+                {
+                    count++;
+                }
+            }
+        }
+
+        getLogger().info(String.format(Strings.get("LOG_DYN_LOAD_STRING_OVERRIDES"), count));
     }
 
     /**
@@ -81,7 +164,7 @@ public class BoxedVillagers extends JavaPlugin
         new WitchdoctorCommandExecutor(this, witchdoctorGuiManager, "witchdoctor");
         new InteractionListener(this);
 
-        getLogger().info("Registered commands and listeners!");
+        getLogger().info(Strings.get("LOG_REGISTER_COMMANDS"));
     }
 
     /**
@@ -99,15 +182,15 @@ public class BoxedVillagers extends JavaPlugin
 
         initHelpPages();
 
-        initSimpleCostMap(Strings.CONFIG_COST_PURGE, purgeCost);
-        initSimpleCostMap(Strings.CONFIG_COST_SCROLL, scrollCost);
-        initSimpleCostMap(Strings.CONFIG_COST_EXTRACT, extractCost);
-        initSimpleCostMap(Strings.CONFIG_COST_ADD, addCost);
+        initSimpleCostMap(Strings.get("CONFIG_COST_PURGE"), purgeCost);
+        initSimpleCostMap(Strings.get("CONFIG_COST_SCROLL"), scrollCost);
+        initSimpleCostMap(Strings.get("CONFIG_COST_EXTRACT"), extractCost);
+        initSimpleCostMap(Strings.get("CONFIG_COST_ADD"), addCost);
 
-        initLayeredCostMap(Strings.CONFIG_COST_CURE, cureCosts, 7);
-        initLayeredCostMap(Strings.CONFIG_COST_SLOT, slotExtensionCosts, 17);
+        initLayeredCostMap(Strings.get("CONFIG_COST_CURE"), cureCosts, 7);
+        initLayeredCostMap(Strings.get("CONFIG_COST_SLOT"), slotExtensionCosts, 17);
 
-        getLogger().info("Loaded costs for operations!");
+        getLogger().info(Strings.get("LOG_LOAD_COSTS"));
     }
 
     /**
@@ -115,47 +198,48 @@ public class BoxedVillagers extends JavaPlugin
      */
     private void initHelpPages()
     {
-        ConfigurationSection section = getConfig().getConfigurationSection(Strings.CONFIG_HELP);
+        ConfigurationSection section = getConfig().getConfigurationSection(Strings.get("CONFIG_HELP"));
         if(section == null)
         {
-            getLogger().severe(String.format(Strings.LOG_DYN_MISSING_CONFIG_SECTION, Strings.CONFIG_HELP));
+            getLogger().severe(String.format(Strings.get("LOG_DYN_MISSING_CONFIG_SECTION"), Strings.get("CONFIG_HELP")));
             return;
         }
 
         for(String key : section.getKeys(false))
         {
-            String title = getConfig().getString(Strings.CONFIG_HELP + "." + key + ".title");
-            String content = getConfig().getString(Strings.CONFIG_HELP + "." + key + ".content");
+            String title = getConfig().getString(Strings.get("CONFIG_HELP") + "." + key + ".title");
+            String content = getConfig().getString(Strings.get("CONFIG_HELP") + "." + key + ".content");
 
             if(title == null)
             {
-                getLogger().warning(String.format(Strings.LOG_DYN_NO_TITLE, key));
+                getLogger().warning(String.format(Strings.get("LOG_DYN_NO_TITLE"), key));
                 title = "";
             }
             if(content == null)
             {
-                getLogger().warning(String.format(Strings.LOG_DYN_NO_CONTENT, key));
+                getLogger().warning(String.format(Strings.get("LOG_DYN_NO_CONTENT"), key));
                 content = "";
             }
 
             helpPages.put(key, new HelpData(title, content));
         }
 
-        getLogger().info(String.format("Loaded %d help pages!", helpPages.size()));
+        getLogger().info(String.format(Strings.get("LOG_DYN_LOAD_HELP"), helpPages.size()));
     }
 
     /**
      * Loads a list of CostData from config, validates if it retrieved the correct amount.
+     *
      * @param configSection Config section the list is located in.
-     * @param costs Reference to the list the costs are stored in.
-     * @param expected Expected number of entries.
+     * @param costs         Reference to the list the costs are stored in.
+     * @param expected      Expected number of entries.
      */
     private void initLayeredCostMap(@NotNull String configSection, @NotNull List<CostData> costs, int expected)
     {
         ConfigurationSection section = getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().severe(String.format(Strings.LOG_DYN_MISSING_CONFIG_SECTION, configSection));
+            getLogger().severe(String.format(Strings.get("LOG_DYN_MISSING_CONFIG_SECTION"), configSection));
             return;
         }
 
@@ -185,7 +269,7 @@ public class BoxedVillagers extends JavaPlugin
                 }
                 else
                 {
-                    getLogger().warning(String.format(Strings.LOG_DYN_UNKNOWN_MATERIAL, innerKey));
+                    getLogger().warning(String.format(Strings.get("LOG_DYN_UNKNOWN_MATERIAL"), innerKey));
                 }
             }
 
@@ -194,21 +278,22 @@ public class BoxedVillagers extends JavaPlugin
 
         if(costs.size() != expected)
         {
-            getLogger().severe(String.format(Strings.LOG_DYN_UNEXPECTED_NUMBER, configSection, costs.size(), expected));
+            getLogger().severe(String.format(Strings.get("LOG_DYN_UNEXPECTED_NUMBER"), configSection, costs.size(), expected));
         }
     }
 
     /**
      * Loads a single CostData from config.
+     *
      * @param configSection Config section the cost is located in.
-     * @param cost Reference to the CostData the cost is stored in.
+     * @param cost          Reference to the CostData the cost is stored in.
      */
     private void initSimpleCostMap(@NotNull String configSection, @NotNull CostData cost)
     {
         ConfigurationSection section = getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().severe(String.format(Strings.LOG_DYN_MISSING_CONFIG_SECTION, configSection));
+            getLogger().severe(String.format(Strings.get("LOG_DYN_MISSING_CONFIG_SECTION"), configSection));
             return;
         }
 

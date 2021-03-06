@@ -2,6 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.data;
 
 import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringUtil;
+import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ public class HelpData
 
     /**
      * Describes a single help page.
-     * @param title Title of the help page.
+     *
+     * @param title   Title of the help page.
      * @param content Content of the help page.
      */
     public HelpData(@NotNull final String title, @NotNull final String content)
@@ -25,6 +27,7 @@ public class HelpData
 
     /**
      * Formats the help page to be printed out in chat.
+     *
      * @param lineWidth How many standard symbols wide the message should be before a line wraps.
      * @return An array of lines.
      */
@@ -34,17 +37,18 @@ public class HelpData
         List<String> lines = new ArrayList<>();
 
         lines.add("");
-        lines.add("<info>" + "=".repeat(lineWidth));
-        lines.add("<info>" + getCenterPadded(title, lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
-        lines.add("<info>" + "=".repeat(lineWidth));
+        lines.add(Strings.get("FORMAT_HELP_COLOR") + "=".repeat(lineWidth));
+        lines.add(Strings.get("FORMAT_HELP_COLOR") + getCenterPadded(title, lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
+        lines.add(Strings.get("FORMAT_HELP_COLOR") + "=".repeat(lineWidth));
         lines.addAll(getContent(lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
-        lines.add("<info>" + "-".repeat(lineWidth));
+        lines.add(Strings.get("FORMAT_HELP_COLOR") + "-".repeat(lineWidth));
 
         return StringFormatter.formatAll(lines).toArray(new String[0]);
     }
 
     /**
      * Formats the content to fit.
+     *
      * @param lineWidth How many standard symbols wide the message should be before a line wraps.
      * @return List of lines.
      */
@@ -62,6 +66,12 @@ public class HelpData
 
             if(c == ' ')
             {
+                if(StringUtil.stringWidth(line.toString()) + StringUtil.stringWidth(word.toString()) > lineWidth)
+                {
+                    lines.add(line.toString());
+                    line = new StringBuilder();
+                }
+
                 line.append(word.toString()).append(" ");
                 word = new StringBuilder();
             }
@@ -76,12 +86,6 @@ public class HelpData
             {
                 word.append(c);
             }
-
-            if(StringUtil.stringWidth(line.toString()) + StringUtil.stringWidth(word.toString()) > lineWidth)
-            {
-                lines.add(line.toString());
-                line = new StringBuilder();
-            }
         }
 
         line.append(word.toString());
@@ -92,7 +96,8 @@ public class HelpData
 
     /**
      * Pads a string to be as centered as possible.
-     * @param string The string to pad.
+     *
+     * @param string      The string to pad.
      * @param targetWidth How wide the line is.
      * @return The padded string.
      */

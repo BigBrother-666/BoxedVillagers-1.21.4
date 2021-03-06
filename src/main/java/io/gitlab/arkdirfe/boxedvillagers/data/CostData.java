@@ -10,6 +10,7 @@ public class CostData
 {
     /**
      * Returns a new CostData which holds the sum of all the provided CostData objects.
+     *
      * @param data The objects to sum up.
      * @return The sum.
      */
@@ -80,6 +81,7 @@ public class CostData
 
     /**
      * Returns a CostData object which is multiplied by a number. Costs cannot go below 1 for each entry.
+     *
      * @param multiplier The number the costs are multiplied with.
      * @return The multiplied CostData.
      */
@@ -106,7 +108,8 @@ public class CostData
 
     /**
      * Adds resources, creates new entries if needed.
-     * @param mat The material of the resource.
+     *
+     * @param mat   The material of the resource.
      * @param count The count of the resource.
      */
     public void addResource(@NotNull final Material mat, final int count)
