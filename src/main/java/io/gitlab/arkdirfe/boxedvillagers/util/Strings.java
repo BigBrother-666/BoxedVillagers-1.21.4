@@ -84,6 +84,7 @@ public final class Strings
     public static final String LOG_UNAVAILABLE_FROM_CONSOLE = "LOG_UNAVAILABLE_FROM_CONSOLE";
     public static final String LOG_RESTOCK_TIME_RAN_BACKWARDS = "LOG_RESTOCK_TIME_RAN_BACKWARDS";
     public static final String LOG_INVALID_STRING_OVERRIDE = "LOG_INVALID_STRING_OVERRIDE";
+    public static final String LOG_CUSTOM_CONFIG_LOAD_ERROR = "LOG_DYN_CUSTOM_CONFIG_LOAD_ERROR";
 
     // Dynamic Logger Strings (Logger-facing)
     public static final String LOG_DYN_NO_WORLD = "LOG_DYN_NO_WORLD";
@@ -226,6 +227,7 @@ public final class Strings
             new AbstractMap.SimpleImmutableEntry<>(LOG_UNAVAILABLE_FROM_CONSOLE, "Only reload command available from console!"), //
             new AbstractMap.SimpleImmutableEntry<>(LOG_RESTOCK_TIME_RAN_BACKWARDS, "Restock attempted with lower world time than last restocked time. If you see this message once it's nothing to worry about, if you see it often you might want to look into things."), //
             new AbstractMap.SimpleImmutableEntry<>(LOG_INVALID_STRING_OVERRIDE, "Please refer to the comments in strings.yml for proper override usage because you clearly haven't read it."), //
+            new AbstractMap.SimpleImmutableEntry<>(LOG_CUSTOM_CONFIG_LOAD_ERROR, "Could not save config to"), // string name
 
             // Dynamic Logger Strings (Logger-facing)
             new AbstractMap.SimpleImmutableEntry<>(LOG_DYN_NO_WORLD, "No world with name %s, this WILL break!"), // string world name
@@ -238,6 +240,7 @@ public final class Strings
             new AbstractMap.SimpleImmutableEntry<>(LOG_DYN_LOAD_HELP, "Loaded %d help pages!"), // int count
             new AbstractMap.SimpleImmutableEntry<>(LOG_DYN_LOAD_STRING_OVERRIDES, "Loaded %d string overrides!"), // int count
             new AbstractMap.SimpleImmutableEntry<>(LOG_DYN_LOAD_COLOR_OVERRIDES, "Loaded %d color overrides!") // int count
+
     );
 
     // Mutable strings (can be overridden by config)
