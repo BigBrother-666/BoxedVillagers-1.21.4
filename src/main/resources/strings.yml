@@ -63,6 +63,7 @@ strings:
   #CHAT_SCROLL_BOUND : "<warn>Scroll already bound!"
   #CHAT_NO_TRADES : "<warn>That villager has no trades!"
   #CHAT_PLAYER_OFFLINE : "<warn>Player offline!"
+  #CHAT_NOT_HOLDING_SCROLL: "<warn>Hold the villager scroll you want to rename in your hand!"
 
 # Colors corresponding to the formatting tags, please use the proper hex format, otherwise the override will fail. Do not try to add new tags.
 colors:

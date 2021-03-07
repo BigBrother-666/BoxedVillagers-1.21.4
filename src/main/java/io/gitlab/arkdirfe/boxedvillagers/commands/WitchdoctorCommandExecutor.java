@@ -3,6 +3,7 @@ package io.gitlab.arkdirfe.boxedvillagers.commands;
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
+import io.gitlab.arkdirfe.boxedvillagers.util.StringRef;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 public class WitchdoctorCommandExecutor implements TabExecutor
 {
@@ -37,7 +39,7 @@ public class WitchdoctorCommandExecutor implements TabExecutor
         }
         else
         {
-            plugin.getLogger().severe(Strings.get(Strings.LOG_CANT_REGISTER_COMMAND_WITCHDOCTOR));
+            plugin.getLogger().severe(Strings.get(StringRef.LOG_CANT_REGISTER_COMMAND_WITCHDOCTOR));
         }
     }
 
@@ -47,17 +49,17 @@ public class WitchdoctorCommandExecutor implements TabExecutor
         if(sender instanceof Player)
         {
             Player player = (Player) sender;
-            if(args.length > 0 && args[0].equalsIgnoreCase("admin") && sender.hasPermission(Strings.get(Strings.PERM_ADMIN)))
+            if(args.length > 0 && args[0].equalsIgnoreCase("admin") && sender.hasPermission(Strings.get(StringRef.PERM_ADMIN)))
             {
                 gui.openGui(player, true);
             }
-            else if(sender.hasPermission(Strings.get(Strings.PERM_WITCHDOCTOR)))
+            else if(sender.hasPermission(Strings.get(StringRef.PERM_WITCHDOCTOR)))
             {
                 gui.openGui(player, false);
             }
             else
             {
-                sender.sendMessage(StringFormatter.formatLine(Strings.get(Strings.CHAT_INSUFFICIENT_PERMISSION)));
+                sender.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_INSUFFICIENT_PERMISSION)));
             }
             return true;
         }
@@ -68,7 +70,7 @@ public class WitchdoctorCommandExecutor implements TabExecutor
     @Override
     public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, @NotNull final String[] args)
     {
-        if(args.length <= 1 && sender.hasPermission(Strings.get(Strings.PERM_ADMIN)))
+        if(args.length <= 1 && sender.hasPermission(Strings.get(StringRef.PERM_ADMIN)))
         {
             return Collections.singletonList("admin");
         }

@@ -55,7 +55,7 @@ public final class ItemUtil
 
         NBTItem nbtItem = new NBTItem(item);
 
-        if(nbtItem.hasKey(Strings.get(Strings.TAG_BOXED_VILLAGER_ITEM)))
+        if(nbtItem.hasKey(Strings.get(StringRef.TAG_BOXED_VILLAGER_ITEM)))
         {
             return nbtItem;
         }
@@ -79,7 +79,7 @@ public final class ItemUtil
 
         NBTItem nbtItem = new NBTItem(item);
 
-        if(nbtItem.hasKey(Strings.get(Strings.TAG_BOXED_VILLAGER_ITEM)) && nbtItem.getBoolean(Strings.get(Strings.TAG_IS_BOUND)))
+        if(nbtItem.hasKey(Strings.get(StringRef.TAG_BOXED_VILLAGER_ITEM)) && nbtItem.getBoolean(Strings.get(StringRef.TAG_IS_BOUND)))
         {
             return nbtItem;
         }
@@ -130,22 +130,22 @@ public final class ItemUtil
     {
         ItemStack scroll = new ItemStack(Material.PAPER);
 
-        List<String> lore = new ArrayList<>(StringFormatter.split(Strings.get(Strings.TT_UNBOUND_SCROLL_LORE)));
+        List<String> lore = new ArrayList<>(StringFormatter.split(Strings.get(StringRef.TT_UNBOUND_SCROLL_LORE)));
 
         if(nonlethal)
         {
-            List<String> strings = StringFormatter.split(Strings.get(Strings.TT_NONLETHAL_ADMIN_ITEM));
+            List<String> strings = StringFormatter.split(Strings.get(StringRef.TT_NONLETHAL_ADMIN_ITEM));
             lore.addAll(strings);
         }
 
-        setItemTitleLoreAndFlags(scroll, StringFormatter.formatLine(Strings.get(Strings.TT_UNBOUND_SCROLL_TITLE)), StringFormatter.formatAll(lore), null);
+        setItemTitleLoreAndFlags(scroll, StringFormatter.formatLine(Strings.get(StringRef.TT_UNBOUND_SCROLL_TITLE)), StringFormatter.formatAll(lore), null);
 
         NBTItem nbtscoll = new NBTItem(scroll);
-        nbtscoll.setUUID(Strings.get(Strings.TAG_BOXED_VILLAGER_ITEM), UUID.randomUUID());
-        nbtscoll.setBoolean(Strings.get(Strings.TAG_IS_BOUND), false);
+        nbtscoll.setUUID(Strings.get(StringRef.TAG_BOXED_VILLAGER_ITEM), UUID.randomUUID());
+        nbtscoll.setBoolean(Strings.get(StringRef.TAG_IS_BOUND), false);
         if(nonlethal)
         {
-            nbtscoll.setBoolean(Strings.get(Strings.TAG_NONLETHAL), true);
+            nbtscoll.setBoolean(Strings.get(StringRef.TAG_NONLETHAL), true);
         }
         return nbtscoll.getItem();
     }
@@ -234,7 +234,7 @@ public final class ItemUtil
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(Strings.TT_HELP_TITLE)), StringFormatter.splitAndFormatLines(Strings.get(Strings.TT_HELP_NO_SCROLL)), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_HELP_TITLE)), StringFormatter.splitAndFormatLines(Strings.get(StringRef.TT_HELP_NO_SCROLL)), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
@@ -252,14 +252,14 @@ public final class ItemUtil
     {
         ItemStack item = new ItemStack(Material.PAPER);
 
-        List<String> lore = new ArrayList<>(StringFormatter.splitAndFormatLines(Strings.get(Strings.TT_HELP_HAS_SCROLL)));
+        List<String> lore = new ArrayList<>(StringFormatter.splitAndFormatLines(Strings.get(StringRef.TT_HELP_HAS_SCROLL)));
 
         if(advancedPerms)
         {
-            lore.addAll(StringFormatter.splitAndFormatLines(Strings.get(Strings.TT_HELP_HAS_SCROLL_ADVANCED)));
+            lore.addAll(StringFormatter.splitAndFormatLines(Strings.get(StringRef.TT_HELP_HAS_SCROLL_ADVANCED)));
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(Strings.TT_HELP_TITLE)), lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_HELP_TITLE)), lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
@@ -282,8 +282,8 @@ public final class ItemUtil
 
         if(slotCost != null)
         {
-            lore.addAll(StringFormatter.split(String.format(Strings.get(Strings.TT_DYN_SLOT_EXTENSION_SLOTS), VillagerData.MAX_TRADE_SLOTS, villagerData.getTradeSlots())));
-            lore.add(Strings.get(Strings.TT_APPLIES_INSTANTLY));
+            lore.addAll(StringFormatter.split(String.format(Strings.get(StringRef.TT_DYN_SLOT_EXTENSION_SLOTS), VillagerData.MAX_TRADE_SLOTS, villagerData.getTradeSlots())));
+            lore.add(Strings.get(StringRef.TT_APPLIES_INSTANTLY));
 
             if(slotCost.hasCost())
             {
@@ -292,11 +292,11 @@ public final class ItemUtil
         }
         else
         {
-            lore.add(Strings.get(Strings.TT_SLOT_EXTENSION_FULL));
+            lore.add(Strings.get(StringRef.TT_SLOT_EXTENSION_FULL));
             item.setType(Material.BOOK);
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(Strings.TT_SLOT_EXTENSION_TITLE)), StringFormatter.formatAll(lore), null);
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_SLOT_EXTENSION_TITLE)), StringFormatter.formatAll(lore), null);
 
         return GuiUtil.setUninteractable(item);
     }
@@ -313,14 +313,14 @@ public final class ItemUtil
         ItemStack item = new ItemStack(Material.PAPER);
 
         List<String> lore = new ArrayList<>();
-        lore.add(Strings.get(Strings.TT_BUY_LORE));
+        lore.add(Strings.get(StringRef.TT_BUY_LORE));
 
         if(scrollCost.hasCost())
         {
             lore.addAll(StringUtil.costToString(scrollCost));
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(Strings.TT_BUY_TITLE)), StringFormatter.formatAll(lore), null);
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_BUY_TITLE)), StringFormatter.formatAll(lore), null);
 
         return GuiUtil.setUninteractable(item);
     }
@@ -340,8 +340,8 @@ public final class ItemUtil
 
         if(cureCost != null)
         {
-            lore.addAll(StringFormatter.split(Strings.get(Strings.TT_CURE_LORE)));
-            lore.add(Strings.get(Strings.TT_APPLIES_INSTANTLY));
+            lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_CURE_LORE)));
+            lore.add(Strings.get(StringRef.TT_APPLIES_INSTANTLY));
 
             if(cureCost.hasCost())
             {
@@ -350,11 +350,11 @@ public final class ItemUtil
         }
         else
         {
-            lore.addAll(StringFormatter.split(Strings.get(Strings.TT_CURE_FULL)));
+            lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_CURE_FULL)));
             item.setType(Material.APPLE);
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(Strings.TT_CURE_TITLE)), StringFormatter.formatAll(lore), null);
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_CURE_TITLE)), StringFormatter.formatAll(lore), null);
 
         return GuiUtil.setUninteractable(item);
     }
@@ -378,31 +378,31 @@ public final class ItemUtil
 
         if(!tradesMoved && tradesPurged == 0 && tradesExtracted == 0 && free == 0)
         {
-            lore.add(Strings.get(Strings.TT_COMMIT_NO_CHANGES));
+            lore.add(Strings.get(StringRef.TT_COMMIT_NO_CHANGES));
         }
         else
         {
-            lore.add(Strings.get(Strings.TT_COMMIT_CHANGES));
+            lore.add(Strings.get(StringRef.TT_COMMIT_CHANGES));
             item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
         }
 
         if(tradesMoved)
         {
-            lore.add(Strings.get(Strings.TT_COMMIT_MOVED));
+            lore.add(Strings.get(StringRef.TT_COMMIT_MOVED));
         }
         if(tradesPurged > 0)
         {
-            lore.addAll(StringFormatter.split(String.format(Strings.get(Strings.TT_DYN_COMMIT_PURGED), tradesPurged)));
+            lore.addAll(StringFormatter.split(String.format(Strings.get(StringRef.TT_DYN_COMMIT_PURGED), tradesPurged)));
         }
 
         if(tradesExtracted > 0)
         {
-            lore.addAll(StringFormatter.split(String.format(Strings.get(Strings.TT_DYN_COMMIT_EXTRACTED), tradesExtracted)));
+            lore.addAll(StringFormatter.split(String.format(Strings.get(StringRef.TT_DYN_COMMIT_EXTRACTED), tradesExtracted)));
         }
 
         if(free > 0)
         {
-            lore.addAll(StringFormatter.split(String.format(Strings.get(Strings.TT_DYN_COMMIT_ADDED), free)));
+            lore.addAll(StringFormatter.split(String.format(Strings.get(StringRef.TT_DYN_COMMIT_ADDED), free)));
         }
 
         if(commitCost.hasCost())
@@ -410,7 +410,7 @@ public final class ItemUtil
             lore.addAll(StringUtil.costToString(commitCost));
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(Strings.TT_COMMIT_TITLE)), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_COMMIT_TITLE)), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         return GuiUtil.setUninteractable(item);
     }
@@ -430,18 +430,18 @@ public final class ItemUtil
         List<String> lore = new ArrayList<>();
 
         lore.addAll(StringFormatter.split(StringUtil.tradeToString(trade.getRecipe(), trade.getBaseAmount())));
-        lore.addAll(StringFormatter.split(String.format(Strings.get(Strings.TT_DYN_TRADE_REDUCTION), trade.getReduction())));
-        lore.addAll(StringFormatter.split(Strings.get(Strings.TT_TRADE_PURGE)));
+        lore.addAll(StringFormatter.split(String.format(Strings.get(StringRef.TT_DYN_TRADE_REDUCTION), trade.getReduction())));
+        lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_TRADE_PURGE)));
 
         if(extractPerms)
         {
-            lore.addAll(StringFormatter.split(Strings.get(Strings.TT_TRADE_EXTRACT)));
+            lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_TRADE_EXTRACT)));
         }
 
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(Strings.TT_TRADE_TITLE)), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_TRADE_TITLE)), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
 
         NBTItem nbtItem = new NBTItem(item);
-        NBTCompound compound = nbtItem.addCompound(Strings.get(Strings.TAG_SERIALIZED_TRADE_DATA));
+        NBTCompound compound = nbtItem.addCompound(Strings.get(StringRef.TAG_SERIALIZED_TRADE_DATA));
         trade.serializeToNBT(compound);
 
         return GuiUtil.setMovable(nbtItem.getItem());
@@ -459,14 +459,14 @@ public final class ItemUtil
         item.setType(Material.SUGAR_CANE);
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(StringFormatter.formatLine(Strings.get(Strings.TT_CONVERT_EXTRACTED_TITLE)));
+        meta.setDisplayName(StringFormatter.formatLine(Strings.get(StringRef.TT_CONVERT_EXTRACTED_TITLE)));
         List<String> lore = new ArrayList<>();
         if(meta.getLore().size() > 1)
         {
             lore.add(meta.getLore().get(0));
             lore.add(meta.getLore().get(1));
         }
-        lore.addAll(StringFormatter.split(Strings.get(Strings.TT_CONVERT_EXTRACTED_LORE)));
+        lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_CONVERT_EXTRACTED_LORE)));
         meta.setLore(StringFormatter.formatAll(lore));
         item.setItemMeta(meta);
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
@@ -484,14 +484,14 @@ public final class ItemUtil
     public static ItemStack convertExtractedToFree(@NotNull final ItemStack item)
     {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(StringFormatter.formatLine(Strings.get(Strings.TT_CONVERT_FREE_TITLE)));
+        meta.setDisplayName(StringFormatter.formatLine(Strings.get(StringRef.TT_CONVERT_FREE_TITLE)));
         List<String> lore = new ArrayList<>();
         if(meta.getLore().size() > 1)
         {
             lore.add(meta.getLore().get(0));
             lore.add(meta.getLore().get(1));
         }
-        lore.addAll(StringFormatter.split(Strings.get(Strings.TT_CONVERT_FREE_LORE)));
+        lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_CONVERT_FREE_LORE)));
         meta.setLore(StringFormatter.formatAll(lore));
         item.setItemMeta(meta);
 

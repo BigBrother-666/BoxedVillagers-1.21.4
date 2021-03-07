@@ -5,6 +5,7 @@ import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
 import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
+import io.gitlab.arkdirfe.boxedvillagers.util.StringRef;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
@@ -58,9 +59,9 @@ public class InteractionListener implements Listener
             {
                 event.setCancelled(true);
 
-                if(nbtItem.getBoolean(Strings.get(Strings.TAG_IS_BOUND)))
+                if(nbtItem.getBoolean(Strings.get(StringRef.TAG_IS_BOUND)))
                 {
-                    player.sendMessage(StringFormatter.formatLine(Strings.get(Strings.CHAT_SCROLL_BOUND)));
+                    player.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_SCROLL_BOUND)));
                     return;
                 }
 
@@ -68,11 +69,11 @@ public class InteractionListener implements Listener
 
                 if(villager.getRecipeCount() == 0)
                 {
-                    player.sendMessage(StringFormatter.formatLine(Strings.get(Strings.CHAT_NO_TRADES)));
+                    player.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_NO_TRADES)));
                 }
                 else
                 {
-                    boolean nonlethal = nbtItem.hasKey(Strings.get(Strings.TAG_NONLETHAL));
+                    boolean nonlethal = nbtItem.hasKey(Strings.get(StringRef.TAG_NONLETHAL));
                     VillagerData data = new VillagerData(villager, nbtItem);
                     player.getInventory().setItemInMainHand(data.getItem());
 

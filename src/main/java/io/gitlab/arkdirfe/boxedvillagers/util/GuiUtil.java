@@ -47,45 +47,45 @@ public final class GuiUtil
     @NotNull
     public static ItemStack setUninteractable(@NotNull final ItemStack item)
     {
-        return setTag(item, Strings.get(Strings.TAG_UNINTERACTABLE));
+        return setTag(item, Strings.get(StringRef.TAG_UNINTERACTABLE));
     }
 
     @NotNull
     public static ItemStack setMovable(@NotNull final ItemStack item)
     {
-        return setTag(item, Strings.get(Strings.TAG_MOVABLE));
+        return setTag(item, Strings.get(StringRef.TAG_MOVABLE));
     }
 
     @NotNull
     public static ItemStack setFree(@NotNull final ItemStack item)
     {
-        return setTag(item, Strings.get(Strings.TAG_FREE));
+        return setTag(item, Strings.get(StringRef.TAG_FREE));
     }
 
     @NotNull
     public static ItemStack setExtracted(@NotNull final ItemStack item)
     {
-        return setTag(item, Strings.get(Strings.TAG_EXTRACTED));
+        return setTag(item, Strings.get(StringRef.TAG_EXTRACTED));
     }
 
     public static boolean isUninteractable(@Nullable final ItemStack item)
     {
-        return hasTag(item, Strings.get(Strings.TAG_UNINTERACTABLE));
+        return hasTag(item, Strings.get(StringRef.TAG_UNINTERACTABLE));
     }
 
     public static boolean isMovable(@Nullable final ItemStack item)
     {
-        return hasTag(item, Strings.get(Strings.TAG_MOVABLE));
+        return hasTag(item, Strings.get(StringRef.TAG_MOVABLE));
     }
 
     public static boolean isFree(@Nullable final ItemStack item)
     {
-        return hasTag(item, Strings.get(Strings.TAG_FREE));
+        return hasTag(item, Strings.get(StringRef.TAG_FREE));
     }
 
     public static boolean isExtracted(@NotNull final ItemStack item)
     {
-        return hasTag(item, Strings.get(Strings.TAG_EXTRACTED));
+        return hasTag(item, Strings.get(StringRef.TAG_EXTRACTED));
     }
 
     /**

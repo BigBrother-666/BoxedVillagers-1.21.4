@@ -2,10 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.ui;
 
 
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
-import io.gitlab.arkdirfe.boxedvillagers.util.GuiUtil;
-import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
-import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
-import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
+import io.gitlab.arkdirfe.boxedvillagers.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -54,7 +51,7 @@ public class WitchdoctorGuiManager implements Listener
      */
     public void openGui(@NotNull final HumanEntity player, final boolean admin)
     {
-        Inventory gui = Bukkit.createInventory(null, 54, (admin ? StringFormatter.formatLine(Strings.get(Strings.UI_WD_TITLE_ADMIN)) : StringFormatter.formatLine(Strings.get(Strings.UI_WD_TITLE))));
+        Inventory gui = Bukkit.createInventory(null, 54, (admin ? StringFormatter.formatLine(Strings.get(StringRef.UI_WD_TITLE_ADMIN)) : StringFormatter.formatLine(Strings.get(StringRef.UI_WD_TITLE))));
         WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, plugin, admin);
         plugin.guiMap.put(player.getUniqueId(), controller);
     }
@@ -275,7 +272,9 @@ public class WitchdoctorGuiManager implements Listener
      */
     private WitchdoctorGuiController getValidController(@NotNull InventoryView view, @NotNull final Inventory inventory)
     {
-        if(!view.getTitle().startsWith(Strings.get(Strings.UI_WD_TITLE)))
+        String container = StringFormatter.stripFormatting(view.getTitle());
+        String ref = StringFormatter.stripFormatting(Strings.get(StringRef.UI_WD_TITLE));
+        if(!container.startsWith(ref))
         {
             return null;
         }

@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public final class StringFormatter
 {
     private static final Pattern hexPattern = Pattern.compile("#[a-fA-F0-9]{6}");
-    private static final Pattern formatPattern = Pattern.compile("§[a-f0-9klmnor]");
+    private static final Pattern formatPattern = Pattern.compile("§[a-f0-9klmnorx]");
     private static Map<String, String> colorCodes = null;
 
     private StringFormatter()
@@ -132,7 +132,7 @@ public final class StringFormatter
     @NotNull
     public static String formatLine(@NotNull final String line)
     {
-        return "§r" + formatHex(replaceIndicators(Strings.get(Strings.FORMAT_DEFAULT_COLOR) + line));
+        return "§r" + formatHex(replaceIndicators(Strings.get(StringRef.FORMAT_DEFAULT_COLOR) + line));
     }
 
     /**
