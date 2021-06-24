@@ -74,14 +74,16 @@ public class WitchdoctorGuiManager implements Listener
             return;
         }
 
+        // Prevent shift-clicking items in/out of the GUI
         if(event.isShiftClick())
         {
             event.setCancelled(true);
         }
 
         ItemStack slotItem = event.getCurrentItem();
-        boolean slotEmpty = ItemUtil.isNullOrAir(slotItem);
         ItemStack cursorItem = view.getCursor();
+
+        boolean slotEmpty = ItemUtil.isNullOrAir(slotItem);
         boolean cursorEmpty = ItemUtil.isNullOrAir(cursorItem);
 
         if(!slotEmpty && GuiUtil.isUninteractable(slotItem))
@@ -147,7 +149,7 @@ public class WitchdoctorGuiManager implements Listener
         {
             event.setCancelled(true);
 
-            if(controller.extractPerms)
+            if(controller.hasExtractPerms())
             {
                 controller.extractTrade(slotIndex);
             }

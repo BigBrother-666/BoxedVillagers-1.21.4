@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 public class BoxedVillagersCommandExecutor implements TabExecutor
 {
@@ -29,7 +28,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
     private final int helpWidth;
 
     /**
-     * Handles the /boxedvillagers or /bv commands
+     * Handles the /boxedvillagers or /bv command
      *
      * @param plugin      Reference to the plugin.
      * @param commandName Name of the command.
@@ -57,7 +56,9 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         {
             String subCmd = args[0];
 
-            if(sender.hasPermission(Strings.get(StringRef.PERM_ADMIN))) // Admin Commands
+            // Admin Commands
+
+            if(sender.hasPermission(Strings.get(StringRef.PERM_ADMIN)))
             {
                 if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE)))
                 {

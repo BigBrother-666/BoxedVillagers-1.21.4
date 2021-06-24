@@ -89,6 +89,9 @@ public class BoxedVillagers extends JavaPlugin
         loadStrings();
     }
 
+    /**
+     * Loads color overrides from config.
+     */
     private void loadColors()
     {
         String configSection = Strings.get(StringRef.CONFIG_STRINGS_COLORS);
@@ -120,6 +123,9 @@ public class BoxedVillagers extends JavaPlugin
         getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_LOAD_COLOR_OVERRIDES), count));
     }
 
+    /**
+     * Loads string overrides from config.
+     */
     private void loadStrings()
     {
         String configSection = Strings.get(StringRef.CONFIG_STRINGS_STRING_ENTRIES);

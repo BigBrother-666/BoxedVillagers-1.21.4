@@ -39,7 +39,7 @@ public class WitchdoctorGuiController
 
     private final boolean admin;
     private final boolean advancedPerms;
-    public final boolean extractPerms;
+    private final boolean extractPerms;
 
     private final WitchdoctorGuiManager manager;
     private final BoxedVillagers plugin;
@@ -61,7 +61,6 @@ public class WitchdoctorGuiController
         this.plugin = plugin;
         this.admin = admin;
         tradeSlotEnd = manager.tradeSlotStart;
-        System.out.println();
 
         advancedPerms = player.hasPermission(Strings.get(StringRef.PERM_WITCHDOCTOR_ADVANCED));
         extractPerms = player.hasPermission(Strings.get(StringRef.PERM_WITCHDOCTOR_EXTRACT));
@@ -83,6 +82,8 @@ public class WitchdoctorGuiController
     {
         return player;
     }
+
+    public boolean hasExtractPerms() { return extractPerms; }
 
     // --- Setters/Accessors
 
@@ -229,8 +230,7 @@ public class WitchdoctorGuiController
      */
     public boolean canCommit()
     {
-        int free = getFreeTradeItems().size();
-        return (tradesMoved || tradesPurged > 0 || tradesExtracted > 0 || free > 0);
+        return (tradesMoved || tradesPurged > 0 || tradesExtracted > 0 || getFreeTradeItems().size() > 0);
     }
 
     /**
@@ -610,7 +610,7 @@ public class WitchdoctorGuiController
             }
         }
 
-        // Check for currencies here!
+        // TODO: Check for currencies here!
 
         return true;
     }
@@ -634,6 +634,6 @@ public class WitchdoctorGuiController
             player.getInventory().removeItem(item);
         }
 
-        // Pay currencies here!
+        // TODO: Pay currencies here!
     }
 }

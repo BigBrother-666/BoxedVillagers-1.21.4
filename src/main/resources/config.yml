@@ -1,8 +1,9 @@
 # Which world should be taken as a reference for timing boxed villager restocks
 timeWorld: world
 
-# For any list that would be empty, use FREE: 0 instead, the plugin needs to be a value for each entry to read it, otherwise things will break
+# For any list that would be empty, use "FREE: 0" instead, the plugin needs to be a value for each entry to read it, otherwise things will break
 # You can also add non-item costs, currently supported is MONEY and CRYSTALS, add them like item costs
+# Note that crystals are only supported by the data structure (they will parse as valid costs) but there is no integration for any crystal economy plugin currently
 
 # Cost for curing a boxed villager
 cureCost:
@@ -81,7 +82,7 @@ addCost:
 
 # How many standard characters a help page should be wide, larger values may break for players with narrow chat.
 helpWidth: 50
-# Help pages, use \n to force line breaks. Both vanilla formatting and color codes work in principle but do not carry over line breaks, use at your own responsibility.
+# Help pages, use \n to force line breaks. Both vanilla formatting and color codes work, but do not carry over line breaks, be sure to test.
 helpPages:
   default:
     title: "Boxed Villagers Help Pages"

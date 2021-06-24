@@ -95,7 +95,7 @@ public final class Strings
         immutableStrings.put(StringRef.LOG_UNAVAILABLE_FROM_CONSOLE, "Only reload command available from console!"); //
         immutableStrings.put(StringRef.LOG_RESTOCK_TIME_RAN_BACKWARDS, "Restock attempted with lower world time than last restocked time. If you see this message once it's nothing to worry about, if you see it often you might want to look into things."); //
         immutableStrings.put(StringRef.LOG_INVALID_STRING_OVERRIDE, "Please refer to the comments in strings.yml for proper override usage because you clearly haven't read it."); //
-        immutableStrings.put(StringRef.LOG_CUSTOM_CONFIG_LOAD_ERROR, "Could not save config to"); // string name
+        immutableStrings.put(StringRef.LOG_CUSTOM_CONFIG_LOAD_ERROR, "Could not save config to"); //
 
         // Dynamic Logger Strings (Logger-facing)
         immutableStrings.put(StringRef.LOG_DYN_NO_WORLD, "No world with name %s, this WILL break!"); // string world name

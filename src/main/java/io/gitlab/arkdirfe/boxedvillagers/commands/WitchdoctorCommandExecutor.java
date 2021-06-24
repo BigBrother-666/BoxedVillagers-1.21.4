@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 
 public class WitchdoctorCommandExecutor implements TabExecutor
 {
