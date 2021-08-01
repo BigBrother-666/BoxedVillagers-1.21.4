@@ -5,7 +5,7 @@ Boxed Villagers is a villager capturing and trading plugin made for the server E
 Boxed Villagers is built against the latest Spigot API.
 Currently: 1.17.1
 
-**There is a newer version out, check the respective branch.**
+**There is a newer version out, please check the respective branch.**
 
 ## Features
 ### Capturing Villagers
