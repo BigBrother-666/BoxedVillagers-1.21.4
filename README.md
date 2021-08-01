@@ -5,6 +5,8 @@ Boxed Villagers is a villager capturing and trading plugin made for the server E
 Boxed Villagers is built against the latest Spigot API.
 Currently: 1.17.1
 
+**There is a newer version out, check the respective branch.**
+
 ## Features
 ### Capturing Villagers
 Villagers can be captured using Unbound Scrolls, capturing a villager removes the entity and stores all relevant data in the item. This eleminates the strain that villagers usually cause on servers (especially if multiple people build large trading halls).
