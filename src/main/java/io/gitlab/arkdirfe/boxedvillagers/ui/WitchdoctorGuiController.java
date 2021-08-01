@@ -270,6 +270,7 @@ public class WitchdoctorGuiController
 
             villagerData.setTrades(getModifiedTrades());
             gui.setItem(manager.scrollSlot, villagerData.getItem());
+            scroll = villagerData.getItem();
             ((Player) player).playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             resetTracking();
 
