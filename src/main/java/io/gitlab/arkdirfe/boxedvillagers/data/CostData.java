@@ -17,13 +17,11 @@ public class CostData
     public static CostData sum(final CostData... data)
     {
         CostData result = new CostData();
-        int money = 0;
-        int crystals = 0;
+        double money = 0;
 
         for(CostData d : data)
         {
             money += d.getMoney();
-            crystals += d.getCrystals();
 
             for(Map.Entry<Material, Integer> entry : d.getResources().entrySet())
             {
@@ -32,13 +30,11 @@ public class CostData
         }
 
         result.money = money;
-        result.crystals = crystals;
 
         return result;
     }
 
-    private int money = 0;
-    private int crystals = 0;
+    private double money = 0;
     private final EnumMap<Material, Integer> resources;
 
     /**
@@ -51,27 +47,17 @@ public class CostData
 
     public boolean hasCost()
     {
-        return money != 0 || crystals != 0 || !resources.isEmpty();
+        return money != 0 || !resources.isEmpty();
     }
 
-    public int getMoney()
+    public double getMoney()
     {
         return money;
     }
 
-    public void setMoney(int money)
+    public void setMoney(double money)
     {
         this.money = Math.max(0, money);
-    }
-
-    public int getCrystals()
-    {
-        return crystals;
-    }
-
-    public void setCrystals(final int crystals)
-    {
-        this.crystals = Math.max(0, crystals);
     }
 
     public Map<Material, Integer> getResources()
@@ -101,7 +87,6 @@ public class CostData
         }
 
         data.setMoney((int) Math.ceil(money * multiplier));
-        data.setCrystals((int) Math.ceil(crystals * multiplier));
 
         return data;
     }

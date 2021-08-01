@@ -72,6 +72,7 @@ public final class Strings
         immutableStrings.put(StringRef.CONFIG_COST_EXTRACT, "extractCost"); //
         immutableStrings.put(StringRef.CONFIG_COST_ADD, "addCost"); //
         immutableStrings.put(StringRef.CONFIG_HELP_WIDTH, "helpWidth"); //
+        immutableStrings.put(StringRef.CONFIG_CURRENCY_FALLBACK, "fallbackCurrencySymbol"); //
 
         // Permission Strings
         immutableStrings.put(StringRef.PERM_WITCHDOCTOR, "boxedvillagers.witchdoctor"); //
@@ -96,6 +97,8 @@ public final class Strings
         immutableStrings.put(StringRef.LOG_RESTOCK_TIME_RAN_BACKWARDS, "Restock attempted with lower world time than last restocked time. If you see this message once it's nothing to worry about, if you see it often you might want to look into things."); //
         immutableStrings.put(StringRef.LOG_INVALID_STRING_OVERRIDE, "Please refer to the comments in strings.yml for proper override usage because you clearly haven't read it."); //
         immutableStrings.put(StringRef.LOG_CUSTOM_CONFIG_LOAD_ERROR, "Could not save config to"); //
+        immutableStrings.put(StringRef.LOG_ECONOMY_SETUP_SUCCESS, "Economy found! Full functionality available for money-based costs."); //
+        immutableStrings.put(StringRef.LOG_ECONOMY_SETUP_FAIL, "No economy found! Money costs will be ignored."); //
 
         // Dynamic Logger Strings (Logger-facing)
         immutableStrings.put(StringRef.LOG_DYN_NO_WORLD, "No world with name %s, this WILL break!"); // string world name
@@ -145,7 +148,7 @@ public final class Strings
         mutableStrings.put(StringRef.TT_CONVERT_EXTRACTED_LORE, "<info>Commit to receive item."); //
         mutableStrings.put(StringRef.TT_CONVERT_FREE_TITLE, "<advanced>Extracted Trade"); //
         mutableStrings.put(StringRef.TT_CONVERT_FREE_LORE, "Acts like a regular trade in the Witch Doctor GUI.\nGets added to scroll when committed."); //
-        mutableStrings.put(StringRef.TT_COST_TO_STRING_HEADER, "Costs:"); //
+        mutableStrings.put(StringRef.TT_COST_TO_STRING_HEADER, "Cost:"); //
 
         // Dynamic Tooltip Strings
         mutableStrings.put(StringRef.TT_DYN_BOUND_SCROLL_LORE, "Name: %s\nCures: %s\nTrade Slots: %s\n<info>Right Click in hand to trade!"); // string name, string cures as string, string slots as string
@@ -157,8 +160,7 @@ public final class Strings
         mutableStrings.put(StringRef.TT_DYN_COMMIT_ADDED, "<static>%d<norm> new trades were added."); // int added
         mutableStrings.put(StringRef.TT_DYN_TRADE_REDUCTION, "Price reduced by <static>%s<norm> for each cure."); // int cure reduction
         mutableStrings.put(StringRef.TT_DYN_TRADE_TO_STRING_ITEM, "<static>%d <item>%s<norm>"); // int amount, string item name
-        mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_MONEY, "   -<static>%d<money> Money"); // int money
-        mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_CRYSTALS, "   -<static>%d<crystals> Crystals"); // int crystals
+        mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_MONEY, "   -<static>%.2f%s<money>"); // int money, string currency suffix
         mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_ITEM, "   -<static>%d <item>%s"); // int amount, string item name
 
         // UI Strings

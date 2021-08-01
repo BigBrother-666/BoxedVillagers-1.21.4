@@ -4,33 +4,31 @@ import io.gitlab.arkdirfe.boxedvillagers.commands.BoxedVillagersCommandExecutor;
 import io.gitlab.arkdirfe.boxedvillagers.commands.WitchdoctorCommandExecutor;
 import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
 import io.gitlab.arkdirfe.boxedvillagers.data.HelpData;
-import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiController;
 import io.gitlab.arkdirfe.boxedvillagers.listeners.InteractionListener;
+import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiController;
 import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
 import io.gitlab.arkdirfe.boxedvillagers.util.*;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class BoxedVillagers extends JavaPlugin
 {
-    public WitchdoctorGuiManager witchdoctorGuiManager;
+    private WitchdoctorGuiManager witchdoctorGuiManager;
 
-    public Map<UUID, WitchdoctorGuiController> guiMap;
-    public Map<String, HelpData> helpPages;
-    public List<CostData> cureCosts;
-    public List<CostData> slotExtensionCosts;
-    public CostData purgeCost;
-    public CostData scrollCost;
-    public CostData extractCost;
-    public CostData addCost;
+    private static Map<UUID, WitchdoctorGuiController> guiMap;
+    private static Map<String, HelpData> helpPages;
+    private static List<CostData> cureCosts;
+    private static List<CostData> slotExtensionCosts;
+    private static CostData purgeCost;
+    private static CostData scrollCost;
+    private static CostData extractCost;
+    private static CostData addCost;
+    private static Economy economy;
 
     private ConfigAccessor stringsConfig;
 
@@ -45,6 +43,7 @@ public class BoxedVillagers extends JavaPlugin
 
         reloadConfig();
         registerCommandsAndListeners();
+        initializeVault();
 
         getLogger().info(Strings.get(StringRef.LOG_LOADED));
     }
@@ -64,6 +63,7 @@ public class BoxedVillagers extends JavaPlugin
         super.reloadConfig();
 
         String timeWorldName = getConfig().getString(Strings.get(StringRef.CONFIG_TIME_WORLD));
+
         if(timeWorldName == null)
         {
             getLogger().severe(Strings.get(StringRef.LOG_ERROR_TIME_WORLD));
@@ -75,6 +75,8 @@ public class BoxedVillagers extends JavaPlugin
                 getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_NO_WORLD), timeWorldName));
             }
         }
+
+        StringUtil.fallbackCurrencySymbol = getConfig().getString(Strings.get(StringRef.CONFIG_CURRENCY_FALLBACK));
 
         initializeMaps();
     }
@@ -209,6 +211,20 @@ public class BoxedVillagers extends JavaPlugin
     }
 
     /**
+     *
+     */
+    private void initializeVault()
+    {
+        if (!setupEconomy()) {
+            getLogger().warning(Strings.get(StringRef.LOG_ECONOMY_SETUP_FAIL));
+        }
+        else
+        {
+            getLogger().info(Strings.get(StringRef.LOG_ECONOMY_SETUP_SUCCESS));
+        }
+    }
+
+    /**
      * Reads help pages from config.
      */
     private void initHelpPages()
@@ -240,6 +256,26 @@ public class BoxedVillagers extends JavaPlugin
         }
 
         getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_LOAD_HELP), helpPages.size()));
+    }
+
+    /**
+     * Uses Vault to initialize an economy.
+     * @return success
+     */
+    private boolean setupEconomy()
+    {
+        if(getServer().getPluginManager().getPlugin("Vault") == null)
+        {
+            return false;
+        }
+
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if(rsp == null)
+        {
+            return false;
+        }
+        economy = rsp.getProvider();
+        return economy != null;
     }
 
     /**
@@ -276,11 +312,7 @@ public class BoxedVillagers extends JavaPlugin
                 }
                 else if(innerKey.equalsIgnoreCase("money"))
                 {
-                    cost.setMoney(getConfig().getInt(configSection + "." + key + "." + innerKey));
-                }
-                else if(innerKey.equalsIgnoreCase("crystals"))
-                {
-                    cost.setCrystals(getConfig().getInt(configSection + "." + key + "." + innerKey));
+                    cost.setMoney(getConfig().getDouble(configSection + "." + key + "." + innerKey));
                 }
                 else
                 {
@@ -320,5 +352,52 @@ public class BoxedVillagers extends JavaPlugin
                 cost.addResource(mat, getConfig().getInt(configSection + "." + mat.toString()));
             }
         }
+    }
+
+    // Getters for private static members
+
+    public static Map<UUID, WitchdoctorGuiController> getGuiMap()
+    {
+        return guiMap;
+    }
+
+    public static Map<String, HelpData> getHelpPages()
+    {
+        return helpPages;
+    }
+
+    public static List<CostData> getCureCosts()
+    {
+        return cureCosts;
+    }
+
+    public static List<CostData> getSlotExtensionCosts()
+    {
+        return slotExtensionCosts;
+    }
+
+    public static CostData getPurgeCost()
+    {
+        return purgeCost;
+    }
+
+    public static CostData getScrollCost()
+    {
+        return scrollCost;
+    }
+
+    public static CostData getExtractCost()
+    {
+        return extractCost;
+    }
+
+    public static CostData getAddCost()
+    {
+        return addCost;
+    }
+
+    public static Economy getEconomy()
+    {
+        return economy;
     }
 }

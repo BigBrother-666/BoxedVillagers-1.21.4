@@ -1,5 +1,6 @@
 package io.gitlab.arkdirfe.boxedvillagers.util;
 
+import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -19,6 +20,7 @@ public final class StringUtil
     {
     }
 
+    public static String fallbackCurrencySymbol;
     public static final int DEFAULT_CHARACTER_WIDTH = 6;
     private static final Map<String, Integer> specialCharacterWidths = Map.ofEntries(new AbstractMap.SimpleEntry<>(" ", 4), new AbstractMap.SimpleEntry<>("!", 2), new AbstractMap.SimpleEntry<>("\"", 5), new AbstractMap.SimpleEntry<>("'", 3), new AbstractMap.SimpleEntry<>(")", 5), new AbstractMap.SimpleEntry<>("*", 5), new AbstractMap.SimpleEntry<>(",", 2), new AbstractMap.SimpleEntry<>(".", 2), new AbstractMap.SimpleEntry<>(":", 2), new AbstractMap.SimpleEntry<>(";", 2), new AbstractMap.SimpleEntry<>("<", 5), new AbstractMap.SimpleEntry<>(">", 5), new AbstractMap.SimpleEntry<>("@", 7), new AbstractMap.SimpleEntry<>("I", 4), new AbstractMap.SimpleEntry<>("[", 4), new AbstractMap.SimpleEntry<>("]", 4), new AbstractMap.SimpleEntry<>("f", 5), new AbstractMap.SimpleEntry<>("i", 2), new AbstractMap.SimpleEntry<>("k", 5), new AbstractMap.SimpleEntry<>("l", 3), new AbstractMap.SimpleEntry<>("t", 4), new AbstractMap.SimpleEntry<>("{", 5), new AbstractMap.SimpleEntry<>("|", 2), new AbstractMap.SimpleEntry<>("}", 5), new AbstractMap.SimpleEntry<>("~", 7));
 
@@ -183,14 +185,9 @@ public final class StringUtil
         List<String> strings = new ArrayList<>();
 
         strings.add(Strings.get(StringRef.TT_COST_TO_STRING_HEADER));
-        if(cost.getMoney() > 0)
+        if(cost.getMoney() > 0 && BoxedVillagers.getEconomy() != null)
         {
-            strings.add(String.format(Strings.get(StringRef.TT_DYN_COST_TO_STRING_MONEY), cost.getMoney()));
-        }
-
-        if(cost.getCrystals() > 0)
-        {
-            strings.add(String.format(Strings.get(StringRef.TT_DYN_COST_TO_STRING_CRYSTALS), cost.getCrystals()));
+            strings.add(String.format(Strings.get(StringRef.TT_DYN_COST_TO_STRING_MONEY), cost.getMoney(), currencyNameOrSymbol(cost.getMoney())));
         }
 
         for(Map.Entry<Material, Integer> entry : cost.getResources().entrySet())
@@ -199,5 +196,23 @@ public final class StringUtil
         }
 
         return strings;
+    }
+
+    /**
+     * Returns the name of the currency provided by Vault, if none is found uses the fallback symbol. Assumes the economy is present and loaded.
+     *
+     * @param amount Amount of money to label.
+     * @return The name.
+     */
+    private static String currencyNameOrSymbol(double amount)
+    {
+        String vaultName = amount == 1 ? BoxedVillagers.getEconomy().currencyNameSingular() : BoxedVillagers.getEconomy().currencyNamePlural();
+
+        if(vaultName.isEmpty())
+        {
+            return fallbackCurrencySymbol;
+        }
+
+        return vaultName;
     }
 }

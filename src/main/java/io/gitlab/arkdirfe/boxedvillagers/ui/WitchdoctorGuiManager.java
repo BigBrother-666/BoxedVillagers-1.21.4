@@ -53,7 +53,7 @@ public class WitchdoctorGuiManager implements Listener
     {
         Inventory gui = Bukkit.createInventory(null, 54, (admin ? StringFormatter.formatLine(Strings.get(StringRef.UI_WD_TITLE_ADMIN)) : StringFormatter.formatLine(Strings.get(StringRef.UI_WD_TITLE))));
         WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, plugin, admin);
-        plugin.guiMap.put(player.getUniqueId(), controller);
+        BoxedVillagers.getGuiMap().put(player.getUniqueId(), controller);
     }
 
     // --- Interaction Event Handlers
@@ -222,9 +222,9 @@ public class WitchdoctorGuiManager implements Listener
     public void onPlayerQuit(final PlayerQuitEvent event)
     {
         UUID uuid = event.getPlayer().getUniqueId();
-        if(plugin.guiMap.containsKey(uuid))
+        if(BoxedVillagers.getGuiMap().containsKey(uuid))
         {
-            returnItemsAndRemoveFromMap(plugin.guiMap.get(uuid), event.getPlayer());
+            returnItemsAndRemoveFromMap(BoxedVillagers.getGuiMap().get(uuid), event.getPlayer());
         }
     }
 
@@ -235,7 +235,7 @@ public class WitchdoctorGuiManager implements Listener
      */
     public void cleanupOpenGuis()
     {
-        for(WitchdoctorGuiController controller : plugin.guiMap.values())
+        for(WitchdoctorGuiController controller : BoxedVillagers.getGuiMap().values())
         {
             HumanEntity player = controller.getPlayer();
             returnItemsAndRemoveFromMap(controller, player);
@@ -260,7 +260,7 @@ public class WitchdoctorGuiManager implements Listener
             player.getInventory().addItem(item);
         }
 
-        plugin.guiMap.remove(player.getUniqueId());
+        BoxedVillagers.getGuiMap().remove(player.getUniqueId());
     }
 
     // Utility Methods
@@ -282,6 +282,6 @@ public class WitchdoctorGuiManager implements Listener
         }
 
         HumanEntity player = inventory.getViewers().get(0);
-        return plugin.guiMap.get(player.getUniqueId());
+        return BoxedVillagers.getGuiMap().get(player.getUniqueId());
     }
 }

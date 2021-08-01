@@ -15,8 +15,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -118,13 +116,13 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
             if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_HELP)))
             {
-                if(args.length == 1 && plugin.helpPages.containsKey("default"))
+                if(args.length == 1 && BoxedVillagers.getHelpPages().containsKey("default"))
                 {
-                    sender.sendMessage(plugin.helpPages.get("default").getFormatted(helpWidth));
+                    sender.sendMessage(BoxedVillagers.getHelpPages().get("default").getFormatted(helpWidth));
                 }
                 else if(args.length == 2)
                 {
-                    HelpData help = plugin.helpPages.get(args[1]);
+                    HelpData help = BoxedVillagers.getHelpPages().get(args[1]);
                     if(help != null)
                     {
                         sender.sendMessage(help.getFormatted(helpWidth));
@@ -200,7 +198,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 
             if((args.length == 1 || args.length == 2) && args[0].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_HELP)))
             {
-                return new ArrayList<>(plugin.helpPages.keySet());
+                return new ArrayList<>(BoxedVillagers.getHelpPages().keySet());
             }
 
             if((args.length == 0 || args.length == 1))

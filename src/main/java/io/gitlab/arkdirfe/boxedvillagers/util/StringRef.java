@@ -51,6 +51,7 @@ public enum StringRef
     CONFIG_COST_EXTRACT, //
     CONFIG_COST_ADD, //
     CONFIG_HELP_WIDTH, //
+    CONFIG_CURRENCY_FALLBACK, //
 
     // Permission Strings
     PERM_WITCHDOCTOR, //
@@ -75,6 +76,8 @@ public enum StringRef
     LOG_RESTOCK_TIME_RAN_BACKWARDS, //
     LOG_INVALID_STRING_OVERRIDE, //
     LOG_CUSTOM_CONFIG_LOAD_ERROR, //
+    LOG_ECONOMY_SETUP_SUCCESS, //
+    LOG_ECONOMY_SETUP_FAIL, //
 
     // Dynamic Logger Strings (Logger-facing)
     LOG_DYN_NO_WORLD, //

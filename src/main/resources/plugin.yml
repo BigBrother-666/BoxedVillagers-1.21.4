@@ -4,6 +4,7 @@ main: io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers
 author: Arkdirfe
 api-version: 1.17
 depend: [NBTAPI]
+softdepend: [Vault]
 commands:
   boxedvillagers:
     description: Main Command
@@ -26,10 +27,10 @@ permissions:
     description: /witchdoctor permission
     default: true
   boxedvillagers.witchdoctor.advanced:
-    description: Allows rearranging and purging of trades in the witchdoctor ui
+    description: Allows rearranging and purging of trades in the witchdoctor UI
     default: op
   boxedvillagers.witchdoctor.extract:
-    description: Allows extracting and re-inserting of trades in the witchdoctor ui
+    description: Allows extracting and re-inserting of trades in the witchdoctor UI
     default: op
   boxedvillagers.admin:
     description: Allows use of /bv give and /bv cure and allows opening of the witchdoctor ui in admin mode (with costs disabled)

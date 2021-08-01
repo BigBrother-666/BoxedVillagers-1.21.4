@@ -9,7 +9,9 @@ import io.gitlab.arkdirfe.boxedvillagers.util.GuiUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringRef;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -45,7 +47,7 @@ public class WitchdoctorGuiController
     private final BoxedVillagers plugin;
 
     /**
-     * Responsible for updating the witchdoctor GUI and keeping track of its state.
+     * Responsible for updating an instance of the witchdoctor GUI and keeping track of its state.
      *
      * @param gui     The linked GUI.
      * @param player  The player who opened the GUI.
@@ -548,7 +550,7 @@ public class WitchdoctorGuiController
         {
             return null;
         }
-        return plugin.cureCosts.get(villagerData.getCures());
+        return BoxedVillagers.getCureCosts().get(villagerData.getCures());
     }
 
     /**
@@ -560,7 +562,7 @@ public class WitchdoctorGuiController
     private CostData calculateCommitCost()
     {
         int free = getFreeTradeItems().size();
-        return CostData.sum(plugin.purgeCost.getMultiplied(tradesPurged), plugin.extractCost.getMultiplied(tradesExtracted), plugin.addCost.getMultiplied(free));
+        return CostData.sum(BoxedVillagers.getPurgeCost().getMultiplied(tradesPurged), BoxedVillagers.getExtractCost().getMultiplied(tradesExtracted), BoxedVillagers.getAddCost().getMultiplied(free));
     }
 
     /**
@@ -571,7 +573,7 @@ public class WitchdoctorGuiController
     @NotNull
     private CostData calculateScrollCost()
     {
-        return plugin.scrollCost;
+        return BoxedVillagers.getScrollCost();
     }
 
     /**
@@ -586,7 +588,7 @@ public class WitchdoctorGuiController
         {
             return null;
         }
-        return plugin.slotExtensionCosts.get(villagerData.getTradeSlots() - VillagerData.MIN_TRADE_SLOTS);
+        return BoxedVillagers.getSlotExtensionCosts().get(villagerData.getTradeSlots() - VillagerData.MIN_TRADE_SLOTS);
     }
 
     /**
@@ -610,7 +612,13 @@ public class WitchdoctorGuiController
             }
         }
 
-        // TODO: Check for currencies here!
+        if(BoxedVillagers.getEconomy() != null)
+        {
+            if(!BoxedVillagers.getEconomy().has(Bukkit.getServer().getOfflinePlayer(player.getUniqueId()), cost.getMoney()))
+            {
+                return false;
+            }
+        }
 
         return true;
     }
@@ -634,6 +642,9 @@ public class WitchdoctorGuiController
             player.getInventory().removeItem(item);
         }
 
-        // TODO: Pay currencies here!
+        if(BoxedVillagers.getEconomy() != null)
+        {
+            BoxedVillagers.getEconomy().withdrawPlayer(Bukkit.getServer().getOfflinePlayer(player.getUniqueId()), cost.getMoney());
+        }
     }
 }

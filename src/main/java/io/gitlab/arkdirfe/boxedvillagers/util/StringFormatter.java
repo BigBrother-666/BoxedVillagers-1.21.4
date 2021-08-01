@@ -39,7 +39,6 @@ public final class StringFormatter
         colorCodes.put("<dynamic>", "#ffce52"); // Dynamic Number (current values)
         colorCodes.put("<title>", "#008100"); // Title
         colorCodes.put("<money>", "#ffdc00"); // Money
-        colorCodes.put("<crystals>", "#008eff"); // Crystals
         colorCodes.put("<enchant>", "#b52fff"); // Heading
     }
 

@@ -35,7 +35,7 @@ strings:
   #TT_CONVERT_EXTRACTED_LORE : "<info>Commit to receive item."
   #TT_CONVERT_FREE_TITLE : "<advanced>Extracted Trade"
   #TT_CONVERT_FREE_LORE : "Acts like a regular trade in the Witch Doctor GUI.\nGets added to scroll when committed."
-  #TT_COST_TO_STRING_HEADER : "Costs:"
+  #TT_COST_TO_STRING_HEADER : "Cost:"
 
   ## Dynamic Tooltip Strings
   #TT_DYN_BOUND_SCROLL_LORE : "Name: %s\nCures: %s\nTrade Slots: %s\n<info>Right Click in hand to trade!" # string name, string cures as string, string slots as string
@@ -47,8 +47,7 @@ strings:
   #TT_DYN_COMMIT_ADDED : "<static>%d<norm> new trades were added." # int added
   #TT_DYN_TRADE_REDUCTION : "Price reduced by <static>%s<norm> for each cure." # int cure reduction
   #TT_DYN_TRADE_TO_STRING_ITEM : "<static>%d <item>%s<norm>" # int amount, string item name
-  #TT_DYN_COST_TO_STRING_MONEY : "  # -<static>%d<money> Money" # int money
-  #TT_DYN_COST_TO_STRING_CRYSTALS : "  # -<static>%d<crystals> Crystals" # int crystals
+  #TT_DYN_COST_TO_STRING_MONEY : "  # -<static>%.2f%s<money> Money" # int money, string currency suffix
   #TT_DYN_COST_TO_STRING_ITEM : "  # -<static>%d <item>%s" # int amount, string item name
 
   ## UI Strings
@@ -66,6 +65,7 @@ strings:
   #CHAT_NOT_HOLDING_SCROLL: "<warn>Hold the villager scroll you want to rename in your hand!"
 
 # Colors corresponding to the formatting tags, please use the proper hex format, otherwise the override will fail. Do not try to add new tags.
+# Tags do not need an end tag, they work like vanilla formatting codes, they stay active until the next tag or line break.
 colors:
   #<norm>: "#ffffff" # Normal Text
   #<uiheader>: "#3f3f3f" # UI Header
@@ -79,5 +79,4 @@ colors:
   #<dynamic>: "#ffce52" # Dynamic Number (current values)
   #<title>: "#008100" # Title
   #<money>: "#ffdc00" # Money
-  #<crystals>: "#008eff" # Crystals
   #<enchant>: "#b52fff" # Heading
