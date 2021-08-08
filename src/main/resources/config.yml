@@ -1,5 +1,5 @@
 ### Technical
-# Which world should be taken as a reference for timing boxed villager restocks
+# Which world should be taken as a reference for timing boxed villager restocks. Make sure this is a world with a day-night cycle that is loaded at all times, ideally your main world.
 timeWorld: world
 
 # If no currency name is found by Vault, use this symbol instead
