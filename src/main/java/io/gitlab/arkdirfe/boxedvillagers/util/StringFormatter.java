@@ -3,11 +3,7 @@ package io.gitlab.arkdirfe.boxedvillagers.util;
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,11 +12,11 @@ public final class StringFormatter
     private static final Pattern hexPattern = Pattern.compile("#[a-fA-F0-9]{6}");
     private static final Pattern formatPattern = Pattern.compile("§[a-f0-9klmnorx]");
     private static Map<String, String> colorCodes = null;
-
+    
     private StringFormatter()
     {
     }
-
+    
     /**
      * Initializes the default color map.
      */
@@ -41,12 +37,13 @@ public final class StringFormatter
         colorCodes.put("<money>", "#ffdc00"); // Money
         colorCodes.put("<enchant>", "#b52fff"); // Heading
     }
-
+    
     /**
      * Sets a value on the color map if it is correctly formatted.
      *
      * @param key   Which value to set.
      * @param value The new value (needs to be in hex format (#xxxxxx).
+     *
      * @return True if the value was properly formatted and not new, false otherwise.
      */
     public static boolean setColor(@NotNull final String key, @NotNull final String value)
@@ -55,15 +52,16 @@ public final class StringFormatter
         {
             return false;
         }
-
+        
         colorCodes.put(key, value);
         return true;
     }
-
+    
     /**
      * Strips all formatting symbols from a string for accurate length calculation.
      *
      * @param string The string to process.
+     *
      * @return The string without formatting symbols.
      */
     @NotNull
@@ -73,7 +71,7 @@ public final class StringFormatter
         {
             string = string.replace(e.getKey(), "");
         }
-
+        
         Matcher match = formatPattern.matcher(string);
         while(match.find())
         {
@@ -81,14 +79,15 @@ public final class StringFormatter
             string = string.replace(found, "");
             match = formatPattern.matcher(string);
         }
-
+        
         return string;
     }
-
+    
     /**
      * Replaces the color indicators with their hex color.
      *
      * @param string The string to replace in.
+     *
      * @return String with replaced indicators.
      */
     @NotNull
@@ -97,22 +96,23 @@ public final class StringFormatter
         for(Map.Entry<String, String> e : colorCodes.entrySet())
         {
             string = string.replace(e.getKey(), e.getValue());
-
+            
         }
         return string;
     }
-
+    
     /**
      * Formats the hex codes.
      *
      * @param string String with hex codes.
+     *
      * @return Formatted string.
      */
     @NotNull
     private static String formatHex(@NotNull String string)
     {
         Matcher match = hexPattern.matcher(string);
-
+        
         while(match.find())
         {
             String color = string.substring(match.start(), match.end());
@@ -121,11 +121,12 @@ public final class StringFormatter
         }
         return ChatColor.translateAlternateColorCodes('&', string);
     }
-
+    
     /**
      * Formats a single line.
      *
      * @param line The line to format.
+     *
      * @return Formatted line.
      */
     @NotNull
@@ -133,30 +134,32 @@ public final class StringFormatter
     {
         return "§r" + formatHex(replaceIndicators(Strings.get(StringRef.FORMAT_DEFAULT_COLOR) + line));
     }
-
+    
     /**
      * Splits a string at \n and formats the lines.
      *
      * @param string String to process.
+     *
      * @return List of lines.
      */
     @NotNull
     public static List<String> splitAndFormatLines(@NotNull final String string)
     {
         List<String> lines = new ArrayList<>();
-
+        
         for(String s : string.split("\n"))
         {
             lines.add(formatLine(s));
         }
-
+        
         return lines;
     }
-
+    
     /**
      * Formats a list of lines.
      *
      * @param lines The lines to format.
+     *
      * @return Formatted lines.
      */
     @NotNull
@@ -169,11 +172,12 @@ public final class StringFormatter
         }
         return out;
     }
-
+    
     /**
      * Splits strings along \n.
      *
      * @param string The string to split.
+     *
      * @return List of lines.
      */
     @NotNull

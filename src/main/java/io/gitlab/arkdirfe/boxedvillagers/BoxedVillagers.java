@@ -14,12 +14,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 
 public class BoxedVillagers extends JavaPlugin
 {
     private WitchdoctorGuiManager witchdoctorGuiManager;
-
+    
     private static Map<UUID, WitchdoctorGuiController> guiMap;
     private static Map<String, HelpData> helpPages;
     private static List<CostData> cureCosts;
@@ -29,41 +30,47 @@ public class BoxedVillagers extends JavaPlugin
     private static CostData extractCost;
     private static CostData addCost;
     private static Economy economy;
-
+    
+    // Config Values
+    private static String timeWorldName;
+    private static String fallbackCurrencySymbol;
+    private static int minTradeSlots;
+    private static int maxTradeSlots;
+    
     private ConfigAccessor stringsConfig;
-
+    
     @Override
     public void onEnable()
     {
         Strings.initImmutable();
         stringsConfig = new ConfigAccessor(this, "strings.yml");
-
+        
         guiMap = new HashMap<>();
         Util.plugin = this;
-
+        
         reloadConfig();
         registerCommandsAndListeners();
         initializeVault();
-
+        
         getLogger().info(Strings.get(StringRef.LOG_LOADED));
     }
-
+    
     @Override
     public void onDisable()
     {
         witchdoctorGuiManager.cleanupOpenGuis();
         getLogger().info(Strings.get(StringRef.LOG_UNLOADED));
     }
-
+    
     @Override
     public void reloadConfig()
     {
         reloadColorsAndStrings();
         saveDefaultConfig();
         super.reloadConfig();
-
-        String timeWorldName = getConfig().getString(Strings.get(StringRef.CONFIG_TIME_WORLD));
-
+        
+        timeWorldName = getConfig().getString(Strings.get(StringRef.CONFIG_TIME_WORLD));
+        
         if(timeWorldName == null)
         {
             getLogger().severe(Strings.get(StringRef.LOG_ERROR_TIME_WORLD));
@@ -75,12 +82,24 @@ public class BoxedVillagers extends JavaPlugin
                 getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_NO_WORLD), timeWorldName));
             }
         }
-
-        StringUtil.fallbackCurrencySymbol = getConfig().getString(Strings.get(StringRef.CONFIG_CURRENCY_FALLBACK));
-
+        
+        fallbackCurrencySymbol = getConfig().getString(Strings.get(StringRef.CONFIG_CURRENCY_FALLBACK));
+        
+        try
+        {
+            maxTradeSlots = Math.max(0, Math.min(27, Integer.parseInt(getConfig().getString(Strings.get(StringRef.CONFIG_MAX_SLOTS)))));
+            minTradeSlots = Math.max(0, Math.min(maxTradeSlots, Integer.parseInt(getConfig().getString(Strings.get(StringRef.CONFIG_MIN_SLOTS)))));
+        }
+        catch(Exception e)
+        {
+            minTradeSlots = 0;
+            maxTradeSlots = 27;
+            getLogger().severe(Strings.get(StringRef.LOG_CONFIG_ERROR_GENERIC));
+        }
+        
         initializeMaps();
     }
-
+    
     private void reloadColorsAndStrings()
     {
         stringsConfig.saveDefaultConfig();
@@ -90,7 +109,7 @@ public class BoxedVillagers extends JavaPlugin
         loadColors();
         loadStrings();
     }
-
+    
     /**
      * Loads color overrides from config.
      */
@@ -103,9 +122,9 @@ public class BoxedVillagers extends JavaPlugin
             getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES), configSection));
             return;
         }
-
+        
         int count = 0;
-
+        
         for(String key : section.getKeys(false))
         {
             String value = stringsConfig.getConfig().getString(configSection + "." + key);
@@ -121,10 +140,10 @@ public class BoxedVillagers extends JavaPlugin
                 }
             }
         }
-
+        
         getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_LOAD_COLOR_OVERRIDES), count));
     }
-
+    
     /**
      * Loads string overrides from config.
      */
@@ -137,9 +156,9 @@ public class BoxedVillagers extends JavaPlugin
             getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES), configSection));
             return;
         }
-
+        
         int count = 0;
-
+        
         for(String key : section.getKeys(false))
         {
             String value = stringsConfig.getConfig().getString(configSection + "." + key);
@@ -153,7 +172,7 @@ public class BoxedVillagers extends JavaPlugin
                 getLogger().warning(Strings.get(StringRef.LOG_INVALID_STRING_OVERRIDE));
                 continue;
             }
-
+            
             if(value != null)
             {
                 if(!Strings.set(keyRef, value))
@@ -166,24 +185,24 @@ public class BoxedVillagers extends JavaPlugin
                 }
             }
         }
-
+        
         getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_LOAD_STRING_OVERRIDES), count));
     }
-
+    
     /**
      * Registers commands and listeners and saves a reference to the witchdoctorGuiManager, which is important for cleaning up if the server closes while someone has a GUI open.
      */
     private void registerCommandsAndListeners()
     {
         witchdoctorGuiManager = new WitchdoctorGuiManager(this);
-
+        
         new BoxedVillagersCommandExecutor(this, "boxedvillagers");
         new WitchdoctorCommandExecutor(this, witchdoctorGuiManager, "witchdoctor");
         new InteractionListener(this);
-
+        
         getLogger().info(Strings.get(StringRef.LOG_REGISTER_COMMANDS));
     }
-
+    
     /**
      * Initializes various maps needed for the operation of the plugin.
      */
@@ -196,26 +215,27 @@ public class BoxedVillagers extends JavaPlugin
         scrollCost = new CostData();
         extractCost = new CostData();
         addCost = new CostData();
-
+        
         initHelpPages();
-
+        
         initSimpleCostMap(Strings.get(StringRef.CONFIG_COST_PURGE), purgeCost);
         initSimpleCostMap(Strings.get(StringRef.CONFIG_COST_SCROLL), scrollCost);
         initSimpleCostMap(Strings.get(StringRef.CONFIG_COST_EXTRACT), extractCost);
         initSimpleCostMap(Strings.get(StringRef.CONFIG_COST_ADD), addCost);
-
+        
         initLayeredCostMap(Strings.get(StringRef.CONFIG_COST_CURE), cureCosts, 7);
-        initLayeredCostMap(Strings.get(StringRef.CONFIG_COST_SLOT), slotExtensionCosts, 17);
-
+        initLayeredCostMap(Strings.get(StringRef.CONFIG_COST_SLOT), slotExtensionCosts, 27);
+        
         getLogger().info(Strings.get(StringRef.LOG_LOAD_COSTS));
     }
-
+    
     /**
      *
      */
     private void initializeVault()
     {
-        if (!setupEconomy()) {
+        if(!setupEconomy())
+        {
             getLogger().warning(Strings.get(StringRef.LOG_ECONOMY_SETUP_FAIL));
         }
         else
@@ -223,7 +243,7 @@ public class BoxedVillagers extends JavaPlugin
             getLogger().info(Strings.get(StringRef.LOG_ECONOMY_SETUP_SUCCESS));
         }
     }
-
+    
     /**
      * Reads help pages from config.
      */
@@ -235,12 +255,12 @@ public class BoxedVillagers extends JavaPlugin
             getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION), Strings.get(StringRef.CONFIG_HELP)));
             return;
         }
-
+        
         for(String key : section.getKeys(false))
         {
             String title = getConfig().getString(Strings.get(StringRef.CONFIG_HELP) + "." + key + ".title");
             String content = getConfig().getString(Strings.get(StringRef.CONFIG_HELP) + "." + key + ".content");
-
+            
             if(title == null)
             {
                 getLogger().warning(String.format(Strings.get(StringRef.LOG_DYN_NO_TITLE), key));
@@ -251,15 +271,16 @@ public class BoxedVillagers extends JavaPlugin
                 getLogger().warning(String.format(Strings.get(StringRef.LOG_DYN_NO_CONTENT), key));
                 content = "";
             }
-
+            
             helpPages.put(key, new HelpData(title, content));
         }
-
+        
         getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_LOAD_HELP), helpPages.size()));
     }
-
+    
     /**
      * Uses Vault to initialize an economy.
+     *
      * @return success
      */
     private boolean setupEconomy()
@@ -268,7 +289,7 @@ public class BoxedVillagers extends JavaPlugin
         {
             return false;
         }
-
+        
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if(rsp == null)
         {
@@ -277,7 +298,7 @@ public class BoxedVillagers extends JavaPlugin
         economy = rsp.getProvider();
         return economy != null;
     }
-
+    
     /**
      * Loads a list of CostData from config, validates if it retrieved the correct amount.
      *
@@ -293,18 +314,18 @@ public class BoxedVillagers extends JavaPlugin
             getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION), configSection));
             return;
         }
-
+        
         for(String key : section.getKeys(false))
         {
             CostData cost = new CostData();
-
+            
             for(String innerKey : getConfig().getConfigurationSection(configSection + "." + key).getKeys(false))
             {
                 if(innerKey.equalsIgnoreCase("free"))
                 {
                     continue;
                 }
-
+                
                 Material mat = Material.matchMaterial(innerKey);
                 if(mat != null)
                 {
@@ -319,16 +340,16 @@ public class BoxedVillagers extends JavaPlugin
                     getLogger().warning(String.format(Strings.get(StringRef.LOG_DYN_UNKNOWN_MATERIAL), innerKey));
                 }
             }
-
+            
             costs.add(cost);
         }
-
+        
         if(costs.size() != expected)
         {
             getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_UNEXPECTED_NUMBER), configSection, costs.size(), expected));
         }
     }
-
+    
     /**
      * Loads a single CostData from config.
      *
@@ -343,7 +364,7 @@ public class BoxedVillagers extends JavaPlugin
             getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION), configSection));
             return;
         }
-
+        
         for(String key : section.getKeys(false))
         {
             Material mat = Material.matchMaterial(key);
@@ -353,51 +374,71 @@ public class BoxedVillagers extends JavaPlugin
             }
         }
     }
-
+    
     // Getters for private static members
-
+    
     public static Map<UUID, WitchdoctorGuiController> getGuiMap()
     {
         return guiMap;
     }
-
+    
     public static Map<String, HelpData> getHelpPages()
     {
         return helpPages;
     }
-
+    
     public static List<CostData> getCureCosts()
     {
         return cureCosts;
     }
-
+    
     public static List<CostData> getSlotExtensionCosts()
     {
         return slotExtensionCosts;
     }
-
+    
     public static CostData getPurgeCost()
     {
         return purgeCost;
     }
-
+    
     public static CostData getScrollCost()
     {
         return scrollCost;
     }
-
+    
     public static CostData getExtractCost()
     {
         return extractCost;
     }
-
+    
     public static CostData getAddCost()
     {
         return addCost;
     }
-
+    
     public static Economy getEconomy()
     {
         return economy;
+    }
+    
+    public static String getTimeWorldName()
+    {
+        return timeWorldName;
+    }
+    
+    public static String getFallbackCurrencySymbol()
+    {
+        return fallbackCurrencySymbol;
+    }
+    
+    public static int getMinTradeSlots()
+    {
+        return minTradeSlots;
+    }
+    
+    public static int getMaxTradeSlots()
+    {
+        return maxTradeSlots;
     }
 }

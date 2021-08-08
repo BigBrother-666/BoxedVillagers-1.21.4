@@ -19,7 +19,7 @@ import java.util.List;
 public class WitchdoctorCommandExecutor implements TabExecutor
 {
     private final WitchdoctorGuiManager gui;
-
+    
     /**
      * Handles the /witchdoctor or /wd command.
      *
@@ -41,7 +41,7 @@ public class WitchdoctorCommandExecutor implements TabExecutor
             plugin.getLogger().severe(Strings.get(StringRef.LOG_CANT_REGISTER_COMMAND_WITCHDOCTOR));
         }
     }
-
+    
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, final String[] args)
     {
@@ -62,10 +62,10 @@ public class WitchdoctorCommandExecutor implements TabExecutor
             }
             return true;
         }
-
+        
         return false;
     }
-
+    
     @Override
     public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, @NotNull final String[] args)
     {
@@ -73,7 +73,7 @@ public class WitchdoctorCommandExecutor implements TabExecutor
         {
             return Collections.singletonList("admin");
         }
-
+        
         return new ArrayList<>();
     }
 }

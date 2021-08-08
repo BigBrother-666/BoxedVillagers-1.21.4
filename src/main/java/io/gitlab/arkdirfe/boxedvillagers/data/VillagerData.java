@@ -2,6 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.data;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.util.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Villager;
@@ -17,9 +18,6 @@ import java.util.List;
 
 public class VillagerData
 {
-    public static final int MAX_TRADE_SLOTS = 27;
-    public static final int MIN_TRADE_SLOTS = 10;
-
     private int cures;
     private List<TradeData> trades;
     private final String profession;
@@ -28,7 +26,7 @@ public class VillagerData
     private long lastRestocked; // In days
     private ItemStack linkedItem;
     private String name;
-
+    
     /**
      * Creates VillagerData from a villager and an unbound scroll.
      *
@@ -39,21 +37,23 @@ public class VillagerData
     {
         cures = 0;
         trades = new ArrayList<>();
-
+        
         for(MerchantRecipe r : fromVillager.getRecipes())
         {
-            trades.add(new TradeData((r.getPriceMultiplier() > 0.1 ? 20 : 5), r.getIngredients().get(0).getAmount(), r));
+            trades.add(new TradeData((r.getPriceMultiplier() > 0.1 ?
+                    20 :
+                    5), r.getIngredients().get(0).getAmount(), r));
         }
-
+        
         profession = fromVillager.getProfession().name();
         rank = fromVillager.getVillagerLevel();
         lastRestocked = Util.getDay(Util.getTotalTime());
-        tradeSlots = Math.max(MIN_TRADE_SLOTS, trades.size());
+        tradeSlots = Math.max(BoxedVillagers.getMinTradeSlots(), trades.size());
         linkedItem = unboundScroll.getItem();
         name = fromVillager.getName();
         attemptRestock();
     }
-
+    
     /**
      * Creates VillagerData from an item. Used when reading from an existing bound scroll.
      *
@@ -62,7 +62,7 @@ public class VillagerData
     public VillagerData(@NotNull final NBTItem fromItem)
     {
         trades = new ArrayList<>();
-
+        
         NBTCompound compound = fromItem.getCompound(Strings.get(StringRef.TAG_DATA_COMPOUND));
         cures = compound.getInteger(Strings.get(StringRef.TAG_CURES));
         profession = compound.getString(Strings.get(StringRef.TAG_PROFESSION));
@@ -70,56 +70,58 @@ public class VillagerData
         lastRestocked = compound.getLong(Strings.get(StringRef.TAG_TIMESTAMP));
         tradeSlots = compound.getInteger(Strings.get(StringRef.TAG_TRADE_SLOTS));
         name = compound.getString(Strings.get(StringRef.TAG_NAME));
-
+        
         for(int i = 0; i < compound.getInteger(Strings.get(StringRef.TAG_TRADE_COUNT)); i++)
         {
             NBTCompound recipeCompound = compound.getCompound("" + i);
-
+            
             trades.add(new TradeData(recipeCompound, cures));
         }
-
+        
         linkedItem = fromItem.getItem();
     }
-
+    
     // --- Getters
-
+    
     public int getCures()
     {
         return cures;
     }
-
+    
     @NotNull
     public List<TradeData> getTrades()
     {
         return trades;
     }
-
+    
     public int getTradeSlots()
     {
         return tradeSlots;
     }
-
+    
     @NotNull
     public String getCuresAsString()
     {
         return cures != 7 ? "" + cures : "<static>" + cures;
     }
-
+    
     @NotNull
     public String getTradeSlotsAsString()
     {
-        return tradeSlots != MAX_TRADE_SLOTS ? String.format(Strings.get(StringRef.TT_DYN_SLOTS_AS_STRING_NOT_FULL), tradeSlots, MAX_TRADE_SLOTS) : String.format(Strings.get(StringRef.TT_DYN_SLOTS_AS_STRING_FULL), MAX_TRADE_SLOTS, MAX_TRADE_SLOTS);
+        return tradeSlots != BoxedVillagers.getMaxTradeSlots() ?
+                String.format(Strings.get(StringRef.TT_DYN_SLOTS_AS_STRING_NOT_FULL), tradeSlots, BoxedVillagers.getMaxTradeSlots()) :
+                String.format(Strings.get(StringRef.TT_DYN_SLOTS_AS_STRING_FULL), BoxedVillagers.getMaxTradeSlots(), BoxedVillagers.getMaxTradeSlots());
     }
-
+    
     // --- Setters/Accessors
-
+    
     public void setTrades(@NotNull final List<TradeData> trades)
     {
         this.trades = trades;
     }
-
+    
     // --- Serialization
-
+    
     /**
      * Updates the bound scroll and returns it in item stack form.
      *
@@ -129,12 +131,12 @@ public class VillagerData
     public ItemStack getItem()
     {
         NBTItem nbtItem = new NBTItem(linkedItem);
-
+        
         if(nbtItem.hasKey(Strings.get(StringRef.TAG_NONLETHAL)))
         {
             nbtItem.removeKey(Strings.get(StringRef.TAG_NONLETHAL));
         }
-
+        
         nbtItem.setBoolean(Strings.get(StringRef.TAG_IS_BOUND), true);
         NBTCompound compound = nbtItem.getOrCreateCompound(Strings.get(StringRef.TAG_DATA_COMPOUND));
         compound.setInteger(Strings.get(StringRef.TAG_CURES), cures);
@@ -144,23 +146,23 @@ public class VillagerData
         compound.setLong(Strings.get(StringRef.TAG_TIMESTAMP), lastRestocked);
         compound.setInteger(Strings.get(StringRef.TAG_TRADE_SLOTS), tradeSlots);
         compound.setString(Strings.get(StringRef.TAG_NAME), name);
-
+        
         for(int i = 0; i < trades.size(); i++)
         {
             NBTCompound entry = compound.getOrCreateCompound("" + i);
             trades.get(i).serializeToNBT(entry);
         }
-
+        
         linkedItem = nbtItem.getItem();
         linkedItem.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-
+        
         updateTitleAndLore();
-
+        
         return linkedItem;
     }
-
+    
     // --- General Methods
-
+    
     /**
      * Returns a list of MerchantRecipe, needed due to TradeData objects holding the individual entries.
      *
@@ -176,7 +178,7 @@ public class VillagerData
         }
         return recipes;
     }
-
+    
     /**
      * Cures the villager.
      *
@@ -190,7 +192,7 @@ public class VillagerData
         compound.setInteger(Strings.get(StringRef.TAG_CURES), cures);
         linkedItem = nbtItem.getItem();
     }
-
+    
     /**
      * Adds trade slots to the villager.
      *
@@ -200,11 +202,11 @@ public class VillagerData
     {
         NBTItem nbtItem = new NBTItem(linkedItem);
         NBTCompound compound = nbtItem.getOrCreateCompound(Strings.get(StringRef.TAG_DATA_COMPOUND));
-        tradeSlots = Math.min(MAX_TRADE_SLOTS, tradeSlots + slots);
+        tradeSlots = Math.min(BoxedVillagers.getMaxTradeSlots(), tradeSlots + slots);
         compound.setInteger(Strings.get(StringRef.TAG_TRADE_SLOTS), tradeSlots);
         linkedItem = nbtItem.getItem();
     }
-
+    
     /**
      * Renames the villager.
      *
@@ -217,7 +219,7 @@ public class VillagerData
             name = newName;
         }
     }
-
+    
     /**
      * Updates how many uses the trades have left.
      *
@@ -231,7 +233,7 @@ public class VillagerData
             trades.get(i).getRecipe().setUses(recipe.getUses());
         }
     }
-
+    
     /**
      * Attempts to restock the villager, succeeds or fails based on time passed since last restock.
      */
@@ -240,36 +242,36 @@ public class VillagerData
         long time = Util.getTotalTime();
         long days = Util.getDay(time);
         long dayTime = Util.getDayTime(time);
-
+        
         boolean permitted = false;
-
+        
         if(days < lastRestocked)
         {
             Util.logWarning(Strings.get(StringRef.LOG_RESTOCK_TIME_RAN_BACKWARDS));
             permitted = true;
         }
-
+        
         if(!permitted && Math.abs(days - lastRestocked) > 1) // Guaranteed to have passed noon
         {
             permitted = true;
         }
-
+        
         if(!permitted && Math.abs(days - lastRestocked) == 1 && dayTime >= 6000) // Past noon on day after last restock
         {
             permitted = true;
         }
-
+        
         if(permitted)
         {
             lastRestocked = days;
-
+            
             for(TradeData data : trades)
             {
                 data.getRecipe().setUses(0);
             }
         }
     }
-
+    
     /**
      * Updates item title and lore.
      */

@@ -2,7 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.util;
 
 public enum StringRef
 {
-    // List of all strings for autocompletion purposes
+    // List of all strings for autocompletion purposes. Sadly there is no support for something like a strings.xml, so I'm doing it this way.
     // Command Strings
     CMD_BV_GIVE, //
     CMD_BV_RELOAD, //
@@ -11,7 +11,7 @@ public enum StringRef
     CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL, //
     CMD_BV_GIVE_TRADE, //
     CMD_BV_RENAME, //
-
+    
     // Item Tags
     TAG_BOXED_VILLAGER_ITEM, //
     TAG_IS_BOUND, //
@@ -31,14 +31,14 @@ public enum StringRef
     TAG_TRADE_SLOTS, //
     TAG_NONLETHAL, //
     TAG_NAME, //
-
+    
     // UI Helper Tags
     TAG_UNINTERACTABLE, //
     TAG_MOVABLE, //
     TAG_FREE, //
     TAG_EXTRACTED, //
     TAG_SERIALIZED_TRADE_DATA, //
-
+    
     // Config Entries
     CONFIG_STRINGS_STRING_ENTRIES, //
     CONFIG_STRINGS_COLORS, //
@@ -52,18 +52,20 @@ public enum StringRef
     CONFIG_COST_ADD, //
     CONFIG_HELP_WIDTH, //
     CONFIG_CURRENCY_FALLBACK, //
-
+    CONFIG_MIN_SLOTS, //
+    CONFIG_MAX_SLOTS, //
+    
     // Permission Strings
     PERM_WITCHDOCTOR, //
     PERM_WITCHDOCTOR_ADVANCED, //
     PERM_WITCHDOCTOR_EXTRACT, //
     PERM_ADMIN, //
-
+    
     // Formatting Strings
     FORMAT_DEFAULT_COLOR, //
     FORMAT_ENCHANT_COLOR, //
     FORMAT_HELP_COLOR, //
-
+    
     // Static Logger Strings (Logger-facing)
     LOG_LOADED, //
     LOG_UNLOADED, //
@@ -78,7 +80,8 @@ public enum StringRef
     LOG_CUSTOM_CONFIG_LOAD_ERROR, //
     LOG_ECONOMY_SETUP_SUCCESS, //
     LOG_ECONOMY_SETUP_FAIL, //
-
+    LOG_CONFIG_ERROR_GENERIC, //
+    
     // Dynamic Logger Strings (Logger-facing)
     LOG_DYN_NO_WORLD, //
     LOG_DYN_MISSING_CONFIG_SECTION, //
@@ -90,7 +93,7 @@ public enum StringRef
     LOG_DYN_LOAD_HELP, //
     LOG_DYN_LOAD_STRING_OVERRIDES, //
     LOG_DYN_LOAD_COLOR_OVERRIDES, //
-
+    
     // Tooltip Static Strings
     TT_UNBOUND_SCROLL_TITLE, //
     TT_UNBOUND_SCROLL_LORE, //
@@ -120,7 +123,7 @@ public enum StringRef
     TT_CONVERT_FREE_TITLE, //
     TT_CONVERT_FREE_LORE, //
     TT_COST_TO_STRING_HEADER, //
-
+    
     // Dynamic Tooltip Strings
     TT_DYN_BOUND_SCROLL_LORE, //
     TT_DYN_SLOTS_AS_STRING_NOT_FULL, //
@@ -134,11 +137,11 @@ public enum StringRef
     TT_DYN_COST_TO_STRING_MONEY, //
     TT_DYN_COST_TO_STRING_CRYSTALS, //
     TT_DYN_COST_TO_STRING_ITEM, //
-
+    
     // UI Strings
     UI_WD_TITLE, //
     UI_WD_TITLE_ADMIN, //
-
+    
     // Chat Strings (Player-facing chat messages)
     CHAT_GIVE_TRADE_USAGE, //
     CHAT_INSUFFICIENT_PERMISSION, //

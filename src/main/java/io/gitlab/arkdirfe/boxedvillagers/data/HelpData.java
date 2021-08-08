@@ -13,7 +13,7 @@ public class HelpData
 {
     private final String title;
     private final String content;
-
+    
     /**
      * Describes a single help page.
      *
@@ -25,46 +25,48 @@ public class HelpData
         this.title = title;
         this.content = content;
     }
-
+    
     /**
      * Formats the help page to be printed out in chat.
      *
      * @param lineWidth How many standard symbols wide the message should be before a line wraps.
+     *
      * @return An array of lines.
      */
     @NotNull
     public String[] getFormatted(final int lineWidth)
     {
         List<String> lines = new ArrayList<>();
-
+        
         lines.add("");
         lines.add(Strings.get(StringRef.FORMAT_HELP_COLOR) + "=".repeat(lineWidth));
         lines.add(Strings.get(StringRef.FORMAT_HELP_COLOR) + getCenterPadded(title, lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
         lines.add(Strings.get(StringRef.FORMAT_HELP_COLOR) + "=".repeat(lineWidth));
         lines.addAll(getContent(lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
         lines.add(Strings.get(StringRef.FORMAT_HELP_COLOR) + "-".repeat(lineWidth));
-
+        
         return StringFormatter.formatAll(lines).toArray(new String[0]);
     }
-
+    
     /**
      * Formats the content to fit.
      *
      * @param lineWidth How many standard symbols wide the message should be before a line wraps.
+     *
      * @return List of lines.
      */
     @NotNull
     private List<String> getContent(final int lineWidth)
     {
         List<String> lines = new ArrayList<>();
-
+        
         StringBuilder line = new StringBuilder();
         StringBuilder word = new StringBuilder();
-
+        
         for(int i = 0; i < content.length(); i++)
         {
             char c = content.charAt(i);
-
+            
             if(c == ' ')
             {
                 if(StringUtil.stringWidth(line.toString()) + StringUtil.stringWidth(word.toString()) > lineWidth)
@@ -72,7 +74,7 @@ public class HelpData
                     lines.add(line.toString());
                     line = new StringBuilder();
                 }
-
+                
                 line.append(word.toString()).append(" ");
                 word = new StringBuilder();
             }
@@ -88,18 +90,19 @@ public class HelpData
                 word.append(c);
             }
         }
-
+        
         line.append(word.toString());
         lines.add(line.toString());
-
+        
         return lines;
     }
-
+    
     /**
      * Pads a string to be as centered as possible.
      *
      * @param string      The string to pad.
      * @param targetWidth How wide the line is.
+     *
      * @return The padded string.
      */
     @NotNull

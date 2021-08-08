@@ -26,7 +26,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
 {
     private final BoxedVillagers plugin;
     private final int helpWidth;
-
+    
     /**
      * Handles the /boxedvillagers or /bv command
      *
@@ -48,16 +48,16 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
             plugin.getLogger().severe(Strings.get(StringRef.LOG_CANT_REGISTER_COMMAND_BOXEDVILLAGERS));
         }
     }
-
+    
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, @NotNull final String[] args)
     {
         if(args.length > 0)
         {
             String subCmd = args[0];
-
+            
             // Admin Commands
-
+            
             if(sender.hasPermission(Strings.get(StringRef.PERM_ADMIN)))
             {
                 if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE)))
@@ -102,7 +102,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                             }
                         }
                     }
-
+                    
                     return true;
                 }
                 else if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_RELOAD)))
@@ -111,9 +111,9 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                     return true;
                 }
             }
-
+            
             // Player Commands
-
+            
             if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_HELP)))
             {
                 if(args.length == 1 && BoxedVillagers.getHelpPages().containsKey("default"))
@@ -138,18 +138,18 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                 if(args.length > 1 && sender instanceof Player)
                 {
                     Player player = (Player) sender;
-
+                    
                     ItemStack item = player.getInventory().getItemInMainHand();
                     NBTItem nbtItem = ItemUtil.validateBoundItem(item);
                     if(nbtItem != null)
                     {
                         StringBuilder newName = new StringBuilder();
-
+                        
                         for(int i = 1; i < args.length; i++)
                         {
                             newName.append(args[i]).append(" ");
                         }
-
+                        
                         VillagerData data = new VillagerData(nbtItem);
                         data.rename(newName.toString());
                         player.getInventory().setItemInMainHand(data.getItem());
@@ -164,13 +164,13 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
             {
                 sender.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_UNKNOWN_SUB_COMMAND)));
             }
-
+            
             return true;
         }
-
+        
         return false;
     }
-
+    
     @Override
     public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, @NotNull final String[] args)
     {
@@ -182,39 +182,39 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                 {
                     return Arrays.asList(Strings.get(StringRef.CMD_BV_GIVE_UNBOUND_SCROLL), Strings.get(StringRef.CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL), Strings.get(StringRef.CMD_BV_GIVE_TRADE));
                 }
-
+                
                 if((args.length == 0 || args.length == 1))
                 {
                     return Arrays.asList(Strings.get(StringRef.CMD_BV_GIVE), Strings.get(StringRef.CMD_BV_HELP), Strings.get(StringRef.CMD_BV_RELOAD), Strings.get(StringRef.CMD_BV_RENAME));
                 }
-
+                
                 if(args[0].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE)) && args[1].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE_TRADE)))
                 {
                     return new ArrayList<>();
                 }
             }
-
+            
             // Player Commands
-
+            
             if((args.length == 1 || args.length == 2) && args[0].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_HELP)))
             {
                 return new ArrayList<>(BoxedVillagers.getHelpPages().keySet());
             }
-
+            
             if((args.length == 0 || args.length == 1))
             {
                 return Arrays.asList(Strings.get(StringRef.CMD_BV_HELP), Strings.get(StringRef.CMD_BV_RENAME));
             }
-
+            
             if(args.length == 3 && !args[0].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_HELP)))
             {
                 return null;
             }
         }
-
+        
         return new ArrayList<>();
     }
-
+    
     /**
      * Returns a player object depending on conditions.
      *
@@ -222,6 +222,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
      * @param sender       Command sender.
      * @param senderPlayer Condition for when to interpret the sender as a player.
      * @param argPlayer    Condition for when to get an online player from the args.
+     *
      * @return Player object if possible, null otherwise.
      */
     @Nullable
@@ -234,7 +235,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                 sender.sendMessage(Strings.get(StringRef.LOG_UNAVAILABLE_FROM_CONSOLE));
                 return null;
             }
-
+            
             return (Player) sender;
         }
         if(argPlayer)
@@ -244,10 +245,10 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
             {
                 sender.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_PLAYER_OFFLINE)));
             }
-
+            
             return player;
         }
-
+        
         return null;
     }
 }

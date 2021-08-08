@@ -8,9 +8,9 @@ public final class Util
     private Util()
     {
     }
-
+    
     public static BoxedVillagers plugin;
-
+    
     /**
      * Gets the total world time from the configured world. This value is used for keeping track of villager restocks.
      *
@@ -18,7 +18,7 @@ public final class Util
      */
     public static long getTotalTime()
     {
-        String timeWorldName = plugin.getConfig().getString(Strings.get(StringRef.CONFIG_TIME_WORLD));
+        String timeWorldName = BoxedVillagers.getTimeWorldName();
         if(timeWorldName != null)
         {
             World world = plugin.getServer().getWorld(timeWorldName);
@@ -31,30 +31,30 @@ public final class Util
                 plugin.getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_NO_WORLD), timeWorldName));
             }
         }
-
+        
         return -1;
     }
-
+    
     public static long getDay(final long time)
     {
         return time / 24000;
     }
-
+    
     public static long getDayTime(final long time)
     {
         return time % 24000;
     }
-
+    
     public static void logInfo(final String log)
     {
         plugin.getLogger().info(log);
     }
-
+    
     public static void logWarning(final String log)
     {
         plugin.getLogger().warning(log);
     }
-
+    
     public static void logSevere(final String log)
     {
         plugin.getLogger().severe(log);

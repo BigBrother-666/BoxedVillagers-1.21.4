@@ -1,6 +1,5 @@
 package io.gitlab.arkdirfe.boxedvillagers.ui;
 
-
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
 import io.gitlab.arkdirfe.boxedvillagers.util.*;
 import org.bukkit.Bukkit;
@@ -22,8 +21,6 @@ import java.util.UUID;
 
 public class WitchdoctorGuiManager implements Listener
 {
-    private final BoxedVillagers plugin;
-
     public final int scrollSlot = GuiUtil.getGuiSlot(1, 4);
     public final int helpSlot = GuiUtil.getGuiSlot(0, 4);
     public final int cureSlot = GuiUtil.getGuiSlot(1, 2);
@@ -31,7 +28,7 @@ public class WitchdoctorGuiManager implements Listener
     public final int extendTradeSlotsSlot = GuiUtil.getGuiSlot(1, 0);
     public final int buyScrollSlot = GuiUtil.getGuiSlot(1, 8);
     public final int tradeSlotStart = GuiUtil.getGuiSlot(3, 0);
-
+    
     /**
      * Handles creation of witchdoctor GUIs and listens to related events.
      *
@@ -40,9 +37,8 @@ public class WitchdoctorGuiManager implements Listener
     public WitchdoctorGuiManager(final BoxedVillagers plugin)
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        this.plugin = plugin;
     }
-
+    
     /**
      * Opens a witchdoctor GUI for a player.
      *
@@ -51,13 +47,15 @@ public class WitchdoctorGuiManager implements Listener
      */
     public void openGui(@NotNull final HumanEntity player, final boolean admin)
     {
-        Inventory gui = Bukkit.createInventory(null, 54, (admin ? StringFormatter.formatLine(Strings.get(StringRef.UI_WD_TITLE_ADMIN)) : StringFormatter.formatLine(Strings.get(StringRef.UI_WD_TITLE))));
-        WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, plugin, admin);
+        Inventory gui = Bukkit.createInventory(null, 54, (admin ?
+                StringFormatter.formatLine(Strings.get(StringRef.UI_WD_TITLE_ADMIN)) :
+                StringFormatter.formatLine(Strings.get(StringRef.UI_WD_TITLE))));
+        WitchdoctorGuiController controller = new WitchdoctorGuiController(gui, player, this, admin);
         BoxedVillagers.getGuiMap().put(player.getUniqueId(), controller);
     }
-
+    
     // --- Interaction Event Handlers
-
+    
     /**
      * Handles clicks on the open witchdoctor GUI.
      *
@@ -68,66 +66,66 @@ public class WitchdoctorGuiManager implements Listener
     {
         InventoryView view = event.getView();
         WitchdoctorGuiController controller = getValidController(view, event.getInventory());
-
+        
         if(controller == null)
         {
             return;
         }
-
+        
         // Prevent shift-clicking items in/out of the GUI
         if(event.isShiftClick())
         {
             event.setCancelled(true);
         }
-
+        
         ItemStack slotItem = event.getCurrentItem();
         ItemStack cursorItem = view.getCursor();
-
+        
         boolean slotEmpty = ItemUtil.isNullOrAir(slotItem);
         boolean cursorEmpty = ItemUtil.isNullOrAir(cursorItem);
-
+        
         if(!slotEmpty && GuiUtil.isUninteractable(slotItem))
         {
             event.setCancelled(true);
         }
-
+        
         if(event.getRawSlot() == scrollSlot)
         {
             event.setCancelled(true);
             controller.clickScrollSlot(view, slotItem, cursorItem, slotEmpty, cursorEmpty);
             return;
         }
-
+        
         if(event.getRawSlot() == cureSlot && controller.getScroll() != null)
         {
             controller.cureVillager();
             return;
         }
-
+        
         if(event.getRawSlot() == commitSlot && controller.canCommit())
         {
             controller.commitChanges();
             return;
         }
-
+        
         if(event.getRawSlot() == buyScrollSlot)
         {
             controller.buyScroll();
             return;
         }
-
+        
         if(event.getRawSlot() == extendTradeSlotsSlot && controller.getScroll() != null)
         {
             controller.extendSlots();
             return;
         }
-
+        
         // Handling for movable items (trade recipes), can be moved around inside the UI but not taken out
-
+        
         int slotIndex = event.getRawSlot();
         boolean slotMovable = GuiUtil.isMovable(slotItem);
         boolean cursorMovable = GuiUtil.isMovable(cursorItem);
-
+        
         if(controller.isTradeSlot(slotIndex))
         {
             event.setCancelled(true);
@@ -137,27 +135,27 @@ public class WitchdoctorGuiManager implements Listener
         {
             event.setCancelled(true);
         }
-
+        
         if(slotMovable && cursorEmpty && event.isShiftClick() && event.isLeftClick()) // Purge trade
         {
             event.setCancelled(true);
             controller.purgeTrade(slotIndex);
             view.setCursor(new ItemStack(Material.AIR));
         }
-
+        
         if(slotMovable && cursorEmpty && event.isShiftClick() && event.isRightClick())
         {
             event.setCancelled(true);
-
+            
             if(controller.hasExtractPerms())
             {
                 controller.extractTrade(slotIndex);
             }
         }
     }
-
+    
     // --- Shenanigans Preventing Handlers
-
+    
     /**
      * Prevents dragging in witchdoctor GUIs.
      *
@@ -168,15 +166,15 @@ public class WitchdoctorGuiManager implements Listener
     {
         InventoryView view = event.getView();
         WitchdoctorGuiController controller = getValidController(view, event.getInventory());
-
+        
         if(controller == null)
         {
             return;
         }
-
+        
         event.setCancelled(true);
     }
-
+    
     /**
      * Prevents a player from dropping movable items out of the witchdoctor GUI by holding them with their cursor and closing the GUI.
      *
@@ -191,9 +189,9 @@ public class WitchdoctorGuiManager implements Listener
             event.getItemDrop().remove();
         }
     }
-
+    
     // --- Handlers to ensure the player keeps their scroll and extracted trades.
-
+    
     /**
      * Ensures the player gets their items back when the witchdoctor GUI is closed.
      *
@@ -204,15 +202,15 @@ public class WitchdoctorGuiManager implements Listener
     {
         InventoryView view = event.getView();
         WitchdoctorGuiController controller = getValidController(view, event.getInventory());
-
+        
         if(controller == null)
         {
             return;
         }
-
+        
         returnItemsAndRemoveFromMap(controller, controller.getPlayer());
     }
-
+    
     /**
      * Ensures the player gets their items back when they get disconnected.
      *
@@ -227,9 +225,9 @@ public class WitchdoctorGuiManager implements Listener
             returnItemsAndRemoveFromMap(BoxedVillagers.getGuiMap().get(uuid), event.getPlayer());
         }
     }
-
+    
     // --- Cleanup Methods
-
+    
     /**
      * Called on disable, returns items to players who still have a witchdoctor GUI open.
      */
@@ -241,7 +239,7 @@ public class WitchdoctorGuiManager implements Listener
             returnItemsAndRemoveFromMap(controller, player);
         }
     }
-
+    
     /**
      * Returns the scroll as well as any uncommitted free trade items to the player's inventory.
      *
@@ -254,22 +252,23 @@ public class WitchdoctorGuiManager implements Listener
         {
             player.getInventory().addItem(controller.getScroll());
         }
-
+        
         for(ItemStack item : controller.getFreeTradeItems())
         {
             player.getInventory().addItem(item);
         }
-
+        
         BoxedVillagers.getGuiMap().remove(player.getUniqueId());
     }
-
+    
     // Utility Methods
-
+    
     /**
      * Checks whether the currently open GUI is a witchdoctor GUI. Protected against renamed chest since those won't have a guiMap entry.
      *
      * @param view      The open inventory view.
      * @param inventory The open inventory.
+     *
      * @return A WitchdoctorGuiController or null.
      */
     private WitchdoctorGuiController getValidController(@NotNull InventoryView view, @NotNull final Inventory inventory)
@@ -280,7 +279,7 @@ public class WitchdoctorGuiManager implements Listener
         {
             return null;
         }
-
+        
         HumanEntity player = inventory.getViewers().get(0);
         return BoxedVillagers.getGuiMap().get(player.getUniqueId());
     }

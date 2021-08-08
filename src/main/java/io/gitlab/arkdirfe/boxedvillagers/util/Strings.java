@@ -10,20 +10,20 @@ public final class Strings
     private Strings()
     {
     }
-
+    
     // Immutable Strings (can not be set through config)
     private static final Map<StringRef, String> immutableStrings = new EnumMap<>(StringRef.class);
-
+    
     // Mutable strings (can be overridden by config)
     private static final Map<StringRef, String> mutableStrings = new EnumMap<>(StringRef.class);
-
+    
     /**
      * Initializes immutable strings, only needs to be called once
      */
     public static void initImmutable()
     {
         immutableStrings.clear();
-
+        
         // Command Strings
         immutableStrings.put(StringRef.CMD_BV_GIVE, "give"); //
         immutableStrings.put(StringRef.CMD_BV_RELOAD, "reload"); //
@@ -32,7 +32,7 @@ public final class Strings
         immutableStrings.put(StringRef.CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL, "unbound-nonlethal"); //
         immutableStrings.put(StringRef.CMD_BV_GIVE_TRADE, "trade"); //
         immutableStrings.put(StringRef.CMD_BV_RENAME, "rename"); //
-
+        
         // Item Tags
         immutableStrings.put(StringRef.TAG_BOXED_VILLAGER_ITEM, "BoxedVillagerItem"); //
         immutableStrings.put(StringRef.TAG_IS_BOUND, "IsBound"); //
@@ -52,14 +52,14 @@ public final class Strings
         immutableStrings.put(StringRef.TAG_TRADE_SLOTS, "TradeSlots"); //
         immutableStrings.put(StringRef.TAG_NONLETHAL, "NonLethal"); //
         immutableStrings.put(StringRef.TAG_NAME, "Name"); //
-
+        
         // UI Helper Tags
         immutableStrings.put(StringRef.TAG_UNINTERACTABLE, "Uninteractable"); //
         immutableStrings.put(StringRef.TAG_MOVABLE, "Movable"); //
         immutableStrings.put(StringRef.TAG_FREE, "Free"); //
         immutableStrings.put(StringRef.TAG_EXTRACTED, "Extracted"); //
         immutableStrings.put(StringRef.TAG_SERIALIZED_TRADE_DATA, "SerializedTradeData"); //
-
+        
         // Config Entries
         immutableStrings.put(StringRef.CONFIG_STRINGS_STRING_ENTRIES, "strings"); //
         immutableStrings.put(StringRef.CONFIG_STRINGS_COLORS, "colors"); //
@@ -73,18 +73,20 @@ public final class Strings
         immutableStrings.put(StringRef.CONFIG_COST_ADD, "addCost"); //
         immutableStrings.put(StringRef.CONFIG_HELP_WIDTH, "helpWidth"); //
         immutableStrings.put(StringRef.CONFIG_CURRENCY_FALLBACK, "fallbackCurrencySymbol"); //
-
+        immutableStrings.put(StringRef.CONFIG_MIN_SLOTS, "minTradeSlots"); //
+        immutableStrings.put(StringRef.CONFIG_MAX_SLOTS, "maxTradeSlots"); //
+        
         // Permission Strings
         immutableStrings.put(StringRef.PERM_WITCHDOCTOR, "boxedvillagers.witchdoctor"); //
         immutableStrings.put(StringRef.PERM_WITCHDOCTOR_ADVANCED, "boxedvillagers.witchdoctor.advanced"); //
         immutableStrings.put(StringRef.PERM_WITCHDOCTOR_EXTRACT, "boxedvillagers.witchdoctor.extract"); //
         immutableStrings.put(StringRef.PERM_ADMIN, "boxedvillagers.admin"); //
-
+        
         // Formatting Strings
         immutableStrings.put(StringRef.FORMAT_DEFAULT_COLOR, "<norm>"); //
         immutableStrings.put(StringRef.FORMAT_ENCHANT_COLOR, "<enchant>"); //
         immutableStrings.put(StringRef.FORMAT_HELP_COLOR, "<info>"); //
-
+        
         // Static Logger Strings (Logger-facing)
         immutableStrings.put(StringRef.LOG_LOADED, "Loaded!"); //
         immutableStrings.put(StringRef.LOG_UNLOADED, "Unloaded!"); //
@@ -99,7 +101,8 @@ public final class Strings
         immutableStrings.put(StringRef.LOG_CUSTOM_CONFIG_LOAD_ERROR, "Could not save config to"); //
         immutableStrings.put(StringRef.LOG_ECONOMY_SETUP_SUCCESS, "Economy found! Full functionality available for money-based costs."); //
         immutableStrings.put(StringRef.LOG_ECONOMY_SETUP_FAIL, "No economy found! Money costs will be ignored."); //
-
+        immutableStrings.put(StringRef.LOG_CONFIG_ERROR_GENERIC, "Something went wrong while reading the config, this is likely caused by invalid formatting."); //
+        
         // Dynamic Logger Strings (Logger-facing)
         immutableStrings.put(StringRef.LOG_DYN_NO_WORLD, "No world with name %s, this WILL break!"); // string world name
         immutableStrings.put(StringRef.LOG_DYN_MISSING_CONFIG_SECTION, "Config section %s missing!"); // string config section
@@ -112,14 +115,14 @@ public final class Strings
         immutableStrings.put(StringRef.LOG_DYN_LOAD_STRING_OVERRIDES, "Loaded %d string overrides!"); // int count
         immutableStrings.put(StringRef.LOG_DYN_LOAD_COLOR_OVERRIDES, "Loaded %d color overrides!"); // int count
     }
-
+    
     /**
      * Restores mutable strings to their default values.
      */
     public static void restoreMutable()
     {
         mutableStrings.clear();
-
+        
         // Tooltip Static Strings
         mutableStrings.put(StringRef.TT_UNBOUND_SCROLL_TITLE, "<basic>Unbound Villager Scroll"); //
         mutableStrings.put(StringRef.TT_UNBOUND_SCROLL_LORE, "<info>Shift Right Click<norm> on a villager to <evil>§mensnare its mortal soul§r<norm> capture it.\nCaptured villagers do not benefit from previous cures or\nHero of the Village and can not unlock additional trades."); //
@@ -149,7 +152,7 @@ public final class Strings
         mutableStrings.put(StringRef.TT_CONVERT_FREE_TITLE, "<advanced>Extracted Trade"); //
         mutableStrings.put(StringRef.TT_CONVERT_FREE_LORE, "Acts like a regular trade in the Witch Doctor GUI.\nGets added to scroll when committed."); //
         mutableStrings.put(StringRef.TT_COST_TO_STRING_HEADER, "Cost:"); //
-
+        
         // Dynamic Tooltip Strings
         mutableStrings.put(StringRef.TT_DYN_BOUND_SCROLL_LORE, "Name: %s\nCures: %s\nTrade Slots: %s\n<info>Right Click in hand to trade!"); // string name, string cures as string, string slots as string
         mutableStrings.put(StringRef.TT_DYN_SLOTS_AS_STRING_NOT_FULL, "<dynamic>%d<norm>/<static>%d"); // int current, int max
@@ -162,11 +165,11 @@ public final class Strings
         mutableStrings.put(StringRef.TT_DYN_TRADE_TO_STRING_ITEM, "<static>%d <item>%s<norm>"); // int amount, string item name
         mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_MONEY, "   -<static>%.2f%s<money>"); // int money, string currency suffix
         mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_ITEM, "   -<static>%d <item>%s"); // int amount, string item name
-
+        
         // UI Strings
         mutableStrings.put(StringRef.UI_WD_TITLE, "<uiheader>Witch Doctor"); //
         mutableStrings.put(StringRef.UI_WD_TITLE_ADMIN, "<uiheader>Witch Doctor <warn>(ADMIN MODE)"); //
-
+        
         // Chat Strings (Player-facing chat messages)
         mutableStrings.put(StringRef.CHAT_GIVE_TRADE_USAGE, "<info>Usage: /bv give trade <input> <input> <output> <uses> <reduction per cure> [player]\n<info>Use hotbar indices (0-8) for inputs, the second input may be -1 if the trade only has one input."); //
         mutableStrings.put(StringRef.CHAT_INSUFFICIENT_PERMISSION, "<warn>Insufficient Permission!"); //
@@ -177,11 +180,12 @@ public final class Strings
         mutableStrings.put(StringRef.CHAT_PLAYER_OFFLINE, "<warn>Player offline!"); //
         mutableStrings.put(StringRef.CHAT_NOT_HOLDING_SCROLL, "<warn>Hold the villager scroll you want to rename in your hand!"); //
     }
-
+    
     /**
      * Gets a string from either the mutable or immutable list.
      *
      * @param key The key of the string.
+     *
      * @return The string itself or an error string if unsuccessful.
      */
     @NotNull
@@ -189,12 +193,13 @@ public final class Strings
     {
         return immutableStrings.getOrDefault(key, mutableStrings.getOrDefault(key, "ERROR RETRIEVING STRING!"));
     }
-
+    
     /**
      * Sets replaces an existing value with a new one.
      *
      * @param key   Key for the value.
      * @param value New value.
+     *
      * @return If the value existed true, otherwise false.
      */
     public static boolean set(@NotNull final StringRef key, @NotNull final String value)
@@ -207,9 +212,9 @@ public final class Strings
         {
             return false;
         }
-
+        
         return true;
     }
-
-
+    
+    
 }

@@ -1,8 +1,16 @@
+### Technical
 # Which world should be taken as a reference for timing boxed villager restocks
 timeWorld: world
 
 # If no currency name is found by Vault, use this symbol instead
 fallbackCurrencySymbol: ""
+
+### Balance
+# Minimum amount of slots a villager has on capture. If the villager has more trades unlocked than this setting, the number of trades will take priority.
+minTradeSlots: 0
+
+# Maximum amount of unlockable trade slots. Caps at 27.
+maxTradeSlots: 27
 
 # For any list that would be empty, use "FREE: 0" instead, the plugin needs to be a value for each entry to read it, otherwise things will break
 # You can also add non-item costs, currently supported is MONEY, add it like an item cost
@@ -24,8 +32,28 @@ cureCost:
   7:
     FREE: 0
 
-# Cost for adding a trade slot (11 - 27, the first 10 slots come with the villager)
+# Cost for adding a trade slot
 slotCost:
+  1:
+    FREE: 0
+  2:
+    FREE: 0
+  3:
+    FREE: 0
+  4:
+    FREE: 0
+  5:
+    FREE: 0
+  6:
+    FREE: 0
+  7:
+    FREE: 0
+  8:
+    FREE: 0
+  9:
+    FREE: 0
+  10:
+    FREE: 0
   11:
     FREE: 0
   12:
@@ -77,6 +105,7 @@ extractCost:
 addCost:
   FREE: 0
 
+### Help Pages
 # How many standard characters a help page should be wide, larger values may break for players with narrow chat.
 helpWidth: 50
 

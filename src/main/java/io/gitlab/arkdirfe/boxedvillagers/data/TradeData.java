@@ -12,7 +12,7 @@ public class TradeData
     private final int reduction;
     private final int baseAmount;
     private final MerchantRecipe recipe;
-
+    
     /**
      * From MerchantRecipe
      *
@@ -26,7 +26,7 @@ public class TradeData
         this.baseAmount = baseAmount;
         this.recipe = recipe;
     }
-
+    
     /**
      * From NBTCompound
      *
@@ -38,7 +38,7 @@ public class TradeData
         recipe = new MerchantRecipe(recipeCompound.getItemStack(Strings.get(StringRef.TAG_OUTPUT)), recipeCompound.getInteger(Strings.get(StringRef.TAG_MAX_USES)));
         reduction = recipeCompound.getInteger(Strings.get(StringRef.TAG_REDUCTION));
         baseAmount = recipeCompound.getInteger(Strings.get(StringRef.TAG_BASE_AMOUNT));
-
+        
         recipe.setMaxUses(recipeCompound.getInteger(Strings.get(StringRef.TAG_MAX_USES)));
         recipe.setUses(recipeCompound.getInteger(Strings.get(StringRef.TAG_USES)));
         ItemStack i1 = recipeCompound.getItemStack(Strings.get(StringRef.TAG_INPUT_1));
@@ -47,27 +47,27 @@ public class TradeData
         recipe.addIngredient(i1);
         recipe.addIngredient(i2);
     }
-
+    
     // Getters
-
+    
     public int getReduction()
     {
         return reduction;
     }
-
+    
     public int getBaseAmount()
     {
         return baseAmount;
     }
-
+    
     @NotNull
     public MerchantRecipe getRecipe()
     {
         return recipe;
     }
-
+    
     // --- Serialization
-
+    
     /**
      * Adds a serialized representation to an NBTCompound.
      *
@@ -77,7 +77,7 @@ public class TradeData
     {
         ItemStack i1 = recipe.getIngredients().get(0);
         ItemStack i2 = recipe.getIngredients().get(1);
-
+        
         entry.setItemStack(Strings.get(StringRef.TAG_INPUT_1), i1);
         entry.setItemStack(Strings.get(StringRef.TAG_INPUT_2), i2);
         entry.setItemStack(Strings.get(StringRef.TAG_OUTPUT), recipe.getResult());
