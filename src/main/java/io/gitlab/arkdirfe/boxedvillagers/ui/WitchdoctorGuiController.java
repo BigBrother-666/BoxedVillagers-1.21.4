@@ -616,10 +616,7 @@ public class WitchdoctorGuiController
         
         if(BoxedVillagers.getEconomy() != null)
         {
-            if(!BoxedVillagers.getEconomy().has(Bukkit.getServer().getOfflinePlayer(player.getUniqueId()), cost.getMoney()))
-            {
-                return false;
-            }
+            return BoxedVillagers.getEconomy().has(Bukkit.getServer().getOfflinePlayer(player.getUniqueId()), cost.getMoney());
         }
         
         return true;

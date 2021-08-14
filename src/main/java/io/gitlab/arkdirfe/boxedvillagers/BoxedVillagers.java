@@ -329,7 +329,7 @@ public class BoxedVillagers extends JavaPlugin
                 Material mat = Material.matchMaterial(innerKey);
                 if(mat != null)
                 {
-                    cost.addResource(mat, getConfig().getInt(configSection + "." + key + "." + mat.toString()));
+                    cost.addResource(mat, getConfig().getInt(configSection + "." + key + "." + mat));
                 }
                 else if(innerKey.equalsIgnoreCase("money"))
                 {
@@ -370,7 +370,7 @@ public class BoxedVillagers extends JavaPlugin
             Material mat = Material.matchMaterial(key);
             if(mat != null)
             {
-                cost.addResource(mat, getConfig().getInt(configSection + "." + mat.toString()));
+                cost.addResource(mat, getConfig().getInt(configSection + "." + mat));
             }
         }
     }

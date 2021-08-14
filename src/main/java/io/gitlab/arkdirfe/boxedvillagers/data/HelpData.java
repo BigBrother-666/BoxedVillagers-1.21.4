@@ -9,23 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HelpData
+/**
+ * Describes a single help page.
+ *
+ * @param title   Title of the help page.
+ * @param content Content of the help page.
+ */
+public record HelpData(String title, String content)
 {
-    private final String title;
-    private final String content;
-    
-    /**
-     * Describes a single help page.
-     *
-     * @param title   Title of the help page.
-     * @param content Content of the help page.
-     */
-    public HelpData(@NotNull final String title, @NotNull final String content)
-    {
-        this.title = title;
-        this.content = content;
-    }
-    
     /**
      * Formats the help page to be printed out in chat.
      *
@@ -75,12 +66,12 @@ public class HelpData
                     line = new StringBuilder();
                 }
                 
-                line.append(word.toString()).append(" ");
+                line.append(word).append(" ");
                 word = new StringBuilder();
             }
             else if(c == '\n')
             {
-                line.append(word.toString()).append(" ");
+                line.append(word).append(" ");
                 word = new StringBuilder();
                 lines.add(line.toString());
                 line = new StringBuilder();
@@ -91,7 +82,7 @@ public class HelpData
             }
         }
         
-        line.append(word.toString());
+        line.append(word);
         lines.add(line.toString());
         
         return lines;

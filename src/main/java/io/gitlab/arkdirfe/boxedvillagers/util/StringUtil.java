@@ -31,23 +31,22 @@ public final class StringUtil
      * @return String with the roman numeral.
      */
     @NotNull
-    public static String numberToRoman(int number) // Only 5 for now, expand if needed
+    public static String numberToRoman(int number)
     {
-        switch(number)
-        {
-            case 1:
-                return "I";
-            case 2:
-                return "II";
-            case 3:
-                return "III";
-            case 4:
-                return "IV";
-            case 5:
-                return "V";
-            default:
-                return "" + number;
-        }
+        return switch(number)
+                {
+                    case 1 -> "I";
+                    case 2 -> "II";
+                    case 3 -> "III";
+                    case 4 -> "IV";
+                    case 5 -> "V";
+                    case 6 -> "VI";
+                    case 7 -> "VII";
+                    case 8 -> "VIII";
+                    case 9 -> "IX";
+                    case 10 -> "X";
+                    default -> "" + number;
+                };
     }
     
     /**
@@ -143,9 +142,8 @@ public final class StringUtil
     {
         StringBuilder result = new StringBuilder(String.format(Strings.get(StringRef.TT_DYN_TRADE_TO_STRING_ITEM), amount, capitalize(item.getType().getKey().getKey(), "_")));
         
-        if(item.getItemMeta() instanceof EnchantmentStorageMeta)
+        if(item.getItemMeta() instanceof EnchantmentStorageMeta meta)
         {
-            EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemMeta();
             Map<Enchantment, Integer> enchants = null;
             if(meta.getStoredEnchants().size() > 0)
             {
@@ -159,7 +157,7 @@ public final class StringUtil
             if(enchants != null)
             {
                 int i = 0;
-                result.append(" " + Strings.get(StringRef.FORMAT_ENCHANT_COLOR) + "(");
+                result.append(" ").append(Strings.get(StringRef.FORMAT_ENCHANT_COLOR)).append("(");
                 for(Map.Entry<Enchantment, Integer> ench : enchants.entrySet())
                 {
                     result.append(String.format("%s %s", capitalize(ench.getKey().getKey().getKey(), "_"), numberToRoman(ench.getValue())));
@@ -213,7 +211,9 @@ public final class StringUtil
      */
     private static String currencyNameOrSymbol(double amount)
     {
-        String vaultName = amount == 1 ? BoxedVillagers.getEconomy().currencyNameSingular() : BoxedVillagers.getEconomy().currencyNamePlural();
+        String vaultName = amount == 1 ?
+                BoxedVillagers.getEconomy().currencyNameSingular() :
+                BoxedVillagers.getEconomy().currencyNamePlural();
         
         if(vaultName.isEmpty())
         {

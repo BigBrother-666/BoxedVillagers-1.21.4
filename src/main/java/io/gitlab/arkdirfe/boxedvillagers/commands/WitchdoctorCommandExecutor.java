@@ -45,9 +45,8 @@ public class WitchdoctorCommandExecutor implements TabExecutor
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, final String[] args)
     {
-        if(sender instanceof Player)
+        if(sender instanceof Player player)
         {
-            Player player = (Player) sender;
             if(args.length > 0 && args[0].equalsIgnoreCase("admin") && sender.hasPermission(Strings.get(StringRef.PERM_ADMIN)))
             {
                 gui.openGui(player, true);

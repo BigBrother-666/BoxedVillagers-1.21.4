@@ -42,7 +42,7 @@ public final class StringFormatter
      * Sets a value on the color map if it is correctly formatted.
      *
      * @param key   Which value to set.
-     * @param value The new value (needs to be in hex format (#xxxxxx).
+     * @param value The new value, needs to be in hex format (#xxxxxx).
      *
      * @return True if the value was properly formatted and not new, false otherwise.
      */

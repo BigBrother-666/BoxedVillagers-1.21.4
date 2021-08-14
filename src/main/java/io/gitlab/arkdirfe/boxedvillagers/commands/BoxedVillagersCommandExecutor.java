@@ -135,9 +135,8 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
             }
             else if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_RENAME)))
             {
-                if(args.length > 1 && sender instanceof Player)
+                if(args.length > 1 && sender instanceof Player player)
                 {
-                    Player player = (Player) sender;
                     
                     ItemStack item = player.getInventory().getItemInMainHand();
                     NBTItem nbtItem = ItemUtil.validateBoundItem(item);

@@ -42,11 +42,29 @@ public final class ItemUtil
     }
     
     /**
+     * Checks if an item is created by this plugin. Only takes into account things players should have in their inventory.
+     *
+     * @param item The item to check.
+     *
+     * @return True if the item was created by this plugin, false if otherwise or item is null.
+     */
+    public static boolean isFromThisPlugin(@Nullable final ItemStack item)
+    {
+        if(isNullOrAir(item))
+        {
+            return false;
+        }
+        
+        NBTItem nbtItem = new NBTItem(item);
+        return nbtItem.hasKey(Strings.get(StringRef.TAG_BOXED_VILLAGER_ITEM)) || nbtItem.hasKey(Strings.get(StringRef.TAG_FREE));
+    }
+    
+    /**
      * Checks if an item is an unbound scroll.
      *
      * @param item Item to check.
      *
-     * @return True if it item is unbound scroll, false if item is not or is null.
+     * @return True if item is unbound scroll, false if item is not or is null.
      */
     @Nullable
     public static NBTItem validateUnboundItem(@Nullable final ItemStack item)
@@ -71,7 +89,7 @@ public final class ItemUtil
      *
      * @param item Item to check.
      *
-     * @return True if it item is bound scroll, false if item is not or is null.
+     * @return True if item is bound scroll, false if item is not or is null.
      */
     @Nullable
     public static NBTItem validateBoundItem(@Nullable final ItemStack item)

@@ -19,16 +19,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 
 public class InteractionListener implements Listener
 {
     /**
-     * Handles player-world interactions with regards to villagers and scrolls.
+     * Handles player-world interactions in regard to villagers and scrolls.
      *
      * @param plugin Reference to the plugin.
      */
@@ -38,7 +40,7 @@ public class InteractionListener implements Listener
     }
     
     /**
-     * Handles player right clicks on a villager with an unbound scroll in hand.
+     * Handles player right-clicks on a villager with an unbound scroll in hand.
      *
      * @param event The event.
      */
@@ -101,7 +103,7 @@ public class InteractionListener implements Listener
     }
     
     /**
-     * Handles the player left clicking with a bound scroll to open the trade UI.
+     * Handles the player left-clicking with a bound scroll to open the trade UI.
      *
      * @param event The event.
      */
@@ -184,6 +186,24 @@ public class InteractionListener implements Listener
         if(nbtItem != null && player.getOpenInventory().getTopInventory() instanceof MerchantInventory)
         {
             event.setCancelled(true);
+        }
+    }
+    
+    /**
+     * Prevents using special items from being used in crafting recipes.
+     *
+     * @param event The event.
+     */
+    @EventHandler
+    public void onPrepareItemCraft(final PrepareItemCraftEvent event)
+    {
+        for(ItemStack stack : event.getInventory().getStorageContents())
+        {
+            if(ItemUtil.isFromThisPlugin(stack))
+            {
+                event.getInventory().setResult(null);
+                break;
+            }
         }
     }
 }
