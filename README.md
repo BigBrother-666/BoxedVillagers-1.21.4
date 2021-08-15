@@ -1,6 +1,6 @@
 # Boxed Villagers
 
-Boxed Villagers is a villager capturing and trading plugin for the server EggMC.
+Boxed Villagers is a villager capturing and trading plugin made for the server EggMC, though it is also available for anyone else.
 
 Boxed Villagers is built against the latest Spigot API.
 Currently: 1.17.1
