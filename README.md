@@ -36,7 +36,7 @@ The Witch Doctor is a custom GUI used to manipulate captured villagers. Possible
 - `boxedvillagers.witchdoctor`: `/witchdoctor` permission
 - `boxedvillagers.witchdoctor.advanced`: Allows rearranging and purging of trades in the witchdoctor UI
 - `boxedvillagers.witchdoctor.extract`: Allows extracting and re-inserting of trades in the witchdoctor UI
-- `boxedvillagers.admin`: Allows use of /bv give and /bv cure and allows opening of the witchdoctor ui in admin mode (with costs disabled)
+- `boxedvillagers.admin`: Allows use of `/bv give` and `/bv cure` and allows opening of the witchdoctor UI in admin mode (with costs disabled)
 
 ### Configurability
 The costs for various operations are fully configurable, supporting basic resource prices as well as integration for economy using Vault. Most player-facing strings can be changed using the `strings.yml` file. For more information on configuration options, read the comments in `config.yml`.
