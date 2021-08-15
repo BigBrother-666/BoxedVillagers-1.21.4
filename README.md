@@ -1,7 +1,5 @@
 # Boxed Villagers
 
-[![Discord](https://img.shields.io/discord/364107873267089409.svg?logo=discord)](https://discord.gg/fr5H9dS)
-
 Boxed Villagers is a villager capturing and trading plugin for the server EggMC.
 
 Boxed Villagers is built against the latest Spigot API.
