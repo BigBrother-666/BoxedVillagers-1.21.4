@@ -125,13 +125,13 @@ public final class Strings
         
         // Tooltip Static Strings
         mutableStrings.put(StringRef.TT_UNBOUND_SCROLL_TITLE, "<basic>Unbound Villager Scroll"); //
-        mutableStrings.put(StringRef.TT_UNBOUND_SCROLL_LORE, "<info>Shift Right Click<norm> on a villager to <evil>§mensnare its mortal soul§r<norm> capture it.\nCaptured villagers do not benefit from previous cures or\nHero of the Village and can not unlock additional trades."); //
+        mutableStrings.put(StringRef.TT_UNBOUND_SCROLL_LORE, "<info>Shift Right Click<norm> on a villager to\n<evil>§mensnare its mortal soul§r<norm> capture it.\nCaptured villagers do not benefit\nfrom previous cures or <basic>Hero of the\n<basic>Village <norm>and can not unlock additional\ntrades from their profession."); //
         mutableStrings.put(StringRef.TT_BOUND_SCROLL_TITLE, "<advanced>Bound Villager Scroll"); //
         mutableStrings.put(StringRef.TT_NONLETHAL_ADMIN_ITEM, "<warn>NONLETHAL SCROLL (ADMIN ITEM)!"); //
         mutableStrings.put(StringRef.TT_HELP_TITLE, "<title>Help"); //
-        mutableStrings.put(StringRef.TT_HELP_NO_SCROLL, "Place your bound scroll below to begin the process.\nYou can purchase scrolls at the right."); //
-        mutableStrings.put(StringRef.TT_HELP_HAS_SCROLL, "Purchase scrolls at the right.\nUse the buttons on the left to upgrade your villager."); //
-        mutableStrings.put(StringRef.TT_HELP_HAS_SCROLL_ADVANCED, "Move the trades below around to change their order.\nUse the button on the right to commit your changes.\n<info>Note: Prices shown below ignore cures."); //
+        mutableStrings.put(StringRef.TT_HELP_NO_SCROLL, "Place your bound scroll below.\n\nPurchase scrolls to the right."); //
+        mutableStrings.put(StringRef.TT_HELP_HAS_SCROLL, "Purchase scrolls to the right.\n\nUse the buttons on the left to\nupgrade your villager."); //
+        mutableStrings.put(StringRef.TT_HELP_HAS_SCROLL_ADVANCED, "\nMove the trades below around\nto change their order.\n\nUse the button on the right to\ncommit your changes.\n\n<info>Note: Prices shown below ignore\n<info>cures."); //
         mutableStrings.put(StringRef.TT_APPLIES_INSTANTLY, "<warn>Applies instantly, irreversible."); //
         mutableStrings.put(StringRef.TT_SLOT_EXTENSION_TITLE, "<title>Extend Trade Slots"); //
         mutableStrings.put(StringRef.TT_SLOT_EXTENSION_FULL, "Your villager has full trade slots."); //
@@ -171,7 +171,7 @@ public final class Strings
         mutableStrings.put(StringRef.UI_WD_TITLE_ADMIN, "<uiheader>Witch Doctor <warn>(ADMIN MODE)"); //
         
         // Chat Strings (Player-facing chat messages)
-        mutableStrings.put(StringRef.CHAT_GIVE_TRADE_USAGE, "<info>Usage: /bv give trade <input> <input> <output> <uses> <reduction per cure> [player]\n<info>Use hotbar indices (0-8) for inputs, the second input may be -1 if the trade only has one input."); //
+        mutableStrings.put(StringRef.CHAT_GIVE_TRADE_USAGE, "<info>Usage:\n<info>/bv give trade <input1> <input2> <output> <uses> <reduction per cure> [player]\n<info>Use hotbar indices (0-8) for inputs, input2 may be -1 for trades with one input"); //
         mutableStrings.put(StringRef.CHAT_INSUFFICIENT_PERMISSION, "<warn>Insufficient Permission!"); //
         mutableStrings.put(StringRef.CHAT_UNKNOWN_SUB_COMMAND, "<warn>Unknown Sub-Command!"); //
         mutableStrings.put(StringRef.CHAT_NO_HELP_PAGE, "<warn>No help page available under this name!"); //
