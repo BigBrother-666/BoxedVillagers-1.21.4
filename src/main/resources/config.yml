@@ -15,6 +15,22 @@ maxTradeSlots: 27
 # For any list that would be empty, use "FREE: 0" instead, the plugin needs to be a value for each entry to read it, otherwise things will break
 # You can also add non-item costs, currently supported is MONEY, add it like an item cost
 
+# Cost for buying a villager scroll
+scrollCost:
+  FREE: 0
+
+# Cost for purging (permanently removing) a trade
+purgeCost:
+  FREE: 0
+
+# Cost for extracting a trade
+extractCost:
+  FREE: 0
+
+# Cost for adding an extracted trade onto another villager
+addCost:
+  FREE: 0
+
 # Cost for curing a boxed villager
 cureCost:
   1:
@@ -89,24 +105,9 @@ slotCost:
   27:
     FREE: 0
 
-# Cost for purging a trade
-purgeCost:
-  FREE: 0
-
-# Cost for buying a villager scroll
-scrollCost:
-  FREE: 0
-
-# Cost for extracting a trade
-extractCost:
-  FREE: 0
-
-# Cost for adding an extracted trade onto another villager
-addCost:
-  FREE: 0
 
 ### Help Pages
-# How many standard characters a help page should be wide, larger values may break for players with narrow chat.
+# How many standard characters a help page should be wide, large values may break for players with narrow chat.
 helpWidth: 50
 
 # Help pages, use \n to force line breaks. Both vanilla formatting and color codes work, but do not carry over line breaks, be sure to test.
