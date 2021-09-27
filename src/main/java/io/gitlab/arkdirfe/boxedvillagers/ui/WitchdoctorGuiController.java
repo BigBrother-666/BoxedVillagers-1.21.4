@@ -589,7 +589,7 @@ public class WitchdoctorGuiController
         {
             return null;
         }
-        return BoxedVillagers.getSlotExtensionCosts().get(villagerData.getTradeSlots() - BoxedVillagers.getMinTradeSlots());
+        return BoxedVillagers.getSlotExtensionCosts().get(villagerData.getTradeSlots());
     }
     
     /**

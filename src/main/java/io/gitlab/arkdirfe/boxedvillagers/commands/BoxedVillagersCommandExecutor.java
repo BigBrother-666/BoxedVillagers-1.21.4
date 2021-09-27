@@ -107,7 +107,18 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                 }
                 else if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_RELOAD)))
                 {
+                    plugin.StartLog();
                     plugin.reloadConfig();
+                    List<String> messages = plugin.GetLogs();
+                    if(sender instanceof Player p)
+                    {
+                        p.sendMessage(Strings.get(StringRef.LOG_RELOADING));
+                        
+                        for(String s : messages)
+                        {
+                            p.sendMessage(s);
+                        }
+                    }
                     return true;
                 }
             }

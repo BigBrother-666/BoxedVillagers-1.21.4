@@ -81,6 +81,7 @@ public enum StringRef
     LOG_ECONOMY_SETUP_SUCCESS, //
     LOG_ECONOMY_SETUP_FAIL, //
     LOG_CONFIG_ERROR_GENERIC, //
+    LOG_RELOADING, //
     
     // Dynamic Logger Strings (Logger-facing)
     LOG_DYN_NO_WORLD, //

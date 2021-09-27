@@ -93,8 +93,8 @@ public final class Strings
         immutableStrings.put(StringRef.LOG_ERROR_TIME_WORLD, "Error loading time world from config!"); //
         immutableStrings.put(StringRef.LOG_REGISTER_COMMANDS, "Registered commands and listeners!"); //
         immutableStrings.put(StringRef.LOG_LOAD_COSTS, "Loaded costs for operations!"); //
-        immutableStrings.put(StringRef.LOG_CANT_REGISTER_COMMAND_BOXEDVILLAGERS, "Unable to register BoxedVillager commands! This should never happen, if it does, fix yer damn strings!"); //
-        immutableStrings.put(StringRef.LOG_CANT_REGISTER_COMMAND_WITCHDOCTOR, "Unable to register Witchdoctor commands! This should never happen, if it does, fix yer damn strings!"); //
+        immutableStrings.put(StringRef.LOG_CANT_REGISTER_COMMAND_BOXEDVILLAGERS, "Unable to register BoxedVillager commands! This should never happen, if it does, tell Arkdirfe to fix his damn strings!"); //
+        immutableStrings.put(StringRef.LOG_CANT_REGISTER_COMMAND_WITCHDOCTOR, "Unable to register Witchdoctor commands! This should never happen, if it does, tell Arkdirfe to fix his damn strings!"); //
         immutableStrings.put(StringRef.LOG_UNAVAILABLE_FROM_CONSOLE, "Only reload command available from console!"); //
         immutableStrings.put(StringRef.LOG_RESTOCK_TIME_RAN_BACKWARDS, "Restock attempted with lower world time than last restocked time. If you see this message once it's nothing to worry about, if you see it often you might want to look into things."); //
         immutableStrings.put(StringRef.LOG_INVALID_STRING_OVERRIDE, "Please refer to the comments in strings.yml for proper override usage because you clearly haven't read it."); //
@@ -102,11 +102,12 @@ public final class Strings
         immutableStrings.put(StringRef.LOG_ECONOMY_SETUP_SUCCESS, "Economy found! Full functionality available for money-based costs."); //
         immutableStrings.put(StringRef.LOG_ECONOMY_SETUP_FAIL, "No economy found! Money costs will be ignored."); //
         immutableStrings.put(StringRef.LOG_CONFIG_ERROR_GENERIC, "Something went wrong while reading the config, this is likely caused by invalid formatting."); //
+        immutableStrings.put(StringRef.LOG_RELOADING, "Reloading BoxedVillagers Config!");
         
         // Dynamic Logger Strings (Logger-facing)
         immutableStrings.put(StringRef.LOG_DYN_NO_WORLD, "No world with name %s, this WILL break!"); // string world name
         immutableStrings.put(StringRef.LOG_DYN_MISSING_CONFIG_SECTION, "Config section %s missing!"); // string config section
-        immutableStrings.put(StringRef.LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES, "Config section %s missing or no overrides were specified!"); // string config section
+        immutableStrings.put(StringRef.LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES, "Config section %s missing or no overrides were specified! Ignore this message this is intended."); // string config section
         immutableStrings.put(StringRef.LOG_DYN_NO_TITLE, "No title found in help page %s!"); // string help title
         immutableStrings.put(StringRef.LOG_DYN_NO_CONTENT, "No content found in help page %s!"); // string help content
         immutableStrings.put(StringRef.LOG_DYN_UNKNOWN_MATERIAL, "Unknown material or unsupported currency %s! Ignoring."); // string currency key

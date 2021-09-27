@@ -16,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class BoxedVillagers extends JavaPlugin
 {
@@ -37,7 +38,10 @@ public class BoxedVillagers extends JavaPlugin
     private static int minTradeSlots;
     private static int maxTradeSlots;
     
-    private ConfigAccessor stringsConfig;
+    private static ConfigAccessor stringsConfig;
+    
+    private final List<String> loggedMessages = new ArrayList<>();
+    private boolean loggingActive;
     
     @Override
     public void onEnable()
@@ -73,13 +77,13 @@ public class BoxedVillagers extends JavaPlugin
         
         if(timeWorldName == null)
         {
-            getLogger().severe(Strings.get(StringRef.LOG_ERROR_TIME_WORLD));
+            LogMessage(Strings.get(StringRef.LOG_ERROR_TIME_WORLD), Level.SEVERE);
         }
         else
         {
             if(getServer().getWorld(timeWorldName) == null)
             {
-                getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_NO_WORLD), timeWorldName));
+                LogMessage(String.format(Strings.get(StringRef.LOG_DYN_NO_WORLD), timeWorldName), Level.SEVERE);
             }
         }
         
@@ -94,7 +98,7 @@ public class BoxedVillagers extends JavaPlugin
         {
             minTradeSlots = 0;
             maxTradeSlots = 27;
-            getLogger().severe(Strings.get(StringRef.LOG_CONFIG_ERROR_GENERIC));
+            LogMessage(Strings.get(StringRef.LOG_CONFIG_ERROR_GENERIC), Level.SEVERE);
         }
         
         initializeMaps();
@@ -119,7 +123,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = stringsConfig.getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES), configSection));
+            LogMessage(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES), configSection), Level.INFO);
             return;
         }
         
@@ -132,7 +136,7 @@ public class BoxedVillagers extends JavaPlugin
             {
                 if(!StringFormatter.setColor(key, value))
                 {
-                    getLogger().severe(Strings.get(StringRef.LOG_INVALID_STRING_OVERRIDE));
+                    LogMessage(Strings.get(StringRef.LOG_INVALID_STRING_OVERRIDE), Level.SEVERE);
                 }
                 else
                 {
@@ -141,7 +145,7 @@ public class BoxedVillagers extends JavaPlugin
             }
         }
         
-        getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_LOAD_COLOR_OVERRIDES), count));
+        LogMessage(String.format(Strings.get(StringRef.LOG_DYN_LOAD_COLOR_OVERRIDES), count), Level.INFO);
     }
     
     /**
@@ -153,7 +157,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = stringsConfig.getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES), configSection));
+            LogMessage(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES), configSection), Level.INFO);
             return;
         }
         
@@ -169,7 +173,7 @@ public class BoxedVillagers extends JavaPlugin
             }
             catch(IllegalArgumentException e)
             {
-                getLogger().warning(Strings.get(StringRef.LOG_INVALID_STRING_OVERRIDE));
+                LogMessage(Strings.get(StringRef.LOG_INVALID_STRING_OVERRIDE), Level.WARNING);
                 continue;
             }
             
@@ -177,7 +181,8 @@ public class BoxedVillagers extends JavaPlugin
             {
                 if(!Strings.set(keyRef, value))
                 {
-                    getLogger().warning(Strings.get(StringRef.LOG_INVALID_STRING_OVERRIDE));
+                    LogMessage(Strings.get(StringRef.LOG_INVALID_STRING_OVERRIDE), Level.WARNING);
+                    ;
                 }
                 else
                 {
@@ -186,7 +191,7 @@ public class BoxedVillagers extends JavaPlugin
             }
         }
         
-        getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_LOAD_STRING_OVERRIDES), count));
+        LogMessage(String.format(Strings.get(StringRef.LOG_DYN_LOAD_STRING_OVERRIDES), count), Level.INFO);
     }
     
     /**
@@ -226,7 +231,7 @@ public class BoxedVillagers extends JavaPlugin
         initLayeredCostMap(Strings.get(StringRef.CONFIG_COST_CURE), cureCosts, 7);
         initLayeredCostMap(Strings.get(StringRef.CONFIG_COST_SLOT), slotExtensionCosts, 27);
         
-        getLogger().info(Strings.get(StringRef.LOG_LOAD_COSTS));
+        LogMessage(Strings.get(StringRef.LOG_LOAD_COSTS), Level.INFO);
     }
     
     /**
@@ -252,7 +257,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = getConfig().getConfigurationSection(Strings.get(StringRef.CONFIG_HELP));
         if(section == null)
         {
-            getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION), Strings.get(StringRef.CONFIG_HELP)));
+            LogMessage(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION), Strings.get(StringRef.CONFIG_HELP)), Level.SEVERE);
             return;
         }
         
@@ -263,19 +268,19 @@ public class BoxedVillagers extends JavaPlugin
             
             if(title == null)
             {
-                getLogger().warning(String.format(Strings.get(StringRef.LOG_DYN_NO_TITLE), key));
+                LogMessage(String.format(Strings.get(StringRef.LOG_DYN_NO_TITLE), key), Level.WARNING);
                 title = "";
             }
             if(content == null)
             {
-                getLogger().warning(String.format(Strings.get(StringRef.LOG_DYN_NO_CONTENT), key));
+                LogMessage(String.format(Strings.get(StringRef.LOG_DYN_NO_CONTENT), key), Level.WARNING);
                 content = "";
             }
             
             helpPages.put(key, new HelpData(title, content));
         }
         
-        getLogger().info(String.format(Strings.get(StringRef.LOG_DYN_LOAD_HELP), helpPages.size()));
+        LogMessage(String.format(Strings.get(StringRef.LOG_DYN_LOAD_HELP), helpPages.size()), Level.INFO);
     }
     
     /**
@@ -311,7 +316,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION), configSection));
+            LogMessage(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION), configSection), Level.SEVERE);
             return;
         }
         
@@ -337,7 +342,7 @@ public class BoxedVillagers extends JavaPlugin
                 }
                 else
                 {
-                    getLogger().warning(String.format(Strings.get(StringRef.LOG_DYN_UNKNOWN_MATERIAL), innerKey));
+                    LogMessage(String.format(Strings.get(StringRef.LOG_DYN_UNKNOWN_MATERIAL), innerKey), Level.WARNING);
                 }
             }
             
@@ -346,7 +351,7 @@ public class BoxedVillagers extends JavaPlugin
         
         if(costs.size() != expected)
         {
-            getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_UNEXPECTED_NUMBER), configSection, costs.size(), expected));
+            LogMessage(String.format(Strings.get(StringRef.LOG_DYN_UNEXPECTED_NUMBER), configSection, costs.size(), expected), Level.SEVERE);
         }
     }
     
@@ -361,7 +366,7 @@ public class BoxedVillagers extends JavaPlugin
         ConfigurationSection section = getConfig().getConfigurationSection(configSection);
         if(section == null)
         {
-            getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION), configSection));
+            LogMessage(String.format(Strings.get(StringRef.LOG_DYN_MISSING_CONFIG_SECTION), configSection), Level.SEVERE);
             return;
         }
         
@@ -373,6 +378,43 @@ public class BoxedVillagers extends JavaPlugin
                 cost.addResource(mat, getConfig().getInt(configSection + "." + mat));
             }
         }
+    }
+    
+    private void LogMessage(String string, Level loggingLevel)
+    {
+        String prefix = "";
+        if(loggingLevel == Level.INFO)
+        {
+            getLogger().info(string);
+            prefix = "#adf3ffINFO: ";
+        }
+        else if(loggingLevel == Level.WARNING)
+        {
+            getLogger().warning(string);
+            prefix = "#ffa13dWARNING: ";
+        }
+        else if(loggingLevel == Level.SEVERE)
+        {
+            getLogger().severe(string);
+            prefix = "#ff0000SEVERE: ";
+        }
+        
+        if(loggingActive)
+        {
+            loggedMessages.add(prefix + string);
+        }
+    }
+    
+    public void StartLog()
+    {
+        loggingActive = true;
+        loggedMessages.clear();
+    }
+    
+    public List<String> GetLogs()
+    {
+        loggingActive = false;
+        return StringFormatter.formatAll(loggedMessages);
     }
     
     // Getters for private static members
