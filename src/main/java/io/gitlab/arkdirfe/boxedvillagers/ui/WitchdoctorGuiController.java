@@ -59,8 +59,16 @@ public class WitchdoctorGuiController
         this.admin = admin;
         tradeSlotEnd = manager.tradeSlotStart;
         
-        advancedPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED);
-        extractPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT);
+        if(admin)
+        {
+            advancedPerms = true;
+            extractPerms = true;
+        }
+        else
+        {
+            advancedPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED);
+            extractPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT);
+        }
         
         player.openInventory(gui);
         update();
