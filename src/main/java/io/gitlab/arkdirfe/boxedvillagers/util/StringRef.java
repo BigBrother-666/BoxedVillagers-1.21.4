@@ -2,99 +2,7 @@ package io.gitlab.arkdirfe.boxedvillagers.util;
 
 public enum StringRef
 {
-    // List of all strings for autocompletion purposes. Sadly there is no support for something like a strings.xml, so I'm doing it this way.
-    // Command Strings
-    CMD_BV_GIVE, //
-    CMD_BV_RELOAD, //
-    CMD_BV_HELP, //
-    CMD_BV_GIVE_UNBOUND_SCROLL, //
-    CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL, //
-    CMD_BV_GIVE_TRADE, //
-    CMD_BV_RENAME, //
-    
-    // Item Tags
-    TAG_BOXED_VILLAGER_ITEM, //
-    TAG_IS_BOUND, //
-    TAG_DATA_COMPOUND, //
-    TAG_CURES, //
-    TAG_INPUT_1, //
-    TAG_INPUT_2, //
-    TAG_OUTPUT, //
-    TAG_BASE_AMOUNT, //
-    TAG_MAX_USES, //
-    TAG_USES, //
-    TAG_REDUCTION, //
-    TAG_PROFESSION, //
-    TAG_RANK, //
-    TAG_TRADE_COUNT, //
-    TAG_TIMESTAMP, //
-    TAG_TRADE_SLOTS, //
-    TAG_NONLETHAL, //
-    TAG_NAME, //
-    
-    // UI Helper Tags
-    TAG_UNINTERACTABLE, //
-    TAG_MOVABLE, //
-    TAG_FREE, //
-    TAG_EXTRACTED, //
-    TAG_SERIALIZED_TRADE_DATA, //
-    
-    // Config Entries
-    CONFIG_STRINGS_STRING_ENTRIES, //
-    CONFIG_STRINGS_COLORS, //
-    CONFIG_TIME_WORLD, //
-    CONFIG_HELP, //
-    CONFIG_COST_CURE, //
-    CONFIG_COST_PURGE, //
-    CONFIG_COST_SLOT, //
-    CONFIG_COST_SCROLL, //
-    CONFIG_COST_EXTRACT, //
-    CONFIG_COST_ADD, //
-    CONFIG_HELP_WIDTH, //
-    CONFIG_CURRENCY_FALLBACK, //
-    CONFIG_MIN_SLOTS, //
-    CONFIG_MAX_SLOTS, //
-    
-    // Permission Strings
-    PERM_WITCHDOCTOR, //
-    PERM_WITCHDOCTOR_ADVANCED, //
-    PERM_WITCHDOCTOR_EXTRACT, //
-    PERM_ADMIN, //
-    
-    // Formatting Strings
-    FORMAT_DEFAULT_COLOR, //
-    FORMAT_ENCHANT_COLOR, //
-    FORMAT_HELP_COLOR, //
-    
-    // Static Logger Strings (Logger-facing)
-    LOG_LOADED, //
-    LOG_UNLOADED, //
-    LOG_ERROR_TIME_WORLD, //
-    LOG_REGISTER_COMMANDS, //
-    LOG_LOAD_COSTS, //
-    LOG_CANT_REGISTER_COMMAND_BOXEDVILLAGERS, //
-    LOG_CANT_REGISTER_COMMAND_WITCHDOCTOR, //
-    LOG_UNAVAILABLE_FROM_CONSOLE, //
-    LOG_RESTOCK_TIME_RAN_BACKWARDS, //
-    LOG_INVALID_STRING_OVERRIDE, //
-    LOG_CUSTOM_CONFIG_LOAD_ERROR, //
-    LOG_ECONOMY_SETUP_SUCCESS, //
-    LOG_ECONOMY_SETUP_FAIL, //
-    LOG_CONFIG_ERROR_GENERIC, //
-    LOG_RELOADING, //
-    
-    // Dynamic Logger Strings (Logger-facing)
-    LOG_DYN_NO_WORLD, //
-    LOG_DYN_MISSING_CONFIG_SECTION, //
-    LOG_DYN_MISSING_CONFIG_SECTION_OVERRIDES, //
-    LOG_DYN_NO_TITLE, //
-    LOG_DYN_NO_CONTENT, //
-    LOG_DYN_UNKNOWN_MATERIAL, //
-    LOG_DYN_UNEXPECTED_NUMBER, //
-    LOG_DYN_LOAD_HELP, //
-    LOG_DYN_LOAD_STRING_OVERRIDES, //
-    LOG_DYN_LOAD_COLOR_OVERRIDES, //
-    
+    // List of all mutable strings for autocompletion purposes. Sadly there is no support for something like a strings.xml, so I'm doing it this way.
     // Tooltip Static Strings
     TT_UNBOUND_SCROLL_TITLE, //
     TT_UNBOUND_SCROLL_LORE, //
@@ -151,5 +59,6 @@ public enum StringRef
     CHAT_SCROLL_BOUND, //
     CHAT_NO_TRADES, //
     CHAT_PLAYER_OFFLINE, //
-    CHAT_NOT_HOLDING_SCROLL //
+    CHAT_NOT_HOLDING_SCROLL, //
+    CHAT_NO_CAPTURE_PERMISSION //
 }

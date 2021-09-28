@@ -56,7 +56,7 @@ public final class ItemUtil
         }
         
         NBTItem nbtItem = new NBTItem(item);
-        return nbtItem.hasKey(Strings.get(StringRef.TAG_BOXED_VILLAGER_ITEM)) || nbtItem.hasKey(Strings.get(StringRef.TAG_FREE));
+        return nbtItem.hasKey(Strings.TAG_BOXED_VILLAGER_ITEM) || nbtItem.hasKey(Strings.TAG_FREE);
     }
     
     /**
@@ -76,7 +76,7 @@ public final class ItemUtil
         
         NBTItem nbtItem = new NBTItem(item);
         
-        if(nbtItem.hasKey(Strings.get(StringRef.TAG_BOXED_VILLAGER_ITEM)))
+        if(nbtItem.hasKey(Strings.TAG_BOXED_VILLAGER_ITEM))
         {
             return nbtItem;
         }
@@ -101,7 +101,7 @@ public final class ItemUtil
         
         NBTItem nbtItem = new NBTItem(item);
         
-        if(nbtItem.hasKey(Strings.get(StringRef.TAG_BOXED_VILLAGER_ITEM)) && nbtItem.getBoolean(Strings.get(StringRef.TAG_IS_BOUND)))
+        if(nbtItem.hasKey(Strings.TAG_BOXED_VILLAGER_ITEM) && nbtItem.getBoolean(Strings.TAG_IS_BOUND))
         {
             return nbtItem;
         }
@@ -164,11 +164,11 @@ public final class ItemUtil
         setItemTitleLoreAndFlags(scroll, StringFormatter.formatLine(Strings.get(StringRef.TT_UNBOUND_SCROLL_TITLE)), StringFormatter.formatAll(lore), null);
         
         NBTItem nbtscoll = new NBTItem(scroll);
-        nbtscoll.setUUID(Strings.get(StringRef.TAG_BOXED_VILLAGER_ITEM), UUID.randomUUID());
-        nbtscoll.setBoolean(Strings.get(StringRef.TAG_IS_BOUND), false);
+        nbtscoll.setUUID(Strings.TAG_BOXED_VILLAGER_ITEM, UUID.randomUUID());
+        nbtscoll.setBoolean(Strings.TAG_IS_BOUND, false);
         if(nonlethal)
         {
-            nbtscoll.setBoolean(Strings.get(StringRef.TAG_NONLETHAL), true);
+            nbtscoll.setBoolean(Strings.TAG_NONLETHAL, true);
         }
         return nbtscoll.getItem();
     }
@@ -472,7 +472,7 @@ public final class ItemUtil
         setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_TRADE_TITLE)), StringFormatter.formatAll(lore), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
         
         NBTItem nbtItem = new NBTItem(item);
-        NBTCompound compound = nbtItem.addCompound(Strings.get(StringRef.TAG_SERIALIZED_TRADE_DATA));
+        NBTCompound compound = nbtItem.addCompound(Strings.TAG_SERIALIZED_TRADE_DATA);
         trade.serializeToNBT(compound);
         
         return GuiUtil.setMovable(nbtItem.getItem());

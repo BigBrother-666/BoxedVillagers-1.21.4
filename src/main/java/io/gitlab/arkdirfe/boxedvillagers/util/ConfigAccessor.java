@@ -83,7 +83,7 @@ public class ConfigAccessor
             }
             catch(IOException ex)
             {
-                plugin.getLogger().log(Level.SEVERE, Strings.get(StringRef.LOG_CUSTOM_CONFIG_LOAD_ERROR) + configFile, ex);
+                plugin.getLogger().log(Level.SEVERE, Strings.LOG_CUSTOM_CONFIG_LOAD_ERROR + configFile, ex);
             }
         }
     }

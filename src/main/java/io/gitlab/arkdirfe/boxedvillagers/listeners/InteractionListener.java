@@ -62,10 +62,18 @@ public class InteractionListener implements Listener
             {
                 event.setCancelled(true);
                 
-                if(nbtItem.getBoolean(Strings.get(StringRef.TAG_IS_BOUND)))
+                if(!player.hasPermission(Strings.PERM_CAPTURE))
                 {
-                    player.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_SCROLL_BOUND)));
+                    player.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_NO_CAPTURE_PERMISSION)));
                     return;
+                }
+                
+                {
+                    if(nbtItem.getBoolean(Strings.TAG_IS_BOUND))
+                    {
+                        player.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_SCROLL_BOUND)));
+                        return;
+                    }
                 }
                 
                 Villager villager = (Villager) event.getRightClicked();
@@ -76,7 +84,7 @@ public class InteractionListener implements Listener
                 }
                 else
                 {
-                    boolean nonlethal = nbtItem.hasKey(Strings.get(StringRef.TAG_NONLETHAL));
+                    boolean nonlethal = nbtItem.hasKey(Strings.TAG_NONLETHAL);
                     VillagerData data = new VillagerData(villager, nbtItem);
                     player.getInventory().setItemInMainHand(data.getItem());
                     

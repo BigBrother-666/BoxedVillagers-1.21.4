@@ -10,28 +10,55 @@ commands:
     description: Main Command
     usage: "Usage: /boxedvillagers help"
     aliases: bv
+    permission: boxedvillagers.maincommand
   witchdoctor:
     description: Opens the Witch Doctor UI that handles upgrading and changing boxed villagers
     usage: "Usage: /witchdoctor"
     aliases: wd
+    permission: boxedvillagers.witchdoctor
 
 permissions:
-  boxedvillagers.*:
-    description: Access to all permissions
+  boxedvillagers.bv:
+    description: /boxedvillagers permission
+    default: false
+  boxedvillagers.bv.help:
+    description: /boxedvillagers help permission
+    default: false
+  boxedvillagers.bv.rename:
+    description: /boxedvillagers rename permission
+    default: false
+  boxedvillagers.bv.give:
+    description: /boxedvillagers give permission
+    default: false
+  boxedvillagers.bv.reload:
+    description: /boxedvillagers reload permission
+    default: false
+  boxedvillagers.capture:
+    description: Can capture villagers with scrolls
+    default: false
+  boxedvillagers.witchdoctor:
+    description: /witchdoctor permission
+    default: false
+  boxedvillagers.witchdoctor.advanced:
+    description: Allows rearranging and purging of trades in the witchdoctor UI
+    default: false
+  boxedvillagers.witchdoctor.extract:
+    description: Allows extracting and re-inserting of trades in the witchdoctor UI
+    default: false
+  boxedvillagers.witchdoctor.admin:
+    description: Allows using /witchdoctor admin to open a UI with costs disabled
+    default: false
+  boxedvillagers.admin:
+    description: Full plugin access.
+    default: false
     children:
+      boxedvillagers.bv: true
+      boxedvillagers.bv.help: true
+      boxedvillagers.bv.rename: true
+      boxedvillagers.bv.give: true
+      boxedvillagers.bv.reload: true
+      boxedvillagers.capture: true
       boxedvillagers.witchdoctor: true
       boxedvillagers.witchdoctor.advanced: true
       boxedvillagers.witchdoctor.extract: true
-      boxedvillagers.admin: true
-  boxedvillagers.witchdoctor:
-    description: /witchdoctor permission
-    default: true
-  boxedvillagers.witchdoctor.advanced:
-    description: Allows rearranging and purging of trades in the witchdoctor UI
-    default: op
-  boxedvillagers.witchdoctor.extract:
-    description: Allows extracting and re-inserting of trades in the witchdoctor UI
-    default: op
-  boxedvillagers.admin:
-    description: Allows use of /bv give and /bv cure and allows opening of the witchdoctor ui in admin mode (with costs disabled)
-    default: op
+      boxedvillagers.witchdoctor.admin: true

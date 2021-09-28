@@ -157,7 +157,7 @@ public final class StringUtil
             if(enchants != null)
             {
                 int i = 0;
-                result.append(" ").append(Strings.get(StringRef.FORMAT_ENCHANT_COLOR)).append("(");
+                result.append(" ").append(Strings.FORMAT_ENCHANT_COLOR).append("(");
                 for(Map.Entry<Enchantment, Integer> ench : enchants.entrySet())
                 {
                     result.append(String.format("%s %s", capitalize(ench.getKey().getKey().getKey(), "_"), numberToRoman(ench.getValue())));

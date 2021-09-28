@@ -78,6 +78,7 @@ strings:
 #CHAT_NO_TRADES : "<warn>That villager has no trades!"
 #CHAT_PLAYER_OFFLINE : "<warn>Player offline!"
 #CHAT_NOT_HOLDING_SCROLL: "<warn>Hold the villager scroll you want to rename in your hand!"
+#CHAT_NO_CAPTURE_PERMISSION: "<warn>You do not have permission to capture villagers!" //
 
 # Colors corresponding to the formatting tags, please use the proper hex format, otherwise the override will fail. Do not try to add new tags.
 # Tags do not need an end tag, they work like vanilla formatting codes, they stay active until the next tag or line break.

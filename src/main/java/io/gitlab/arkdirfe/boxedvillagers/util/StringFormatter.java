@@ -132,7 +132,7 @@ public final class StringFormatter
     @NotNull
     public static String formatLine(@NotNull final String line)
     {
-        return "§r" + formatHex(replaceIndicators(Strings.get(StringRef.FORMAT_DEFAULT_COLOR) + line));
+        return "§r" + formatHex(replaceIndicators(Strings.FORMAT_DEFAULT_COLOR + line));
     }
     
     /**

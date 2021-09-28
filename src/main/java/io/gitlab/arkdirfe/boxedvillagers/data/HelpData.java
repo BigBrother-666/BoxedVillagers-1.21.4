@@ -1,7 +1,6 @@
 package io.gitlab.arkdirfe.boxedvillagers.data;
 
 import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
-import io.gitlab.arkdirfe.boxedvillagers.util.StringRef;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.jetbrains.annotations.NotNull;
@@ -30,11 +29,11 @@ public record HelpData(String title, String content)
         List<String> lines = new ArrayList<>();
         
         lines.add("");
-        lines.add(Strings.get(StringRef.FORMAT_HELP_COLOR) + "=".repeat(lineWidth));
-        lines.add(Strings.get(StringRef.FORMAT_HELP_COLOR) + getCenterPadded(title, lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
-        lines.add(Strings.get(StringRef.FORMAT_HELP_COLOR) + "=".repeat(lineWidth));
+        lines.add(Strings.FORMAT_HELP_COLOR + "=".repeat(lineWidth));
+        lines.add(Strings.FORMAT_HELP_COLOR + getCenterPadded(title, lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
+        lines.add(Strings.FORMAT_HELP_COLOR + "=".repeat(lineWidth));
         lines.addAll(getContent(lineWidth * StringUtil.DEFAULT_CHARACTER_WIDTH));
-        lines.add(Strings.get(StringRef.FORMAT_HELP_COLOR) + "-".repeat(lineWidth));
+        lines.add(Strings.FORMAT_HELP_COLOR + "-".repeat(lineWidth));
         
         return StringFormatter.formatAll(lines).toArray(new String[0]);
     }

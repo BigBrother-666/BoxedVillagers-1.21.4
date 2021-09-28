@@ -36,7 +36,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
     public BoxedVillagersCommandExecutor(@NotNull final BoxedVillagers plugin, @NotNull final String commandName)
     {
         this.plugin = plugin;
-        this.helpWidth = plugin.getConfig().getInt(Strings.get(StringRef.CONFIG_HELP_WIDTH));
+        this.helpWidth = plugin.getConfig().getInt(Strings.CONFIG_HELP_WIDTH);
         PluginCommand cmd = plugin.getCommand(commandName);
         if(cmd != null)
         {
@@ -45,7 +45,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         }
         else
         {
-            plugin.getLogger().severe(Strings.get(StringRef.LOG_CANT_REGISTER_COMMAND_BOXEDVILLAGERS));
+            plugin.getLogger().severe(Strings.LOG_CANT_REGISTER_COMMAND_BOXEDVILLAGERS);
         }
     }
     
@@ -56,76 +56,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         {
             String subCmd = args[0];
             
-            // Admin Commands
-            
-            if(sender.hasPermission(Strings.get(StringRef.PERM_ADMIN)))
-            {
-                if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE)))
-                {
-                    if(args.length > 1)
-                    {
-                        String itemName = args[1];
-                        if(itemName.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE_UNBOUND_SCROLL)))
-                        {
-                            Player player = getPlayer(args, sender, args.length == 2, args.length == 3);
-                            if(player != null)
-                            {
-                                player.getInventory().addItem(ItemUtil.getUnboundScroll(false));
-                            }
-                        }
-                        else if(itemName.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL)))
-                        {
-                            Player player = getPlayer(args, sender, args.length == 2, args.length == 3);
-                            if(player != null)
-                            {
-                                player.getInventory().addItem(ItemUtil.getUnboundScroll(true));
-                            }
-                        }
-                        else if(itemName.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE_TRADE)))
-                        {
-                            Player player = getPlayer(args, sender, args.length == 7, args.length == 8);
-                            if(player != null)
-                            {
-                                ItemStack item = ItemUtil.getGeneratedTradeItem(player, args);
-                                if(item != null)
-                                {
-                                    player.getInventory().addItem(item);
-                                }
-                                else
-                                {
-                                    sender.sendMessage(StringFormatter.splitAndFormatLines(Strings.get(StringRef.CHAT_GIVE_TRADE_USAGE)).toArray(new String[0]));
-                                }
-                            }
-                            else
-                            {
-                                sender.sendMessage(StringFormatter.splitAndFormatLines(Strings.get(StringRef.CHAT_GIVE_TRADE_USAGE)).toArray(new String[0]));
-                            }
-                        }
-                    }
-                    
-                    return true;
-                }
-                else if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_RELOAD)))
-                {
-                    plugin.StartLog();
-                    plugin.reloadConfig();
-                    List<String> messages = plugin.GetLogs();
-                    if(sender instanceof Player p)
-                    {
-                        p.sendMessage(Strings.get(StringRef.LOG_RELOADING));
-                        
-                        for(String s : messages)
-                        {
-                            p.sendMessage(s);
-                        }
-                    }
-                    return true;
-                }
-            }
-            
-            // Player Commands
-            
-            if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_HELP)))
+            if(subCmd.equalsIgnoreCase(Strings.CMD_BV_HELP) && sender.hasPermission(Strings.PERM_BOXEDVILLAGERS_HELP))
             {
                 if(args.length == 1 && BoxedVillagers.getHelpPages().containsKey("default"))
                 {
@@ -143,12 +74,13 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                         sender.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_NO_HELP_PAGE)));
                     }
                 }
+                
+                return true;
             }
-            else if(subCmd.equalsIgnoreCase(Strings.get(StringRef.CMD_BV_RENAME)))
+            else if(subCmd.equalsIgnoreCase(Strings.CMD_BV_RENAME) && sender.hasPermission(Strings.PERM_BOXEDVILLAGERS_RENAME))
             {
                 if(args.length > 1 && sender instanceof Player player)
                 {
-                    
                     ItemStack item = player.getInventory().getItemInMainHand();
                     NBTItem nbtItem = ItemUtil.validateBoundItem(item);
                     if(nbtItem != null)
@@ -169,13 +101,71 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                         player.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_NOT_HOLDING_SCROLL)));
                     }
                 }
+                
+                return true;
             }
-            else
+            else if(subCmd.equalsIgnoreCase(Strings.CMD_BV_GIVE) && sender.hasPermission(Strings.PERM_BOXEDVILLAGERS_GIVE))
             {
-                sender.sendMessage(StringFormatter.formatLine(Strings.get(StringRef.CHAT_UNKNOWN_SUB_COMMAND)));
+                if(args.length > 1)
+                {
+                    String itemName = args[1];
+                    if(itemName.equalsIgnoreCase(Strings.CMD_BV_GIVE_UNBOUND_SCROLL))
+                    {
+                        Player player = getPlayer(args, sender, args.length == 2, args.length == 3);
+                        if(player != null)
+                        {
+                            player.getInventory().addItem(ItemUtil.getUnboundScroll(false));
+                        }
+                    }
+                    else if(itemName.equalsIgnoreCase(Strings.CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL))
+                    {
+                        Player player = getPlayer(args, sender, args.length == 2, args.length == 3);
+                        if(player != null)
+                        {
+                            player.getInventory().addItem(ItemUtil.getUnboundScroll(true));
+                        }
+                    }
+                    else if(itemName.equalsIgnoreCase(Strings.CMD_BV_GIVE_TRADE))
+                    {
+                        Player player = getPlayer(args, sender, args.length == 7, args.length == 8);
+                        if(player != null)
+                        {
+                            ItemStack item = ItemUtil.getGeneratedTradeItem(player, args);
+                            if(item != null)
+                            {
+                                player.getInventory().addItem(item);
+                            }
+                            else
+                            {
+                                sender.sendMessage(StringFormatter.splitAndFormatLines(Strings.get(StringRef.CHAT_GIVE_TRADE_USAGE)).toArray(new String[0]));
+                            }
+                        }
+                        else
+                        {
+                            sender.sendMessage(StringFormatter.splitAndFormatLines(Strings.get(StringRef.CHAT_GIVE_TRADE_USAGE)).toArray(new String[0]));
+                        }
+                    }
+                }
+                
+                return true;
             }
-            
-            return true;
+            else if(subCmd.equalsIgnoreCase(Strings.CMD_BV_RELOAD) && sender.hasPermission(Strings.PERM_BOXEDVILLAGERS_RELOAD))
+            {
+                plugin.StartLog();
+                plugin.reloadConfig();
+                List<String> messages = plugin.GetLogs();
+                if(sender instanceof Player p)
+                {
+                    p.sendMessage(Strings.LOG_RELOADING);
+                    
+                    for(String s : messages)
+                    {
+                        p.sendMessage(s);
+                    }
+                }
+                
+                return true;
+            }
         }
         
         return false;
@@ -184,45 +174,60 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
     @Override
     public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, @NotNull final String[] args)
     {
-        if(sender instanceof Player)
+        if(sender instanceof Player player)
         {
-            if(sender.hasPermission(Strings.get(StringRef.PERM_ADMIN)))
+            if(args.length <= 1)
             {
-                if((args.length == 1 || args.length == 2) && args[0].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE)))
+                return GetAvailableCommands(player);
+            }
+            
+            String subCmd = args[0];
+            
+            if(subCmd.equalsIgnoreCase(Strings.CMD_BV_HELP) && sender.hasPermission(Strings.PERM_BOXEDVILLAGERS_HELP))
+            {
+                if(args.length == 2)
                 {
-                    return Arrays.asList(Strings.get(StringRef.CMD_BV_GIVE_UNBOUND_SCROLL), Strings.get(StringRef.CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL), Strings.get(StringRef.CMD_BV_GIVE_TRADE));
+                    return new ArrayList<>(BoxedVillagers.getHelpPages().keySet());
                 }
-                
-                if((args.length == 0 || args.length == 1))
+            }
+            else if(subCmd.equalsIgnoreCase(Strings.CMD_BV_GIVE) && sender.hasPermission(Strings.PERM_BOXEDVILLAGERS_GIVE))
+            {
+                if(args.length == 2)
                 {
-                    return Arrays.asList(Strings.get(StringRef.CMD_BV_GIVE), Strings.get(StringRef.CMD_BV_HELP), Strings.get(StringRef.CMD_BV_RELOAD), Strings.get(StringRef.CMD_BV_RENAME));
+                    return Arrays.asList(Strings.CMD_BV_GIVE_UNBOUND_SCROLL, Strings.CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL, Strings.CMD_BV_GIVE_TRADE);
                 }
-                
-                if(args[0].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE)) && args[1].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_GIVE_TRADE)))
+                else if(args[1].equalsIgnoreCase(Strings.CMD_BV_GIVE_TRADE))
                 {
                     return new ArrayList<>();
                 }
             }
-            
-            // Player Commands
-            
-            if((args.length == 1 || args.length == 2) && args[0].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_HELP)))
-            {
-                return new ArrayList<>(BoxedVillagers.getHelpPages().keySet());
-            }
-            
-            if((args.length == 0 || args.length == 1))
-            {
-                return Arrays.asList(Strings.get(StringRef.CMD_BV_HELP), Strings.get(StringRef.CMD_BV_RENAME));
-            }
-            
-            if(args.length == 3 && !args[0].equalsIgnoreCase(Strings.get(StringRef.CMD_BV_HELP)))
-            {
-                return null;
-            }
         }
         
         return new ArrayList<>();
+    }
+    
+    private ArrayList<String> GetAvailableCommands(Player player)
+    {
+        ArrayList<String> list = new ArrayList<>();
+        
+        if(player.hasPermission(Strings.PERM_BOXEDVILLAGERS_HELP))
+        {
+            list.add(Strings.CMD_BV_HELP);
+        }
+        if(player.hasPermission(Strings.PERM_BOXEDVILLAGERS_RENAME))
+        {
+            list.add(Strings.CMD_BV_RENAME);
+        }
+        if(player.hasPermission(Strings.PERM_BOXEDVILLAGERS_GIVE))
+        {
+            list.add(Strings.CMD_BV_GIVE);
+        }
+        if(player.hasPermission(Strings.PERM_BOXEDVILLAGERS_RELOAD))
+        {
+            list.add(Strings.CMD_BV_RELOAD);
+        }
+        
+        return list;
     }
     
     /**
@@ -242,7 +247,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
         {
             if(!(sender instanceof Player))
             {
-                sender.sendMessage(Strings.get(StringRef.LOG_UNAVAILABLE_FROM_CONSOLE));
+                sender.sendMessage(Strings.LOG_UNAVAILABLE_FROM_CONSOLE);
                 return null;
             }
             

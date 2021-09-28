@@ -63,15 +63,15 @@ public class VillagerData
     {
         trades = new ArrayList<>();
         
-        NBTCompound compound = fromItem.getCompound(Strings.get(StringRef.TAG_DATA_COMPOUND));
-        cures = compound.getInteger(Strings.get(StringRef.TAG_CURES));
-        profession = compound.getString(Strings.get(StringRef.TAG_PROFESSION));
-        rank = compound.getInteger(Strings.get(StringRef.TAG_RANK));
-        lastRestocked = compound.getLong(Strings.get(StringRef.TAG_TIMESTAMP));
-        tradeSlots = compound.getInteger(Strings.get(StringRef.TAG_TRADE_SLOTS));
-        name = compound.getString(Strings.get(StringRef.TAG_NAME));
+        NBTCompound compound = fromItem.getCompound(Strings.TAG_DATA_COMPOUND);
+        cures = compound.getInteger(Strings.TAG_CURES);
+        profession = compound.getString(Strings.TAG_PROFESSION);
+        rank = compound.getInteger(Strings.TAG_RANK);
+        lastRestocked = compound.getLong(Strings.TAG_TIMESTAMP);
+        tradeSlots = compound.getInteger(Strings.TAG_TRADE_SLOTS);
+        name = compound.getString(Strings.TAG_NAME);
         
-        for(int i = 0; i < compound.getInteger(Strings.get(StringRef.TAG_TRADE_COUNT)); i++)
+        for(int i = 0; i < compound.getInteger(Strings.TAG_TRADE_COUNT); i++)
         {
             NBTCompound recipeCompound = compound.getCompound("" + i);
             
@@ -132,20 +132,20 @@ public class VillagerData
     {
         NBTItem nbtItem = new NBTItem(linkedItem);
         
-        if(nbtItem.hasKey(Strings.get(StringRef.TAG_NONLETHAL)))
+        if(nbtItem.hasKey(Strings.TAG_NONLETHAL))
         {
-            nbtItem.removeKey(Strings.get(StringRef.TAG_NONLETHAL));
+            nbtItem.removeKey(Strings.TAG_NONLETHAL);
         }
         
-        nbtItem.setBoolean(Strings.get(StringRef.TAG_IS_BOUND), true);
-        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.get(StringRef.TAG_DATA_COMPOUND));
-        compound.setInteger(Strings.get(StringRef.TAG_CURES), cures);
-        compound.setString(Strings.get(StringRef.TAG_PROFESSION), profession);
-        compound.setInteger(Strings.get(StringRef.TAG_RANK), rank);
-        compound.setInteger(Strings.get(StringRef.TAG_TRADE_COUNT), trades.size());
-        compound.setLong(Strings.get(StringRef.TAG_TIMESTAMP), lastRestocked);
-        compound.setInteger(Strings.get(StringRef.TAG_TRADE_SLOTS), tradeSlots);
-        compound.setString(Strings.get(StringRef.TAG_NAME), name);
+        nbtItem.setBoolean(Strings.TAG_IS_BOUND, true);
+        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
+        compound.setInteger(Strings.TAG_CURES, cures);
+        compound.setString(Strings.TAG_PROFESSION, profession);
+        compound.setInteger(Strings.TAG_RANK, rank);
+        compound.setInteger(Strings.TAG_TRADE_COUNT, trades.size());
+        compound.setLong(Strings.TAG_TIMESTAMP, lastRestocked);
+        compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
+        compound.setString(Strings.TAG_NAME, name);
         
         for(int i = 0; i < trades.size(); i++)
         {
@@ -187,9 +187,9 @@ public class VillagerData
     public void cure(final int times)
     {
         NBTItem nbtItem = new NBTItem(linkedItem);
-        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.get(StringRef.TAG_DATA_COMPOUND));
+        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         cures = Math.min(7, cures + times);
-        compound.setInteger(Strings.get(StringRef.TAG_CURES), cures);
+        compound.setInteger(Strings.TAG_CURES, cures);
         linkedItem = nbtItem.getItem();
     }
     
@@ -201,9 +201,9 @@ public class VillagerData
     public void addTradeSlots(final int slots)
     {
         NBTItem nbtItem = new NBTItem(linkedItem);
-        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.get(StringRef.TAG_DATA_COMPOUND));
+        NBTCompound compound = nbtItem.getOrCreateCompound(Strings.TAG_DATA_COMPOUND);
         tradeSlots = Math.min(BoxedVillagers.getMaxTradeSlots(), tradeSlots + slots);
-        compound.setInteger(Strings.get(StringRef.TAG_TRADE_SLOTS), tradeSlots);
+        compound.setInteger(Strings.TAG_TRADE_SLOTS, tradeSlots);
         linkedItem = nbtItem.getItem();
     }
     
@@ -247,7 +247,7 @@ public class VillagerData
         
         if(days < lastRestocked)
         {
-            Util.logWarning(Strings.get(StringRef.LOG_RESTOCK_TIME_RAN_BACKWARDS));
+            Util.logWarning(Strings.LOG_RESTOCK_TIME_RAN_BACKWARDS);
             permitted = true;
         }
         

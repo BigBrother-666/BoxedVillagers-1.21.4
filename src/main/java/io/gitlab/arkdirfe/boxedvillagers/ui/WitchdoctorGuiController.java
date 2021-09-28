@@ -7,7 +7,6 @@ import io.gitlab.arkdirfe.boxedvillagers.data.TradeData;
 import io.gitlab.arkdirfe.boxedvillagers.data.VillagerData;
 import io.gitlab.arkdirfe.boxedvillagers.util.GuiUtil;
 import io.gitlab.arkdirfe.boxedvillagers.util.ItemUtil;
-import io.gitlab.arkdirfe.boxedvillagers.util.StringRef;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -60,8 +59,8 @@ public class WitchdoctorGuiController
         this.admin = admin;
         tradeSlotEnd = manager.tradeSlotStart;
         
-        advancedPerms = player.hasPermission(Strings.get(StringRef.PERM_WITCHDOCTOR_ADVANCED));
-        extractPerms = player.hasPermission(Strings.get(StringRef.PERM_WITCHDOCTOR_EXTRACT));
+        advancedPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED);
+        extractPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT);
         
         player.openInventory(gui);
         update();
@@ -485,7 +484,7 @@ public class WitchdoctorGuiController
             if(!ItemUtil.isNullOrAir(item))
             {
                 NBTItem nbtItem = new NBTItem(item);
-                TradeData tradeData = new TradeData(nbtItem.getCompound(Strings.get(StringRef.TAG_SERIALIZED_TRADE_DATA)), villagerData.getCures());
+                TradeData tradeData = new TradeData(nbtItem.getCompound(Strings.TAG_SERIALIZED_TRADE_DATA), villagerData.getCures());
                 trades.add(tradeData);
             }
         }

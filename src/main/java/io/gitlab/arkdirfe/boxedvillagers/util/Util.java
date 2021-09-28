@@ -28,7 +28,7 @@ public final class Util
             }
             else
             {
-                plugin.getLogger().severe(String.format(Strings.get(StringRef.LOG_DYN_NO_WORLD), timeWorldName));
+                plugin.getLogger().severe(String.format(Strings.LOG_DYN_NO_WORLD, timeWorldName));
             }
         }
         
