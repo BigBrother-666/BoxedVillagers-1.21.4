@@ -38,8 +38,12 @@ public class WitchdoctorGuiController
     private int tradeSlotEnd;
     
     private final boolean admin;
-    private final boolean advancedPerms;
+    private final boolean buyPerms;
+    private final boolean curePerms;
+    private final boolean extendPerms;
+    private final boolean purgePerms;
     private final boolean extractPerms;
+    private final boolean shouldSeeTrades;
     
     private final WitchdoctorGuiManager manager;
     
@@ -59,16 +63,12 @@ public class WitchdoctorGuiController
         this.admin = admin;
         tradeSlotEnd = manager.tradeSlotStart;
         
-        if(admin)
-        {
-            advancedPerms = true;
-            extractPerms = true;
-        }
-        else
-        {
-            advancedPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_ADVANCED);
-            extractPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT);
-        }
+        buyPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_BUY) || admin;
+        curePerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_CURE) || admin;
+        extendPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTEND) || admin;
+        purgePerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_PURGE) || admin;
+        extractPerms = player.hasPermission(Strings.PERM_WITCHDOCTOR_EXTRACT) || admin;
+        shouldSeeTrades = purgePerms || extractPerms;
         
         player.openInventory(gui);
         update();
@@ -91,6 +91,11 @@ public class WitchdoctorGuiController
     public boolean hasExtractPerms()
     {
         return extractPerms;
+    }
+    
+    public boolean hasPurgePerms()
+    {
+        return purgePerms;
     }
     
     // --- Setters/Accessors
@@ -148,8 +153,12 @@ public class WitchdoctorGuiController
             items[i] = ItemUtil.getUIFillerItem(Material.LIME_STAINED_GLASS_PANE);
         }
         
-        items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
-        items[manager.helpSlot] = ItemUtil.getNoScrollHelpItem();
+        if(buyPerms)
+        {
+            items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
+        }
+        
+        items[manager.helpSlot] = ItemUtil.getHelpItem(false, buyPerms, curePerms, extendPerms, purgePerms, extractPerms);
         items[manager.scrollSlot] = null;
         
         gui.setContents(items);
@@ -162,13 +171,15 @@ public class WitchdoctorGuiController
     {
         ItemStack[] items = gui.getContents();
         
-        items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
-        items[manager.helpSlot] = ItemUtil.getScrollHelpItem(advancedPerms);
-        
-        if(advancedPerms)
+        if(buyPerms)
         {
-            items[manager.extendTradeSlotsSlot] = ItemUtil.getSlotExtensionItem(villagerData, calculateSlotExtensionCost());
-            
+            items[manager.buyScrollSlot] = ItemUtil.getBuyScrollItem(calculateScrollCost());
+        }
+        
+        items[manager.helpSlot] = ItemUtil.getHelpItem(true, buyPerms, curePerms, extendPerms, purgePerms, extractPerms);
+        
+        if(shouldSeeTrades)
+        {
             // Draw trades
             int index = 0;
             
@@ -185,7 +196,7 @@ public class WitchdoctorGuiController
                 TradeData trade = villagerData.getTrades().get(index++);
                 if(trade != null)
                 {
-                    items[i] = ItemUtil.getTradeItem(trade, extractPerms);
+                    items[i] = ItemUtil.getTradeItem(trade, purgePerms, extractPerms);
                 }
                 else
                 {
@@ -196,23 +207,38 @@ public class WitchdoctorGuiController
         
         gui.setContents(items);
         updateCureButton();
+        updateExtendButton();
         updateCommitButton();
     }
     
     /**
      * Updates only the cure button.
      */
-    public void updateCureButton()
+    private void updateCureButton()
     {
-        gui.setItem(manager.cureSlot, ItemUtil.getCureItem(calculateCureCost()));
+        if(curePerms)
+        {
+            gui.setItem(manager.cureSlot, ItemUtil.getCureItem(calculateCureCost(), villagerData.getCures()));
+        }
+    }
+    
+    /**
+     * Updates only the extend button.
+     */
+    private void updateExtendButton()
+    {
+        if(extendPerms)
+        {
+            gui.setItem(manager.extendTradeSlotsSlot, ItemUtil.getSlotExtensionItem(villagerData, calculateSlotExtensionCost()));
+        }
     }
     
     /**
      * Updates only the commit button.
      */
-    public void updateCommitButton()
+    private void updateCommitButton()
     {
-        if(advancedPerms)
+        if(purgePerms || extractPerms)
         {
             gui.setItem(manager.commitSlot, ItemUtil.getCommitItem(getFreeTradeItems().size(), tradesMoved, tradesPurged, tradesExtracted, calculateCommitCost()));
         }
@@ -294,7 +320,12 @@ public class WitchdoctorGuiController
      */
     public void cureVillager()
     {
-        if(villagerData.getCures() == 7)
+        if(!curePerms)
+        {
+            return;
+        }
+        
+        if(villagerData.getCures() >= BoxedVillagers.getMaxCures())
         {
             return;
         }
@@ -338,6 +369,11 @@ public class WitchdoctorGuiController
      */
     public void buyScroll()
     {
+        if(!buyPerms)
+        {
+            return;
+        }
+        
         CostData scrollCost = calculateScrollCost();
         
         if(playerCanPay(scrollCost) && player.getInventory().firstEmpty() != -1)
@@ -357,6 +393,11 @@ public class WitchdoctorGuiController
      */
     public void extendSlots()
     {
+        if(!extendPerms)
+        {
+            return;
+        }
+        
         if(villagerData.getTradeSlots() == BoxedVillagers.getMaxTradeSlots())
         {
             return;
@@ -371,7 +412,7 @@ public class WitchdoctorGuiController
             villagerData.addTradeSlots(1);
             gui.setItem(manager.scrollSlot, villagerData.getItem());
             ((Player) player).playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1);
-            update();
+            updateExtendButton();
         }
         else
         {

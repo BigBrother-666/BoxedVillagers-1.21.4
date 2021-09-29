@@ -9,10 +9,7 @@ import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringRef;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -52,6 +49,8 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, @NotNull final String[] args)
     {
+        boolean isConsole = sender instanceof ConsoleCommandSender;
+        
         if(args.length > 0)
         {
             String subCmd = args[0];
@@ -104,7 +103,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                 
                 return true;
             }
-            else if(subCmd.equalsIgnoreCase(Strings.CMD_BV_GIVE) && sender.hasPermission(Strings.PERM_BOXEDVILLAGERS_GIVE))
+            else if((subCmd.equalsIgnoreCase(Strings.CMD_BV_GIVE) && sender.hasPermission(Strings.PERM_BOXEDVILLAGERS_GIVE)) || isConsole)
             {
                 if(args.length > 1)
                 {
@@ -125,7 +124,7 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                             player.getInventory().addItem(ItemUtil.getUnboundScroll(true));
                         }
                     }
-                    else if(itemName.equalsIgnoreCase(Strings.CMD_BV_GIVE_TRADE))
+                    else if(itemName.equalsIgnoreCase(Strings.CMD_BV_GIVE_TRADE) && !isConsole) // No giving trades from console, would require an inventory
                     {
                         Player player = getPlayer(args, sender, args.length == 7, args.length == 8);
                         if(player != null)
@@ -199,6 +198,10 @@ public class BoxedVillagersCommandExecutor implements TabExecutor
                 else if(args[1].equalsIgnoreCase(Strings.CMD_BV_GIVE_TRADE))
                 {
                     return new ArrayList<>();
+                }
+                else if(args.length == 3)
+                {
+                    return null;
                 }
             }
         }

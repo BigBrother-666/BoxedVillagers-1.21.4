@@ -1,5 +1,5 @@
 name: BoxedVillagers
-version: 1.0.1
+version: 1.0.2
 main: io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers
 author: Arkdirfe
 api-version: 1.17
@@ -10,7 +10,7 @@ commands:
     description: Main Command
     usage: "Usage: /boxedvillagers help"
     aliases: bv
-    permission: boxedvillagers.maincommand
+    permission: boxedvillagers.bv
   witchdoctor:
     description: Opens the Witch Doctor UI that handles upgrading and changing boxed villagers
     usage: "Usage: /witchdoctor"
@@ -20,7 +20,7 @@ commands:
 permissions:
   boxedvillagers.bv:
     description: /boxedvillagers permission
-    default: false
+    default: op
   boxedvillagers.bv.help:
     description: /boxedvillagers help permission
     default: false
@@ -38,15 +38,27 @@ permissions:
     default: false
   boxedvillagers.witchdoctor:
     description: /witchdoctor permission
+    default: op
+  boxedvillagers.witchdoctor.buy:
+    description: Allows buying scrolls from the witchdoctor UI
     default: false
-  boxedvillagers.witchdoctor.advanced:
-    description: Allows rearranging and purging of trades in the witchdoctor UI
+  boxedvillagers.witchdoctor.cure:
+    description: Allows curing villagers in the witchdoctor UI
+    default: false
+  boxedvillagers.witchdoctor.extend:
+    description: Allows extending trade slots in the witchdoctor UI
+    default: false
+  boxedvillagers.witchdoctor.purge:
+    description: Allows purging of trades in the witchdoctor UI
     default: false
   boxedvillagers.witchdoctor.extract:
     description: Allows extracting and re-inserting of trades in the witchdoctor UI
     default: false
   boxedvillagers.witchdoctor.admin:
     description: Allows using /witchdoctor admin to open a UI with costs disabled
+    default: false
+  boxedvillagers.witchdoctor.open:
+    description: Allows using /witchdoctor open to open the witchdoctor UI for any player
     default: false
   boxedvillagers.admin:
     description: Full plugin access.
@@ -59,6 +71,10 @@ permissions:
       boxedvillagers.bv.reload: true
       boxedvillagers.capture: true
       boxedvillagers.witchdoctor: true
-      boxedvillagers.witchdoctor.advanced: true
+      boxedvillagers.witchdoctor.buy: true
+      boxedvillagers.witchdoctor.cure: true
+      boxedvillagers.witchdoctor.extend: true
+      boxedvillagers.witchdoctor.purge: true
       boxedvillagers.witchdoctor.extract: true
       boxedvillagers.witchdoctor.admin: true
+      boxedvillagers.witchdoctor.open: true

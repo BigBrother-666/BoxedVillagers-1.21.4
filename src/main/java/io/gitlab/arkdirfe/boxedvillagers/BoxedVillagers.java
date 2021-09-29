@@ -37,6 +37,7 @@ public class BoxedVillagers extends JavaPlugin
     private static String fallbackCurrencySymbol;
     private static int minTradeSlots;
     private static int maxTradeSlots;
+    private static int maxCures;
     
     private static ConfigAccessor stringsConfig;
     
@@ -92,11 +93,13 @@ public class BoxedVillagers extends JavaPlugin
         {
             maxTradeSlots = Math.max(0, Math.min(27, Integer.parseInt(getConfig().getString(Strings.CONFIG_MAX_SLOTS))));
             minTradeSlots = Math.max(0, Math.min(maxTradeSlots, Integer.parseInt(getConfig().getString(Strings.CONFIG_MIN_SLOTS))));
+            maxCures = Math.max(0, Math.min(7, Integer.parseInt(getConfig().getString(Strings.CONFIG_MAX_CURES))));
         }
         catch(Exception e)
         {
             minTradeSlots = 0;
             maxTradeSlots = 27;
+            maxCures = 7;
             LogMessage(Strings.LOG_CONFIG_ERROR_GENERIC, Level.SEVERE);
         }
         
@@ -481,5 +484,10 @@ public class BoxedVillagers extends JavaPlugin
     public static int getMaxTradeSlots()
     {
         return maxTradeSlots;
+    }
+    
+    public static int getMaxCures()
+    {
+        return maxCures;
     }
 }

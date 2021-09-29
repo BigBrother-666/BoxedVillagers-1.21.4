@@ -12,6 +12,9 @@ minTradeSlots: 0
 # Maximum amount of unlockable trade slots. Caps at 27.
 maxTradeSlots: 27
 
+# Maximum amount of permitted cures. Caps at 7.
+maxCures: 7
+
 # For any list that would be empty, use "FREE: 0" instead, the plugin needs to be a value for each entry to read it, otherwise things will break
 # You can also add non-item costs, currently supported is MONEY, add it like an item cost
 

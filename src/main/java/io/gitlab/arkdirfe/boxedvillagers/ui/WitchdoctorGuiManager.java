@@ -139,11 +139,15 @@ public class WitchdoctorGuiManager implements Listener
         if(slotMovable && cursorEmpty && event.isShiftClick() && event.isLeftClick()) // Purge trade
         {
             event.setCancelled(true);
-            controller.purgeTrade(slotIndex);
-            view.setCursor(new ItemStack(Material.AIR));
+            
+            if(controller.hasPurgePerms())
+            {
+                controller.purgeTrade(slotIndex);
+                view.setCursor(new ItemStack(Material.AIR));
+            }
         }
         
-        if(slotMovable && cursorEmpty && event.isShiftClick() && event.isRightClick())
+        if(slotMovable && cursorEmpty && event.isShiftClick() && event.isRightClick()) // Extract trade
         {
             event.setCancelled(true);
             

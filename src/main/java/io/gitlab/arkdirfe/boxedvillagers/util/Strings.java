@@ -23,6 +23,8 @@ public final class Strings
     public static final String CMD_BV_GIVE_UNBOUND_SCROLL_NONLETHAL = "unbound-nonlethal"; //
     public static final String CMD_BV_GIVE_TRADE = "trade"; //
     public static final String CMD_BV_RENAME = "rename"; //
+    public static final String CMD_WD_ADMIN = "admin"; //
+    public static final String CMD_WD_OPEN = "open"; //
     
     // Item Tags
     public static final String TAG_BOXED_VILLAGER_ITEM = "BoxedVillagerItem"; //
@@ -66,6 +68,7 @@ public final class Strings
     public static final String CONFIG_CURRENCY_FALLBACK = "fallbackCurrencySymbol"; //
     public static final String CONFIG_MIN_SLOTS = "minTradeSlots"; //
     public static final String CONFIG_MAX_SLOTS = "maxTradeSlots"; //
+    public static final String CONFIG_MAX_CURES = "maxCures"; //
     
     // Permission Strings
     public static final String PERM_BOXEDVILLAGERS = "boxedvillagers.bv"; //
@@ -75,9 +78,14 @@ public final class Strings
     public static final String PERM_BOXEDVILLAGERS_RELOAD = "boxedvillagers.bv.reload"; //
     public static final String PERM_CAPTURE = "boxedvillagers.capture"; //
     public static final String PERM_WITCHDOCTOR = "boxedvillagers.witchdoctor"; //
-    public static final String PERM_WITCHDOCTOR_ADVANCED = "boxedvillagers.witchdoctor.advanced"; //
+    public static final String PERM_WITCHDOCTOR_BUY = "boxedvillagers.witchdoctor.buy"; //
+    public static final String PERM_WITCHDOCTOR_CURE = "boxedvillagers.witchdoctor.cure"; //
+    public static final String PERM_WITCHDOCTOR_EXTEND = "boxedvillagers.witchdoctor.extend"; //
+    public static final String PERM_WITCHDOCTOR_MOVE = "boxedvillagers.witchdoctor.move"; //
+    public static final String PERM_WITCHDOCTOR_PURGE = "boxedvillagers.witchdoctor.purge"; //
     public static final String PERM_WITCHDOCTOR_EXTRACT = "boxedvillagers.witchdoctor.extract"; //
     public static final String PERM_WITCHDOCTOR_ADMIN = "boxedvillagers.witchdoctor.admin"; //
+    public static final String PERM_WITCHDOCTOR_OPEN = "boxedvillagers.witchdoctor.open"; //
     public static final String PERM_ADMIN = "boxedvillagers.admin"; //
     
     // Formatting Strings
@@ -117,6 +125,7 @@ public final class Strings
     // Internal Error
     public static final String UNKNOWN_STRING = "ERROR RETRIEVING STRING!";
     
+    
     /**
      * Restores mutable strings to their default values.
      */
@@ -130,9 +139,12 @@ public final class Strings
         mutableStrings.put(StringRef.TT_BOUND_SCROLL_TITLE, "<advanced>Bound Villager Scroll"); //
         mutableStrings.put(StringRef.TT_NONLETHAL_ADMIN_ITEM, "<warn>NONLETHAL SCROLL (ADMIN ITEM)!"); //
         mutableStrings.put(StringRef.TT_HELP_TITLE, "<title>Help"); //
-        mutableStrings.put(StringRef.TT_HELP_NO_SCROLL, "Place your bound scroll below.\n\nPurchase scrolls to the right."); //
-        mutableStrings.put(StringRef.TT_HELP_HAS_SCROLL, "Purchase scrolls to the right.\n\nUse the buttons on the left to\nupgrade your villager."); //
-        mutableStrings.put(StringRef.TT_HELP_HAS_SCROLL_ADVANCED, "\nMove the trades below around\nto change their order.\n\nUse the button on the right to\ncommit your changes.\n\n<info>Note: Prices shown below ignore\n<info>cures."); //
+        mutableStrings.put(StringRef.TT_HELP_NO_SCROLL, "Place your bound scroll below."); //
+        mutableStrings.put(StringRef.TT_HELP_PURCHASE, "Purchase scrolls to the right."); //
+        mutableStrings.put(StringRef.TT_HELP_UPGRADE, "Upgrade your villager to the left"); //
+        mutableStrings.put(StringRef.TT_HELP_COMMIT, "Use the button on the right to\ncommit your changes."); //
+        mutableStrings.put(StringRef.TT_HELP_MOVE, "Move the trades below around\nto change their order."); //
+        mutableStrings.put(StringRef.TT_HELP_PRICE_NOTE, "<info>Note: Prices shown below ignore\n<info>cures."); //
         mutableStrings.put(StringRef.TT_APPLIES_INSTANTLY, "<warn>Applies instantly, irreversible."); //
         mutableStrings.put(StringRef.TT_SLOT_EXTENSION_TITLE, "<title>Extend Trade Slots"); //
         mutableStrings.put(StringRef.TT_SLOT_EXTENSION_FULL, "Your villager has full trade slots."); //
@@ -155,17 +167,18 @@ public final class Strings
         mutableStrings.put(StringRef.TT_COST_TO_STRING_HEADER, "Cost:"); //
         
         // Dynamic Tooltip Strings
-        mutableStrings.put(StringRef.TT_DYN_BOUND_SCROLL_LORE, "Name: %s\nCures: %s\nTrade Slots: %s\n<info>Right Click in hand to trade!"); // string name, string cures as string, string slots as string
+        mutableStrings.put(StringRef.TT_DYN_BOUND_SCROLL_LORE, "Name: %s\nCures: %s\nTrade Slots: %s\n<info>Right Click in hand to trade!"); // String name, String cures as string, String slots as string
         mutableStrings.put(StringRef.TT_DYN_SLOTS_AS_STRING_NOT_FULL, "<dynamic>%d<norm>/<static>%d"); // int current, int max
         mutableStrings.put(StringRef.TT_DYN_SLOTS_AS_STRING_FULL, "<dynamic>%d/%d"); // int max slots, int max slots
         mutableStrings.put(StringRef.TT_DYN_SLOT_EXTENSION_SLOTS, "A villager can hold up to <static>%d<norm> trades.\nIt can currently hold <dynamic>%d<norm>."); // int max slots, int current slots
+        mutableStrings.put(StringRef.TT_DYN_CURE_CAPACITY, "A villager can be cured up to <static>%d<norm> times.\nCured <dynamic>%d<norm> times so far."); // int max cures, int current cures
         mutableStrings.put(StringRef.TT_DYN_COMMIT_PURGED, "<static>%d<norm> trades were purged."); // int purged
         mutableStrings.put(StringRef.TT_DYN_COMMIT_EXTRACTED, "<static>%d<norm> trades were extracted."); // int extracted
         mutableStrings.put(StringRef.TT_DYN_COMMIT_ADDED, "<static>%d<norm> new trades were added."); // int added
         mutableStrings.put(StringRef.TT_DYN_TRADE_REDUCTION, "Price reduced by <static>%s<norm> for each cure."); // int cure reduction
-        mutableStrings.put(StringRef.TT_DYN_TRADE_TO_STRING_ITEM, "<static>%d <item>%s<norm>"); // int amount, string item name
-        mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_MONEY, "   -<static>%.2f%s<money>"); // int money, string currency suffix
-        mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_ITEM, "   -<static>%d <item>%s"); // int amount, string item name
+        mutableStrings.put(StringRef.TT_DYN_TRADE_TO_STRING_ITEM, "<static>%d <item>%s<norm>"); // int amount, String item name
+        mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_MONEY, "   -<static>%.2f%s<money>"); // int money, String currency suffix
+        mutableStrings.put(StringRef.TT_DYN_COST_TO_STRING_ITEM, "   -<static>%d <item>%s"); // int amount, String item name
         
         // UI Strings
         mutableStrings.put(StringRef.UI_WD_TITLE, "<uiheader>Witch Doctor"); //

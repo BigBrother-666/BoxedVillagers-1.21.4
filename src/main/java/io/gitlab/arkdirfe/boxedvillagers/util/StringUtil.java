@@ -104,6 +104,17 @@ public final class StringUtil
         return result.toString();
     }
     
+    @NotNull
+    public static String smartAppend(@NotNull String prefix, @NotNull String suffix, int linebreaks)
+    {
+        if(prefix.isEmpty())
+        {
+            return suffix;
+        }
+        
+        return prefix + "\n".repeat(Math.max(0, linebreaks)) + suffix;
+    }
+    
     /**
      * Converts a trade to a readable string.
      *

@@ -9,13 +9,16 @@
 strings:
 ## Tooltip Static Strings
 #TT_UNBOUND_SCROLL_TITLE : "<basic>Unbound Villager Scroll"
-#TT_UNBOUND_SCROLL_LORE : "<info>Shift Right Click<norm> on a villager to\n<evil>§mensnare its mortal soul§r<norm> capture it.\n\nCaptured villagers do not benefit\nfrom previous cures or <basic>Hero of the\n<basic>Village <norm>and can not unlock additional\ntrades from their profession."
+#TT_UNBOUND_SCROLL_LORE : "<info>Shift Right Click<norm> on a villager to\n<evil>§mensnare its mortal soul§r<norm> capture it.\nCaptured villagers do not benefit\nfrom previous cures or <basic>Hero of the\n<basic>Village <norm>and can not unlock additional\ntrades from their profession." #
 #TT_BOUND_SCROLL_TITLE : "<advanced>Bound Villager Scroll"
 #TT_NONLETHAL_ADMIN_ITEM : "<warn>NONLETHAL SCROLL (ADMIN ITEM)!"
 #TT_HELP_TITLE : "<title>Help"
-#TT_HELP_NO_SCROLL : "Place your bound scroll below.\n\nPurchase scrolls to the right."
-#TT_HELP_HAS_SCROLL : "Purchase scrolls to the right.\n\nUse the buttons on the left to\nupgrade your villager."
-#TT_HELP_HAS_SCROLL_ADVANCED : "\nMove the trades below around\nto change their order.\n\nUse the button on the right to\ncommit your changes.\n\n<info>Note: Prices shown below ignore\n<info>cures."
+#TT_HELP_NO_SCROLL : "Place your bound scroll below."
+#TT_HELP_PURCHASE : "Purchase scrolls to the right."
+#TT_HELP_UPGRADE : "Upgrade your villager to the left"
+#TT_HELP_COMMIT : "Use the button on the right to\ncommit your changes."
+#TT_HELP_MOVE : "Move the trades below around\nto change their order."
+#TT_HELP_PRICE_NOTE : "<info>Note: Prices shown below ignore\n<info>cures."
 #TT_APPLIES_INSTANTLY : "<warn>Applies instantly, irreversible."
 #TT_SLOT_EXTENSION_TITLE : "<title>Extend Trade Slots"
 #TT_SLOT_EXTENSION_FULL : "Your villager has full trade slots."
@@ -35,25 +38,25 @@ strings:
 #TT_CONVERT_EXTRACTED_LORE : "<info>Commit to receive item."
 #TT_CONVERT_FREE_TITLE : "<advanced>Extracted Trade"
 #TT_CONVERT_FREE_LORE : "Acts like a regular trade in the Witch Doctor GUI.\nGets added to scroll when committed."
-#TT_COST_TO_STRING_HEADER : "Costs:"
+#TT_COST_TO_STRING_HEADER : "Cost:"
 
 ## Dynamic Tooltip Strings
-#TT_DYN_BOUND_SCROLL_LORE : "Name: %s\nCures: %s\nTrade Slots: %s\n<info>Right Click in hand to trade!" # string name, string cures as string, string slots as string
+#TT_DYN_BOUND_SCROLL_LORE : "Name: %s\nCures: %s\nTrade Slots: %s\n<info>Right Click in hand to trade!" # String name, String cures as string, String slots as string
 #TT_DYN_SLOTS_AS_STRING_NOT_FULL : "<dynamic>%d<norm>/<static>%d" # int current, int max
 #TT_DYN_SLOTS_AS_STRING_FULL : "<dynamic>%d/%d" # int max slots, int max slots
 #TT_DYN_SLOT_EXTENSION_SLOTS : "A villager can hold up to <static>%d<norm> trades.\nIt can currently hold <dynamic>%d<norm>." # int max slots, int current slots
+#TT_DYN_CURE_CAPACITY : "A villager can be cured up to <static>%d<norm> times.\nCured <dynamic>%d<norm> times so far." # int max cures, int current cures
 #TT_DYN_COMMIT_PURGED : "<static>%d<norm> trades were purged." # int purged
 #TT_DYN_COMMIT_EXTRACTED : "<static>%d<norm> trades were extracted." # int extracted
 #TT_DYN_COMMIT_ADDED : "<static>%d<norm> new trades were added." # int added
 #TT_DYN_TRADE_REDUCTION : "Price reduced by <static>%s<norm> for each cure." # int cure reduction
-#TT_DYN_TRADE_TO_STRING_ITEM : "<static>%d <item>%s<norm>" # int amount, string item name
-#TT_DYN_COST_TO_STRING_MONEY : "  # -<static>%d<money> Money" # int money
-#TT_DYN_COST_TO_STRING_CRYSTALS : "  # -<static>%d<crystals> Crystals" # int crystals
-#TT_DYN_COST_TO_STRING_ITEM : "  # -<static>%d <item>%s" # int amount, string item name
+#TT_DYN_TRADE_TO_STRING_ITEM : "<static>%d <item>%s<norm>" # int amount, String item name
+#TT_DYN_COST_TO_STRING_MONEY : "   -<static>%.2f%s<money>" # int money, String currency suffix
+#TT_DYN_COST_TO_STRING_ITEM : "   -<static>%d <item>%s" # int amount, String item name
 
 ## UI Strings
-#UI_WD_TITLE : "Witch Doctor"
-#UI_WD_TITLE_ADMIN : "Witch Doctor <warn>(ADMIN MODE)"
+#UI_WD_TITLE : "<uiheader>Witch Doctor" #
+#UI_WD_TITLE_ADMIN : "<uiheader>Witch Doctor <warn>(ADMIN MODE)"
 
 ## Chat Strings (Player-facing chat messages)
 #CHAT_GIVE_TRADE_USAGE : "<info>Usage:\n<info>/bv give trade <input1> <input2> <output> <uses> <reduction per cure> [player]\n<info>Use hotbar indices (0-8) for inputs, input2 may be -1 for trades with one input"
@@ -63,22 +66,8 @@ strings:
 #CHAT_SCROLL_BOUND : "<warn>Scroll already bound!"
 #CHAT_NO_TRADES : "<warn>That villager has no trades!"
 #CHAT_PLAYER_OFFLINE : "<warn>Player offline!"
-#CHAT_NOT_HOLDING_SCROLL: "<warn>Hold the villager scroll you want to rename in your hand!"
-
-## UI Strings
-#UI_WD_TITLE : "Witch Doctor"
-#UI_WD_TITLE_ADMIN : "Witch Doctor <warn>(ADMIN MODE)"
-
-## Chat Strings (Player-facing chat messages)
-#CHAT_GIVE_TRADE_USAGE : "<info>Usage: /bv give trade <input> <input> <output> <uses> <reduction per cure> [player]\n<info>Use hotbar indices (0-8) for inputs, the second input may be -1 if the trade only has one input."
-#CHAT_INSUFFICIENT_PERMISSION : "<warn>Insufficient Permission!"
-#CHAT_UNKNOWN_SUB_COMMAND : "<warn>Unknown Sub-Command!"
-#CHAT_NO_HELP_PAGE : "<warn>No help page available under this name!"
-#CHAT_SCROLL_BOUND : "<warn>Scroll already bound!"
-#CHAT_NO_TRADES : "<warn>That villager has no trades!"
-#CHAT_PLAYER_OFFLINE : "<warn>Player offline!"
-#CHAT_NOT_HOLDING_SCROLL: "<warn>Hold the villager scroll you want to rename in your hand!"
-#CHAT_NO_CAPTURE_PERMISSION: "<warn>You do not have permission to capture villagers!" //
+#CHAT_NOT_HOLDING_SCROLL : "<warn>Hold the villager scroll you want to rename in your hand!"
+#CHAT_NO_CAPTURE_PERMISSION : "<warn>You do not have permission to capture villagers!"
 
 # Colors corresponding to the formatting tags, please use the proper hex format, otherwise the override will fail. Do not try to add new tags.
 # Tags do not need an end tag, they work like vanilla formatting codes, they stay active until the next tag or line break.

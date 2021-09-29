@@ -224,7 +224,7 @@ public final class ItemUtil
             
             TradeData data = new TradeData(reduction, input1.getAmount(), trade);
             
-            return convertExtractedToFree(convertTradeToExtracted(getTradeItem(data, true))); // Yup
+            return convertExtractedToFree(convertTradeToExtracted(getTradeItem(data, true, true))); // Yup
         }
         
         return null;
@@ -250,42 +250,44 @@ public final class ItemUtil
     }
     
     /**
-     * Returns the help item for when there is no scroll present.
+     * Returns the help scroll for the witchdoctor UI based on the arguments.
      *
-     * @return Item as ItemStack.
+     * @param hasScroll    Is a scroll present?
+     * @param buyPerms     Does the player have permission to buy scrolls?
+     * @param curePerms    Does the player have permission to cure villagers?
+     * @param extendPerms  Does the player have permission to expand trade slots?
+     * @param purgePerms   Does the player have permission to purge trades?
+     * @param extractPerms Does the player have permission to extract trades?
+     *
+     * @return The scroll item;
      */
     @NotNull
-    public static ItemStack getNoScrollHelpItem()
+    public static ItemStack getHelpItem(boolean hasScroll, boolean buyPerms, boolean curePerms, boolean extendPerms, boolean purgePerms, boolean extractPerms)
     {
         ItemStack item = new ItemStack(Material.PAPER);
         
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_HELP_TITLE)), StringFormatter.splitAndFormatLines(Strings.get(StringRef.TT_HELP_NO_SCROLL)), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        String tooltip = "";
         
-        item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-        
-        return GuiUtil.setUninteractable(item);
-    }
-    
-    /**
-     * Returns the help item for when there is a scroll present.
-     *
-     * @param advancedPerms Whether the user can manipulate trades.
-     *
-     * @return Item as ItemStack.
-     */
-    @NotNull
-    public static ItemStack getScrollHelpItem(final boolean advancedPerms)
-    {
-        ItemStack item = new ItemStack(Material.PAPER);
-        
-        List<String> lore = new ArrayList<>(StringFormatter.splitAndFormatLines(Strings.get(StringRef.TT_HELP_HAS_SCROLL)));
-        
-        if(advancedPerms)
+        if(!hasScroll)
         {
-            lore.addAll(StringFormatter.splitAndFormatLines(Strings.get(StringRef.TT_HELP_HAS_SCROLL_ADVANCED)));
+            tooltip = StringUtil.smartAppend(tooltip, Strings.get(StringRef.TT_HELP_NO_SCROLL), 2);
+        }
+        if(buyPerms)
+        {
+            tooltip = StringUtil.smartAppend(tooltip, Strings.get(StringRef.TT_HELP_PURCHASE), 2);
+        }
+        if(curePerms || extendPerms)
+        {
+            tooltip = StringUtil.smartAppend(tooltip, Strings.get(StringRef.TT_HELP_UPGRADE), 2);
+        }
+        if(purgePerms || extractPerms)
+        {
+            tooltip = StringUtil.smartAppend(tooltip, Strings.get(StringRef.TT_HELP_MOVE), 2);
+            tooltip = StringUtil.smartAppend(tooltip, Strings.get(StringRef.TT_HELP_COMMIT), 2);
+            tooltip = StringUtil.smartAppend(tooltip, Strings.get(StringRef.TT_HELP_PRICE_NOTE), 2);
         }
         
-        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_HELP_TITLE)), lore, Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
+        setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_HELP_TITLE)), StringFormatter.splitAndFormatLines(tooltip), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
         
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
         
@@ -361,7 +363,7 @@ public final class ItemUtil
      * @return Item as ItemStack.
      */
     @NotNull
-    public static ItemStack getCureItem(@Nullable final CostData cureCost)
+    public static ItemStack getCureItem(@Nullable final CostData cureCost, final int currentCures)
     {
         ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
         
@@ -370,6 +372,7 @@ public final class ItemUtil
         if(cureCost != null)
         {
             lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_CURE_LORE)));
+            lore.addAll(StringFormatter.split(String.format(Strings.get(StringRef.TT_DYN_CURE_CAPACITY), BoxedVillagers.getMaxCures(), currentCures)));
             lore.add(Strings.get(StringRef.TT_APPLIES_INSTANTLY));
             
             if(cureCost.hasCost())
@@ -449,12 +452,13 @@ public final class ItemUtil
      * Returns item that represents a trade.
      *
      * @param trade        Which trade the item represents.
-     * @param extractPerms Whether the player has permission to extract trades.
+     * @param purgePerms   Does the player have permission to purge trades?
+     * @param extractPerms Does the player have permission to extract trades?
      *
      * @return Item as ItemStack.
      */
     @NotNull
-    public static ItemStack getTradeItem(@NotNull final TradeData trade, final boolean extractPerms)
+    public static ItemStack getTradeItem(@NotNull final TradeData trade, final boolean purgePerms, final boolean extractPerms)
     {
         ItemStack item = new ItemStack(Material.PAPER);
         
@@ -462,7 +466,11 @@ public final class ItemUtil
         
         lore.addAll(StringFormatter.split(StringUtil.tradeToString(trade.getRecipe(), trade.getBaseAmount())));
         lore.addAll(StringFormatter.split(String.format(Strings.get(StringRef.TT_DYN_TRADE_REDUCTION), trade.getReduction())));
-        lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_TRADE_PURGE)));
+        
+        if(purgePerms)
+        {
+            lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_TRADE_PURGE)));
+        }
         
         if(extractPerms)
         {
