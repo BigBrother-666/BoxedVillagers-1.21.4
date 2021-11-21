@@ -69,6 +69,8 @@ public final class Strings
     public static final String CONFIG_MIN_SLOTS = "minTradeSlots"; //
     public static final String CONFIG_MAX_SLOTS = "maxTradeSlots"; //
     public static final String CONFIG_MAX_CURES = "maxCures"; //
+    public static final String CONFIG_MIN_XP = "minXPReward"; //
+    public static final String CONFIG_MAX_XP = "maxXPReward"; //
     
     // Permission Strings
     public static final String PERM_BOXEDVILLAGERS = "boxedvillagers.bv"; //

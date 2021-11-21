@@ -96,7 +96,6 @@ public final class StringFormatter
         for(Map.Entry<String, String> e : colorCodes.entrySet())
         {
             string = string.replace(e.getKey(), e.getValue());
-            
         }
         return string;
     }

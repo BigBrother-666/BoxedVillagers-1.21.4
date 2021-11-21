@@ -39,6 +39,9 @@ public class BoxedVillagers extends JavaPlugin
     private static int maxTradeSlots;
     private static int maxCures;
     
+    private static int minXPReward;
+    private static int maxXPReward;
+    
     private static ConfigAccessor stringsConfig;
     
     private final List<String> loggedMessages = new ArrayList<>();
@@ -91,15 +94,19 @@ public class BoxedVillagers extends JavaPlugin
         
         try
         {
-            maxTradeSlots = Math.max(0, Math.min(27, Integer.parseInt(getConfig().getString(Strings.CONFIG_MAX_SLOTS))));
-            minTradeSlots = Math.max(0, Math.min(maxTradeSlots, Integer.parseInt(getConfig().getString(Strings.CONFIG_MIN_SLOTS))));
-            maxCures = Math.max(0, Math.min(7, Integer.parseInt(getConfig().getString(Strings.CONFIG_MAX_CURES))));
+            maxTradeSlots = Math.max(0, Math.min(27, Integer.parseInt(Objects.requireNonNull(getConfig().getString(Strings.CONFIG_MAX_SLOTS)))));
+            minTradeSlots = Math.max(0, Math.min(maxTradeSlots, Integer.parseInt(Objects.requireNonNull(getConfig().getString(Strings.CONFIG_MIN_SLOTS)))));
+            maxCures = Math.max(0, Math.min(7, Integer.parseInt(Objects.requireNonNull(getConfig().getString(Strings.CONFIG_MAX_CURES)))));
+            minXPReward = Math.abs(Integer.parseInt(Objects.requireNonNull(getConfig().getString(Strings.CONFIG_MIN_XP))));
+            maxXPReward = Math.max(minXPReward, Math.abs(Integer.parseInt(Objects.requireNonNull(getConfig().getString(Strings.CONFIG_MAX_XP)))));
         }
         catch(Exception e)
         {
             minTradeSlots = 0;
             maxTradeSlots = 27;
             maxCures = 7;
+            minXPReward = 3;
+            maxXPReward = 6;
             LogMessage(Strings.LOG_CONFIG_ERROR_GENERIC, Level.SEVERE);
         }
         
@@ -489,5 +496,15 @@ public class BoxedVillagers extends JavaPlugin
     public static int getMaxCures()
     {
         return maxCures;
+    }
+    
+    public static int getMinXPReward()
+    {
+        return minXPReward;
+    }
+    
+    public static int getMaxXPReward()
+    {
+        return maxXPReward;
     }
 }

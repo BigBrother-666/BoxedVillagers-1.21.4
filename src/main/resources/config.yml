@@ -15,6 +15,11 @@ maxTradeSlots: 27
 # Maximum amount of permitted cures. Caps at 7.
 maxCures: 7
 
+# Minimum and maximum XP rewards for trading. Awarded per trade regardless of the trade content. Vanilla values are 3-6 by default and 8-11 for villagers willing to breed.
+minXPReward: 3
+maxXPReward: 6
+
+### Costs
 # For any list that would be empty, use "FREE: 0" instead, the plugin needs to be a value for each entry to read it, otherwise things will break
 # You can also add non-item costs, currently supported is MONEY, add it like an item cost
 
