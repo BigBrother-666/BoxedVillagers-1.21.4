@@ -26,10 +26,11 @@ The Witch Doctor is a custom GUI used to manipulate captured villagers. Possible
 - `/witchdoctor`: Opens the Witch Doctor GUI.
 
 ### Admin Commands
-- `/boxedvillagers give [item]`: Allows obtaining of Unbound Scrolls and an Admin variant which does not kill the villager.
+- `/boxedvillagers give [item] [player]`: Allows obtaining of Unbound Scrolls and an Admin variant which does not kill the villager.
 - `/boxedvillagers give trade [input1] [input2] [output]`: Allows creation of trades, the command uses indices of hotbar slots to determine the components. It can also be used with just an input and an output.
 - `/boxedvillagers reload`: Reloads configs and string overrides.
 - `/witchdoctor admin`: Admin version of the regular GUI, all costs are free.
+- `/witchdoctor open [player]`: Opens the Witch Doctor GUI for another player, can be used from console.
 
 ### Permissions
 - `boxedvillagers.admin`: Access to all permissions
@@ -39,10 +40,13 @@ The Witch Doctor is a custom GUI used to manipulate captured villagers. Possible
 - `boxedvillagers.bv.give`: `/boxedvillagers give` permission
 - `boxedvillagers.bv.reload`: `/boxedvillagers reload` permission
 - `boxedvillagers.capture`: Allows capturing villagers with scrolls
-- `boxedvillagers.witchdoctor`: `/witchdoctor` permission, also implicitly enables scrolls since the Witch Doctor is the only way to obtain them
-- `boxedvillagers.witchdoctor.advanced`: Allows rearranging and purging of trades in the witchdoctor UI
-- `boxedvillagers.witchdoctor.extract`: Allows extracting and re-inserting of trades in the witchdoctor UI
-- `boxedvillagers.witchdoctor.admin`: Allows usage of `/witchdoctor admin`, which opens a UI where all operations are free
+- `boxedvillagers.witchdoctor`: `/witchdoctor` permission
+- `boxedvillagers.witchdoctor.buy`: Allows purchasing unbound scrolls
+- `boxedvillagers.witchdoctor.cure`: Allows curing villagers
+- `boxedvillagers.witchdoctor.extend`: Allows expainding a villagers' trade slot capacity
+- `boxedvillagers.witchdoctor.purge`: Allows purging of trades
+- `boxedvillagers.witchdoctor.extract`: Allows extracting and re-inserting of trades
+- `boxedvillagers.witchdoctor.admin`: Allows usage of `/witchdoctor admin`
 
 ### Configurability
 The costs for various operations are fully configurable, supporting basic resource prices as well as integration for economy using Vault. Most player-facing strings can be changed using the `strings.yml` file. For more information on configuration options, read the comments in `config.yml`.
