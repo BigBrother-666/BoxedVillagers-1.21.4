@@ -264,7 +264,7 @@ public final class ItemUtil
     @NotNull
     public static ItemStack getHelpItem(boolean hasScroll, boolean buyPerms, boolean curePerms, boolean extendPerms, boolean purgePerms, boolean extractPerms)
     {
-        ItemStack item = new ItemStack(Material.PAPER);
+        ItemStack item = new ItemStack(Material.BOOK);
         
         String tooltip = "";
         

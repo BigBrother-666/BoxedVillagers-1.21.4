@@ -20,6 +20,8 @@ minXPReward: 3
 maxXPReward: 6
 
 ### Costs
+# Use Bukkit materials for the costs (https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html)
+# Item costs look like this: "DIAMOND_BLOCK : 5"
 # For any list that would be empty, use "FREE: 0" instead, the plugin needs to be a value for each entry to read it, otherwise things will break
 # You can also add non-item costs, currently supported is MONEY, add it like an item cost
 
