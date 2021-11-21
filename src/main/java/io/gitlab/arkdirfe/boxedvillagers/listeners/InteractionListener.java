@@ -52,7 +52,7 @@ public class InteractionListener implements Listener
             return;
         }
         
-        if(event.getRightClicked() instanceof Villager)
+        if(event.getRightClicked() instanceof Villager villager)
         {
             Player player = event.getPlayer();
             NBTItem nbtItem = ItemUtil.validateUnboundItem(player.getInventory().getItemInMainHand());
@@ -74,8 +74,6 @@ public class InteractionListener implements Listener
                         return;
                     }
                 }
-                
-                Villager villager = (Villager) event.getRightClicked();
                 
                 if(villager.getRecipeCount() == 0)
                 {
@@ -102,7 +100,7 @@ public class InteractionListener implements Listener
                     // Delete villager if scroll is lethal
                     if(!nonlethal)
                     {
-                        villager.remove();
+                        villager.damage(999999999);
                     }
                 }
             }
@@ -174,7 +172,7 @@ public class InteractionListener implements Listener
     }
     
     /**
-     * Prevents dropping of scrolls while in a merchant GUI.
+     * Prevents dropping of scrolls while in a merchant GUI. Also handles giving players XP rewards for trading.
      *
      * @param event The event.
      */
