@@ -191,7 +191,6 @@ public class BoxedVillagers extends JavaPlugin
                 if(!Strings.set(keyRef, value))
                 {
                     LogMessage(Strings.LOG_INVALID_STRING_OVERRIDE, Level.WARNING);
-                    ;
                 }
                 else
                 {

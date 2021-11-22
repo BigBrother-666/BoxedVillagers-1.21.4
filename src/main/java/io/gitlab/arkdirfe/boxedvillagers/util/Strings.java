@@ -101,8 +101,8 @@ public final class Strings
     public static final String LOG_ERROR_TIME_WORLD = "Error loading time world from config!"; //
     public static final String LOG_REGISTER_COMMANDS = "Registered commands and listeners!"; //
     public static final String LOG_LOAD_COSTS = "Loaded costs for operations!"; //
-    public static final String LOG_CANT_REGISTER_COMMAND_BOXEDVILLAGERS = "Unable to register BoxedVillager commands! This should never happen =  if it does =  tell Arkdirfe to fix his damn strings!"; //
-    public static final String LOG_CANT_REGISTER_COMMAND_WITCHDOCTOR = "Unable to register Witchdoctor commands! This should never happen =  if it does =  tell Arkdirfe to fix his damn strings!"; //
+    public static final String LOG_CANT_REGISTER_COMMAND_BOXEDVILLAGERS = "Unable to register BoxedVillager commands! This should never happen if it does tell Arkdirfe to fix his damn strings!"; //
+    public static final String LOG_CANT_REGISTER_COMMAND_WITCHDOCTOR = "Unable to register Witchdoctor commands! This should never happen if it does tell Arkdirfe to fix his damn strings!"; //
     public static final String LOG_UNAVAILABLE_FROM_CONSOLE = "Only reload command available from console!"; //
     public static final String LOG_RESTOCK_TIME_RAN_BACKWARDS = "Restock attempted with lower world time than last restocked time. If you see this message once it's nothing to worry about =  if you see it often you might want to look into things."; //
     public static final String LOG_INVALID_STRING_OVERRIDE = "Please refer to the comments in strings.yml for proper override usage because you clearly haven't read it."; //
@@ -119,9 +119,9 @@ public final class Strings
     public static final String LOG_DYN_NO_TITLE = "No title found in help page %s!"; // String help title
     public static final String LOG_DYN_NO_CONTENT = "No content found in help page %s!"; // String help content
     public static final String LOG_DYN_UNKNOWN_MATERIAL = "Unknown material or unsupported currency %s! Ignoring."; // String currency key
-    public static final String LOG_DYN_UNEXPECTED_NUMBER = "Unexpected number of cost entries for %s (got %d =  expected %d! This WILL break!"; // String config section =  int list size =  int expected size
+    public static final String LOG_DYN_UNEXPECTED_NUMBER = "Unexpected number of cost entries for %s (got %d =  expected %d)! This WILL break!"; // String config section =  int list size =  int expected size
     public static final String LOG_DYN_LOAD_HELP = "Loaded %d help pages!"; // int count
-    public static final String LOG_DYN_LOAD_STRING_OVERRIDES = "Loaded %d public static final String overrides!"; // int count
+    public static final String LOG_DYN_LOAD_STRING_OVERRIDES = "Loaded %d String overrides!"; // int count
     public static final String LOG_DYN_LOAD_COLOR_OVERRIDES = "Loaded %d color overrides!"; // int count
     
     // Internal Error
