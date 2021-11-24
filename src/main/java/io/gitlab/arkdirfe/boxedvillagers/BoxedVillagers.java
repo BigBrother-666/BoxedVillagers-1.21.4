@@ -5,8 +5,7 @@ import io.gitlab.arkdirfe.boxedvillagers.commands.WitchdoctorCommandExecutor;
 import io.gitlab.arkdirfe.boxedvillagers.data.CostData;
 import io.gitlab.arkdirfe.boxedvillagers.data.HelpData;
 import io.gitlab.arkdirfe.boxedvillagers.listeners.InteractionListener;
-import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiController;
-import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
+import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorUi;
 import io.gitlab.arkdirfe.boxedvillagers.util.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
@@ -20,9 +19,6 @@ import java.util.logging.Level;
 
 public class BoxedVillagers extends JavaPlugin
 {
-    private WitchdoctorGuiManager witchdoctorGuiManager;
-    
-    private static Map<UUID, WitchdoctorGuiController> guiMap;
     private static Map<String, HelpData> helpPages;
     private static List<CostData> cureCosts;
     private static List<CostData> slotExtensionCosts;
@@ -31,6 +27,7 @@ public class BoxedVillagers extends JavaPlugin
     private static CostData extractCost;
     private static CostData addCost;
     private static Economy economy;
+    private static BoxedVillagers plugin;
     
     // Config Values
     private static String timeWorldName;
@@ -50,9 +47,10 @@ public class BoxedVillagers extends JavaPlugin
     @Override
     public void onEnable()
     {
+        plugin = this;
+        
         stringsConfig = new ConfigAccessor(this, "strings.yml");
         
-        guiMap = new HashMap<>();
         Util.plugin = this;
         
         reloadConfig();
@@ -65,7 +63,7 @@ public class BoxedVillagers extends JavaPlugin
     @Override
     public void onDisable()
     {
-        witchdoctorGuiManager.cleanupOpenGuis();
+        WitchdoctorUi.cleanupOpenGuis();
         getLogger().info(Strings.LOG_UNLOADED);
     }
     
@@ -207,10 +205,10 @@ public class BoxedVillagers extends JavaPlugin
      */
     private void registerCommandsAndListeners()
     {
-        witchdoctorGuiManager = new WitchdoctorGuiManager(this);
+        new WitchdoctorUi(this);
         
         new BoxedVillagersCommandExecutor(this, "boxedvillagers");
-        new WitchdoctorCommandExecutor(this, witchdoctorGuiManager, "witchdoctor");
+        new WitchdoctorCommandExecutor(this, "witchdoctor");
         new InteractionListener(this);
         
         getLogger().info(Strings.LOG_REGISTER_COMMANDS);
@@ -427,11 +425,6 @@ public class BoxedVillagers extends JavaPlugin
     
     // Getters for private static members
     
-    public static Map<UUID, WitchdoctorGuiController> getGuiMap()
-    {
-        return guiMap;
-    }
-    
     public static Map<String, HelpData> getHelpPages()
     {
         return helpPages;
@@ -505,5 +498,10 @@ public class BoxedVillagers extends JavaPlugin
     public static int getMaxXPReward()
     {
         return maxXPReward;
+    }
+    
+    public static BoxedVillagers getPlugin()
+    {
+        return plugin;
     }
 }

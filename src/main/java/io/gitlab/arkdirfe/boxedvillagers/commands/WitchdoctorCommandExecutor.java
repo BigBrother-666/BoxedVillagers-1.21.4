@@ -1,7 +1,7 @@
 package io.gitlab.arkdirfe.boxedvillagers.commands;
 
 import io.gitlab.arkdirfe.boxedvillagers.BoxedVillagers;
-import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorGuiManager;
+import io.gitlab.arkdirfe.boxedvillagers.ui.WitchdoctorUi;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringFormatter;
 import io.gitlab.arkdirfe.boxedvillagers.util.StringRef;
 import io.gitlab.arkdirfe.boxedvillagers.util.Strings;
@@ -18,18 +18,14 @@ import java.util.List;
 
 public class WitchdoctorCommandExecutor implements TabExecutor
 {
-    private final WitchdoctorGuiManager gui;
-    
     /**
      * Handles the /witchdoctor or /wd command.
      *
      * @param plugin      Reference to the plugin.
-     * @param manager     The GUI manager class.
      * @param commandName Name of the command.
      */
-    public WitchdoctorCommandExecutor(@NotNull final BoxedVillagers plugin, @NotNull final WitchdoctorGuiManager manager, @NotNull String commandName)
+    public WitchdoctorCommandExecutor(@NotNull final BoxedVillagers plugin, @NotNull String commandName)
     {
-        this.gui = manager;
         PluginCommand cmd = plugin.getCommand(commandName);
         if(cmd != null)
         {
@@ -49,7 +45,7 @@ public class WitchdoctorCommandExecutor implements TabExecutor
         {
             if(args.length == 1 && args[0].equalsIgnoreCase("admin") && sender.hasPermission(Strings.PERM_WITCHDOCTOR_ADMIN))
             {
-                gui.openGui(player, true);
+                WitchdoctorUi.openForPlayer(player, true);
             }
             else if(args.length == 2 && args[0].equalsIgnoreCase(Strings.CMD_WD_OPEN))
             {
@@ -57,7 +53,7 @@ public class WitchdoctorCommandExecutor implements TabExecutor
             }
             else
             {
-                gui.openGui(player, false);
+                WitchdoctorUi.openForPlayer(player, false);
             }
             
             return true;
@@ -87,7 +83,7 @@ public class WitchdoctorCommandExecutor implements TabExecutor
             return;
         }
         
-        gui.openGui(player, false);
+        WitchdoctorUi.openForPlayer(player, false);
     }
     
     @Override
