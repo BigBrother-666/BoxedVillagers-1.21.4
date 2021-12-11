@@ -132,6 +132,16 @@ public class WitchdoctorUi implements Listener
             player.getInventory().addItem(item);
         }
         
+        ItemStack cursorItem = player.getItemOnCursor();
+        if(!ItemUtil.isNullOrAir(cursorItem) && !GuiUtil.isExtracted(cursorItem))
+        {
+            NBTItem nbt = new NBTItem(cursorItem);
+            if(nbt.hasKey(Strings.TAG_SERIALIZED_TRADE_DATA))
+            {
+                player.setItemOnCursor(null);
+            }
+        }
+        
         instances.remove(player.getUniqueId());
     }
     
