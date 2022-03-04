@@ -6,7 +6,8 @@ build:
   stage: build
   image: maven:3.8.1-openjdk-16
   before_script:
-    - echo GE_JOB_ID=$CI_JOB_ID >> generate_executables.env
+    - echo $CI_JOB_ID
+    - echo GE_JOB_ID=$CI_JOB_ID >> build.env
   script: mvn clean package
   artifacts:
     name: "BoxedVillagers"
@@ -15,12 +16,12 @@ build:
     exclude:
       - "target/original*.jar"
     reports:
-      dotenv: jar.env
+      dotenv: build.env
 
 release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  script: echo "Creating Release"
+  script: echo "${GE_JOB_ID}"
   rules:
     - if: $CI_COMMIT_TAG
   needs:
@@ -32,5 +33,5 @@ release:
     description: "Automatically Generated Release"
     assets:
       links:
-        - name: Jarfile
-          url: "https://gitlab.com/eggmc/boxedvillagers/cw/-/jobs/${GE_JOB_ID}/artifacts/file/target/BoxedVillagers-1.0-SNAPSHOT.jar"
+        - name: Plugin JAR
+          url: "https://gitlab.com/eggmc/boxedvillagers/-/jobs/${GE_JOB_ID}/artifacts/file/target/BoxedVillagers-1.0-SNAPSHOT.jar"
