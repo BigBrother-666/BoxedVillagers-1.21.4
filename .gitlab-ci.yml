@@ -7,7 +7,7 @@ build:
   image: maven:3.8.1-openjdk-16
   before_script:
     - echo "JOB=$CI_JOB_ID" >> build.env
-  script: mvn -Drevision="-$CI_COMMIT_TAG" clean package
+  script: if [$CI_COMMIT_TAG == ""]; then mvn -Drevision="$CI_COMMIT_TAG" clean package; else mvn clean package fi
   artifacts:
     name: "BoxedVillagers"
     paths:
