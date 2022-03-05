@@ -34,4 +34,4 @@ release:
     assets:
       links:
         - name: "Plugin JAR"
-          url: "https://gitlab.com/eggmc/boxedvillagers/-/jobs/${JOB}/artifacts/file/target/BoxedVillagers-1.0-SNAPSHOT.jar"
+          url: "https://gitlab.com/eggmc/boxedvillagers/-/jobs/${JOB}/artifacts/file/target/BoxedVillagers-1.0-$CI_COMMIT_TAG"
