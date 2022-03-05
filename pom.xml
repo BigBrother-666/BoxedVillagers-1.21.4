@@ -9,11 +9,10 @@
     <version>${revision}</version>
 
     <properties>
-        <sonar.projectKey>eggmc_boxedvillagers</sonar.projectKey>
-        <sonar.organization>eggmc</sonar.organization>
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
         <java.version>16</java.version>
+        <revision>-INTERNAL</revision>
     </properties>
 
     <build>
