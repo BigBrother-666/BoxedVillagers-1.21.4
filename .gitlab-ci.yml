@@ -10,7 +10,6 @@ build_untagged:
   script: mvn clean package
   artifacts:
     name: "BoxedVillagers"
-    expire_in: 7 days
     paths:
     - "target/*.jar"
     exclude:
@@ -26,6 +25,7 @@ build_tagged:
   script: mvn -Drevision="$CI_COMMIT_TAG" clean package
   artifacts:
     name: "BoxedVillagers"
+    expire_in: never
     paths:
     - "target/*.jar"
     exclude:
@@ -49,4 +49,4 @@ release:
     assets:
       links:
         - name: "Plugin JAR"
-          url: "https://gitlab.com/eggmc/boxedvillagers/-/jobs/${JOB}/artifacts/file/target/BoxedVillagers-1.0-$CI_COMMIT_TAG"
+          url: "https://gitlab.com/eggmc/boxedvillagers/-/jobs/${JOB}/artifacts/file/target/BoxedVillagers-$CI_COMMIT_TAG"
