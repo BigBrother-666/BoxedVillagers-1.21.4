@@ -289,7 +289,7 @@ public final class ItemUtil
         
         setItemTitleLoreAndFlags(item, StringFormatter.formatLine(Strings.get(StringRef.TT_HELP_TITLE)), StringFormatter.splitAndFormatLines(tooltip), Collections.singletonList(ItemFlag.HIDE_ENCHANTS));
         
-        item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+        item.addUnsafeEnchantment(Enchantment.INFINITY, 1);
         
         return GuiUtil.setUninteractable(item);
     }
@@ -416,7 +416,7 @@ public final class ItemUtil
         else
         {
             lore.add(Strings.get(StringRef.TT_COMMIT_CHANGES));
-            item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+            item.addUnsafeEnchantment(Enchantment.INFINITY, 1);
         }
         
         if(tradesMoved)
@@ -509,7 +509,7 @@ public final class ItemUtil
         lore.addAll(StringFormatter.split(Strings.get(StringRef.TT_CONVERT_EXTRACTED_LORE)));
         meta.setLore(StringFormatter.formatAll(lore));
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+        item.addUnsafeEnchantment(Enchantment.INFINITY, 1);
         
         return GuiUtil.setExtracted(item);
     }

@@ -154,7 +154,7 @@ public class VillagerData
         }
         
         linkedItem = nbtItem.getItem();
-        linkedItem.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+        linkedItem.addUnsafeEnchantment(Enchantment.INFINITY, 1);
         
         updateTitleAndLore();
         
