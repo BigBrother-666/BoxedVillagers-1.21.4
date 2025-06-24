@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class InteractionListener implements Listener {
@@ -189,8 +190,9 @@ public class InteractionListener implements Listener {
                 if (selected != null && event.getRawSlot() == 2 && selected.getUses() < selected.getMaxUses()) {
                     int tradeCount = 1;
                     if (event.isShiftClick() && !event.getAction().equals(InventoryAction.NOTHING)) {
-                        int primaryCost = selected.getIngredients().get(0).getAmount();
-                        int secondaryCost = selected.getIngredients().get(1).getAmount();
+                        List<ItemStack> ingredients = selected.getIngredients();
+                        int primaryCost = !ingredients.isEmpty() ? ingredients.get(0).getAmount() : 0;
+                        int secondaryCost = ingredients.size() > 1 ? ingredients.get(1).getAmount() : 0;
                         int primaryCount = merchantInventory.getItem(0) == null ? 0 : merchantInventory.getItem(0).getAmount();
                         int secondaryCount = merchantInventory.getItem(1) == null ? 0 : merchantInventory.getItem(1).getAmount();
 
