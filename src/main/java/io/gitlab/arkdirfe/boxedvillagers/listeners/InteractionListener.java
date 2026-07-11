@@ -24,6 +24,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -137,7 +138,8 @@ public class InteractionListener implements Listener {
 
             VillagerData data = new VillagerData(nbtItem);
             data.attemptRestock();
-            player.getInventory().setItemInMainHand(data.getItem());
+
+            giveItem(player, data);
 
             Merchant merchant = Bukkit.createMerchant(""); // Used for checking whether it's a real villager or my UI, players can't use name tags to change villager name to empty string
             merchant.setRecipes(data.getMerchantRecipes());
@@ -165,9 +167,23 @@ public class InteractionListener implements Listener {
                 VillagerData data = new VillagerData(nbtItem);
                 data.updateUses(merchantInventory.getMerchant());
 
-                player.getInventory().setItemInMainHand(data.getItem());
+                giveItem(player, data);
             }
         }
+    }
+
+    private void giveItem(HumanEntity player, VillagerData data) {
+        ItemStack item = data.getItem();
+        ItemMeta itemMeta = item.getItemMeta();
+        if (itemMeta != null) {
+            ItemMeta old = player.getInventory().getItemInMainHand().getItemMeta();
+            if (old != null) {
+                itemMeta.setDisplayName(old.getDisplayName());
+                item.setItemMeta(itemMeta);
+            }
+        }
+
+        player.getInventory().setItemInMainHand(item);
     }
 
     /**
